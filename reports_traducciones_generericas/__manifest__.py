@@ -22,7 +22,7 @@
                 'sale',
                 'stock',
                 'account',
-                'purchase,'
+                'purchase'
                 ],
 
     'data': [
