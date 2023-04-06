@@ -1,17 +1,17 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* stock
+# 	* account_accountant
 # 	* account
 # 	* sale_management
-# 	* account_accountant
+# 	* stock
 # 	* purchase
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e-20230124\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-06 11:23+0000\n"
-"PO-Revision-Date: 2023-04-06 11:23+0000\n"
+"POT-Creation-Date: 2023-04-05 14:22+0000\n"
+"PO-Revision-Date: 2023-04-05 14:22+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -240,7 +240,7 @@ msgstr "#Creado por: %s"
 msgid "%(action)s for journal %(journal)s"
 msgstr "%(action)s del diario %(journal)s"
 
-#. modules: account, purchase
+#. modules: purchase, account
 #. odoo-python
 #: code:addons/account/models/account_move.py:0
 #: code:addons/purchase/models/purchase.py:0
@@ -1252,7 +1252,7 @@ msgstr "<i class=\"fa fa-clock-o\" aria-label=\"Periodo\" role=\"img\" title=\"P
 msgid "<i class=\"fa fa-comment\"/> Send message"
 msgstr "<i class=\"fa fa-comment\"/> Enviar mensaje"
 
-#. modules: account, purchase
+#. modules: purchase, account
 #: model_terms:ir.ui.view,arch_db:account.portal_invoice_page
 #: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_order
 msgid "<i class=\"fa fa-download\"/> Download"
@@ -1354,7 +1354,7 @@ msgstr ""
 "<i class=\"fa fa-fw o_button_icon fa-arrow-right\"/> Configurar servidores "
 "de correo"
 
-#. modules: account, purchase
+#. modules: purchase, account
 #: model_terms:ir.ui.view,arch_db:account.portal_invoice_page
 #: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_order
 msgid "<i class=\"fa fa-print\"/> Print"
@@ -1513,7 +1513,7 @@ msgstr ""
 "<span class=\"d-none d-md-inline\">Solicitud de cotización #</span>\n"
 "                        <span class=\"d-block d-md-none\">Ref.</span>"
 
-#. modules: account, purchase
+#. modules: purchase, account
 #: model_terms:ir.ui.view,arch_db:account.res_config_settings_view_form
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
 msgid ""
@@ -2147,7 +2147,7 @@ msgstr "<span>Firma</span>"
 msgid "<span>Tax 0%</span>"
 msgstr "<span>Impuesto 0%</span>"
 
-#. modules: account, purchase
+#. modules: purchase, account
 #: model_terms:ir.ui.view,arch_db:account.bill_preview
 #: model_terms:ir.ui.view,arch_db:account.report_invoice_document
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
@@ -2204,7 +2204,7 @@ msgstr "<strong class=\"d-block mb-1\">Desde:</strong>"
 msgid "<strong class=\"d-block mb-1\">Invoices</strong>"
 msgstr "<strong class=\"d-block mb-1\">Facturas</strong>"
 
-#. modules: account, purchase
+#. modules: purchase, account
 #: model_terms:ir.ui.view,arch_db:account.report_invoice_document
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
 #: model_terms:ir.ui.view,arch_db:purchase.report_purchaseorder_document
@@ -2391,7 +2391,7 @@ msgstr "<strong>Orden:</strong>"
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.report_delivery_document
 msgid "<strong>Ordered</strong>"
-msgstr "<strong>Ordenado</strong>"
+msgstr "<strong>Cantidad pedida</strong>"
 
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.report_package_barcode
@@ -2437,7 +2437,7 @@ msgstr "<strong>Cant</strong>"
 msgid "<strong>Quantity</strong>"
 msgstr "<strong>Cantidad</strong>"
 
-#. modules: account, purchase
+#. modules: purchase, account
 #: model_terms:ir.ui.view,arch_db:account.report_invoice_document
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
 msgid "<strong>Receipt Date:</strong>"
@@ -2842,7 +2842,7 @@ msgstr "Aceptar"
 msgid "Access Groups"
 msgstr "Grupos de acceso"
 
-#. modules: account, purchase
+#. modules: purchase, account
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__access_warning
 #: model:ir.model.fields,field_description:account.field_account_move__access_warning
 #: model:ir.model.fields,field_description:account.field_account_payment__access_warning
@@ -3470,7 +3470,7 @@ msgstr "Total devengado"
 msgid "Action"
 msgstr "Acción"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model.fields,field_description:account.field_account_account__message_needaction
 #: model:ir.model.fields,field_description:account.field_account_account_template__message_needaction
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__message_needaction
@@ -3510,7 +3510,7 @@ msgstr "Activa para crear recibo de compra"
 msgid "Activate to create sale receipt"
 msgstr "Activar para crear un recibo de venta"
 
-#. modules: stock, account, sale_management
+#. modules: sale_management, account, stock
 #: model:ir.model.fields,field_description:account.field_account_account_tag__active
 #: model:ir.model.fields,field_description:account.field_account_fiscal_position__active
 #: model:ir.model.fields,field_description:account.field_account_incoterms__active
@@ -3543,7 +3543,7 @@ msgstr "Cuenta activa"
 msgid "Active domain"
 msgstr "Dominio activo"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__activity_ids
 #: model:ir.model.fields,field_description:account.field_account_journal__activity_ids
 #: model:ir.model.fields,field_description:account.field_account_move__activity_ids
@@ -3556,7 +3556,7 @@ msgstr "Dominio activo"
 msgid "Activities"
 msgstr "Actividades"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__activity_exception_decoration
 #: model:ir.model.fields,field_description:account.field_account_journal__activity_exception_decoration
 #: model:ir.model.fields,field_description:account.field_account_move__activity_exception_decoration
@@ -3569,7 +3569,7 @@ msgstr "Actividades"
 msgid "Activity Exception Decoration"
 msgstr "Decoración de Actividad de Excepción"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__activity_state
 #: model:ir.model.fields,field_description:account.field_account_journal__activity_state
 #: model:ir.model.fields,field_description:account.field_account_move__activity_state
@@ -3587,7 +3587,7 @@ msgstr "Estado de la actividad"
 msgid "Activity Summary"
 msgstr "Resumen Actividad"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__activity_type_icon
 #: model:ir.model.fields,field_description:account.field_account_journal__activity_type_icon
 #: model:ir.model.fields,field_description:account.field_account_move__activity_type_icon
@@ -3720,7 +3720,7 @@ msgstr "Agregar una nueva categoría de almacenamiento"
 msgid "Add a new tag"
 msgstr "Añadir nueva etiqueta"
 
-#. modules: account, sale_management, purchase
+#. modules: purchase, account, sale_management
 #: model_terms:ir.ui.view,arch_db:account.view_move_form
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
@@ -3744,7 +3744,7 @@ msgstr "Agregar un producto"
 msgid "Add a rounding line"
 msgstr "Agregar una línea de redondeo"
 
-#. modules: account, sale_management, purchase
+#. modules: purchase, account, sale_management
 #: model_terms:ir.ui.view,arch_db:account.view_move_form
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
@@ -3975,7 +3975,7 @@ msgstr "Seudónimo"
 msgid "Alias domain"
 msgstr "Dominio del seudónimo"
 
-#. modules: account, purchase, stock
+#. modules: purchase, account, stock
 #. odoo-python
 #: code:addons/account/controllers/portal.py:0
 #: code:addons/purchase/controllers/portal.py:0
@@ -4217,7 +4217,7 @@ msgstr ""
 msgid "Amls Widget"
 msgstr ""
 
-#. modules: account, account_accountant, purchase
+#. modules: purchase, account, account_accountant
 #. odoo-javascript
 #: code:addons/account_accountant/static/src/xml/account_reconciliation.xml:0
 #: code:addons/account_accountant/static/src/xml/account_reconciliation.xml:0
@@ -4423,7 +4423,7 @@ msgstr ""
 "Ocurrió un error al calcular la inalterabilidad. Es imposible obtener el "
 "asiento de diario publicado anteriormente."
 
-#. modules: account, account_accountant, purchase
+#. modules: purchase, account, account_accountant
 #. odoo-javascript
 #: code:addons/account_accountant/static/src/xml/account_reconciliation.xml:0
 #: model:ir.model.fields,field_description:account.field_account_move_line__analytic_distribution
@@ -4499,7 +4499,7 @@ msgstr "Aplicabilidad del plan analítico"
 msgid "Analytic Plans"
 msgstr "Planes analíticos"
 
-#. modules: account, account_accountant, purchase
+#. modules: purchase, account, account_accountant
 #: model:ir.model.fields,field_description:account.field_account_move_line__analytic_precision
 #: model:ir.model.fields,field_description:account.field_account_reconcile_model_line__analytic_precision
 #: model:ir.model.fields,field_description:account_accountant.field_bank_rec_widget__analytic_precision
@@ -4675,7 +4675,7 @@ msgstr "Aprobar pedido"
 msgid "April"
 msgstr "Abril"
 
-#. modules: stock, account, sale_management
+#. modules: sale_management, account, stock
 #: model_terms:ir.ui.view,arch_db:account.account_incoterms_form
 #: model_terms:ir.ui.view,arch_db:account.account_incoterms_view_search
 #: model_terms:ir.ui.view,arch_db:account.account_tag_view_form
@@ -4815,7 +4815,7 @@ msgstr "Adjuntar un archivo"
 msgid "Attachment"
 msgstr "Adjunto"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model.fields,field_description:account.field_account_account__message_attachment_count
 #: model:ir.model.fields,field_description:account.field_account_account_template__message_attachment_count
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__message_attachment_count
@@ -4884,7 +4884,7 @@ msgstr ""
 msgid "Auto Reconcile"
 msgstr "Reconciliación automática"
 
-#. modules: account, purchase
+#. modules: purchase, account
 #: model_terms:ir.ui.view,arch_db:account.view_move_form
 #: model_terms:ir.ui.view,arch_db:purchase.view_move_form_inherit_purchase
 msgid "Auto-Complete"
@@ -5585,7 +5585,7 @@ msgstr "Facturación"
 msgid "Billing Status"
 msgstr "Estado de facturación"
 
-#. modules: account, purchase
+#. modules: purchase, account
 #. odoo-python
 #: code:addons/account/controllers/portal.py:0
 #: model:ir.actions.act_window,name:account.action_move_in_invoice_type
@@ -5629,7 +5629,7 @@ msgstr "Facturas a pagar"
 msgid "Blank if Zero"
 msgstr "Dejar en blanco si es cero"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model.fields.selection,name:account.selection__res_partner__invoice_warn__block
 #: model:ir.model.fields.selection,name:purchase.selection__product_template__purchase_line_warn__block
 #: model:ir.model.fields.selection,name:purchase.selection__res_partner__purchase_warn__block
@@ -5830,7 +5830,7 @@ msgstr "No se puede encontrar ninguna ubicación de cliente o de proveedor"
 msgid "Can't find any generic route %s."
 msgstr "No se puede encontrar ninguna ruta genérica %s."
 
-#. modules: stock, account, account_accountant, purchase
+#. modules: purchase, account, stock, account_accountant
 #: model_terms:ir.ui.view,arch_db:account.account_automatic_entry_wizard_form
 #: model_terms:ir.ui.view,arch_db:account.account_invoice_onboarding_sale_tax_form
 #: model_terms:ir.ui.view,arch_db:account.account_invoice_send_wizard_form
@@ -5874,7 +5874,7 @@ msgstr "Cancelar asiento"
 msgid "Cancel Next Move"
 msgstr "Cancelar siguiente movimiento"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #. odoo-python
 #: code:addons/purchase/controllers/portal.py:0
 #: model:ir.model.fields.selection,name:account.selection__account_invoice_report__state__cancel
@@ -6186,7 +6186,7 @@ msgstr ""
 "Categorice sus ubicaciones para obtener reglas de almacenamiento más "
 "inteligentes"
 
-#. modules: stock, account, sale_management, purchase
+#. modules: purchase, account, stock, sale_management
 #: model:ir.model.fields,field_description:account.field_account_analytic_line__category
 #: model:ir.model.fields,field_description:account.field_account_move_line__product_uom_category_id
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__product_uom_category_id
@@ -6606,7 +6606,7 @@ msgstr ""
 "Haga clic aquí para encontrar un contador o si desea enlistar sus servicios "
 "de contabilidad en Odoo"
 
-#. modules: account, account_accountant, stock
+#. modules: account, stock, account_accountant
 #. odoo-javascript
 #: code:addons/account_accountant/static/src/xml/account_reconciliation.xml:0
 #: code:addons/stock/static/src/xml/stock_traceability_report_backend.xml:0
@@ -6696,7 +6696,7 @@ msgstr ""
 " Cuando se establece, esta línea genera sub líneas agrupadas por dichas "
 "claves."
 
-#. modules: account, purchase
+#. modules: purchase, account
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__commercial_partner_id
 #: model:ir.model.fields,field_description:account.field_account_move__commercial_partner_id
 #: model:ir.model.fields,field_description:account.field_account_payment__commercial_partner_id
@@ -6725,7 +6725,7 @@ msgstr "Empresas"
 msgid "Companies that refers to partner"
 msgstr "Empresas que se refieren al partner"
 
-#. modules: stock, account, sale_management, account_accountant, purchase
+#. modules: account_accountant, account, sale_management, stock, purchase
 #: model:ir.model.fields,field_description:account.field_account_account__company_id
 #: model:ir.model.fields,field_description:account.field_account_accrued_orders_wizard__company_id
 #: model:ir.model.fields,field_description:account.field_account_automatic_entry_wizard__company_id
@@ -6805,7 +6805,7 @@ msgstr "Cuenta bancaria de la empresa"
 msgid "Company Country"
 msgstr "País de la empresa"
 
-#. modules: account, purchase
+#. modules: purchase, account
 #: model:ir.model.fields,field_description:account.field_account_accrued_orders_wizard__currency_id
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__company_currency_id
 #: model:ir.model.fields,field_description:account.field_account_invoice_report__company_currency_id
@@ -6942,7 +6942,7 @@ msgstr ""
 msgid "Config Settings"
 msgstr "Opciones de configuración"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.ui.menu,name:account.menu_finance_configuration
 #: model:ir.ui.menu,name:purchase.menu_purchase_config
 #: model:ir.ui.menu,name:stock.menu_stock_config_settings
@@ -6961,7 +6961,7 @@ msgstr "Revisión de la Configuración"
 msgid "Configure"
 msgstr "Configurar"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #. odoo-python
 #: code:addons/account/wizard/account_tour_upload_bill.py:0
 #: code:addons/purchase/models/purchase.py:0
@@ -7116,7 +7116,7 @@ msgstr "Consumible"
 msgid "Consume Line"
 msgstr "Línea de consumo"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model,name:stock.model_res_partner
 #: model:ir.model.fields,field_description:stock.field_stock_move_line__picking_partner_id
 #: model:ir.model.fields,field_description:stock.field_stock_picking__partner_id
@@ -7173,7 +7173,7 @@ msgstr "Botones del panel de control"
 msgid "Control-Access"
 msgstr "Control de accesos"
 
-#. modules: stock, account, sale_management, purchase
+#. modules: purchase, account, stock, sale_management
 #: model:ir.model.fields,help:account.field_account_move_line__product_uom_category_id
 #: model:ir.model.fields,help:purchase.field_purchase_order_line__product_uom_category_id
 #: model:ir.model.fields,help:sale_management.field_sale_order_option__product_uom_category_id
@@ -7692,7 +7692,7 @@ msgstr ""
 msgid "Create your quotation template"
 msgstr "Cree su plantilla de presupuesto"
 
-#. modules: stock, account, sale_management, account_accountant, purchase
+#. modules: account_accountant, account, sale_management, stock, purchase
 #: model:ir.model.fields,field_description:account.field_account_account__create_uid
 #: model:ir.model.fields,field_description:account.field_account_account_tag__create_uid
 #: model:ir.model.fields,field_description:account.field_account_account_template__create_uid
@@ -7804,7 +7804,7 @@ msgstr "Cree su plantilla de presupuesto"
 msgid "Created by"
 msgstr "Creado por"
 
-#. modules: stock, account, sale_management, account_accountant, purchase
+#. modules: account_accountant, account, sale_management, stock, purchase
 #: model:ir.model.fields,field_description:account.field_account_account__create_date
 #: model:ir.model.fields,field_description:account.field_account_account_tag__create_date
 #: model:ir.model.fields,field_description:account.field_account_account_template__create_date
@@ -8071,7 +8071,7 @@ msgstr ""
 msgid "Currencies"
 msgstr "Monedas"
 
-#. modules: account, account_accountant, purchase
+#. modules: purchase, account, account_accountant
 #. odoo-javascript
 #: code:addons/account_accountant/static/src/components/bank_reconciliation/bank_rec_widget_form_lines_widget.js:0
 #: model:ir.model,name:account.model_res_currency
@@ -8112,7 +8112,7 @@ msgstr "Asistente de conversión de moneda"
 msgid "Currency Exchange Journal"
 msgstr "Diario de intercambio de moneda"
 
-#. modules: account, purchase
+#. modules: purchase, account
 #: model:ir.model.fields,field_description:account.field_account_move_line__currency_rate
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__currency_rate
 msgid "Currency Rate"
@@ -8304,7 +8304,7 @@ msgstr "Plazo de pago de cliente"
 msgid "Customer Payments"
 msgstr "Pagos de cliente"
 
-#. modules: account, purchase
+#. modules: purchase, account
 #: model:ir.model.fields,help:account.field_account_bank_statement_line__access_url
 #: model:ir.model.fields,help:account.field_account_move__access_url
 #: model:ir.model.fields,help:account.field_account_payment__access_url
@@ -8423,7 +8423,7 @@ msgstr "Comprobar la inalterabilidad de datos"
 msgid "Data consistency check"
 msgstr "Comprobar la consistencia de datos"
 
-#. modules: stock, account, account_accountant, purchase
+#. modules: purchase, account, stock, account_accountant
 #. odoo-python
 #. odoo-javascript
 #: code:addons/account/controllers/portal.py:0
@@ -8566,7 +8566,7 @@ msgstr "Fecha del último inventario en esta ubicación."
 msgid "Date to Reserve"
 msgstr "Fecha para reservar"
 
-#. modules: account, purchase
+#. modules: purchase, account
 #. odoo-javascript
 #: code:addons/account/static/src/components/account_payment_field/account_payment.xml:0
 #: code:addons/account/static/src/xml/legacy_account_payment.xml:0
@@ -8607,7 +8607,7 @@ msgstr ""
 "Día del mes en el que se debe realizar el inventario anual. Si es cero o negativo, se seleccionará el primer día del mes en su lugar.\n"
 "        Si es mayor que el último día de un mes, se seleccionará en su lugar el último día del mes."
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #. odoo-javascript
 #: code:addons/purchase/static/src/views/purchase_dashboard.xml:0
 #: model:ir.model.fields,field_description:account.field_account_payment_term_line__days
@@ -9187,7 +9187,7 @@ msgstr "Obsoleto"
 msgid "Depreciation"
 msgstr "Depreciación"
 
-#. modules: stock, account, purchase, sale_management
+#. modules: purchase, account, stock, sale_management
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__name
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_option__name
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template_line__name
@@ -9430,7 +9430,7 @@ msgstr "Firma de Dirección"
 msgid "Disabled"
 msgstr "Deshabilitado"
 
-#. modules: account, sale_management
+#. modules: sale_management, account
 #: model_terms:ir.ui.view,arch_db:account.view_move_form
 #: model_terms:ir.ui.view,arch_db:sale_management.report_saleorder_document_inherit_sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_form_quote
@@ -9473,7 +9473,7 @@ msgstr "Descuento"
 msgid "Discount %"
 msgstr "Descuento %"
 
-#. modules: account, sale_management
+#. modules: sale_management, account
 #: model:ir.model.fields,field_description:account.field_account_move_line__discount
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_option__discount
 msgid "Discount (%)"
@@ -9559,7 +9559,7 @@ msgstr "Mostrar advertencia en monedas inactivas"
 msgid "Display Lots & Serial Numbers on Delivery Slips"
 msgstr "Mostrar Lotes y Números de Serie en Albaranes"
 
-#. modules: stock, account, sale_management, account_accountant, purchase
+#. modules: account_accountant, account, sale_management, stock, purchase
 #: model:ir.model.fields,field_description:account.field_account_account__display_name
 #: model:ir.model.fields,field_description:account.field_account_account_tag__display_name
 #: model:ir.model.fields,field_description:account.field_account_account_template__display_name
@@ -9715,7 +9715,7 @@ msgstr ""
 msgid "Display Stroked Balance"
 msgstr ""
 
-#. modules: account, sale_management, purchase
+#. modules: purchase, account, sale_management
 #: model:ir.model.fields,field_description:account.field_account_move_line__display_type
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__display_type
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template_line__display_type
@@ -9773,7 +9773,7 @@ msgstr "Distribución cuando el impuesto se utiliza en un reembolso"
 msgid "Distribution when the tax is used on an invoice"
 msgstr "Distribución cuando el impuesto se utiliza en una factura"
 
-#. modules: account, account_accountant, sale_management
+#. modules: sale_management, account, account_accountant
 #. odoo-python
 #: code:addons/account/models/digest.py:0
 #: code:addons/account_accountant/models/digest.py:0
@@ -9808,7 +9808,7 @@ msgstr "Digitalización de documento"
 msgid "Document Type"
 msgstr "Tipo de documento"
 
-#. modules: stock, account, sale_management, purchase
+#. modules: purchase, account, stock, sale_management
 #: model_terms:ir.ui.view,arch_db:account.res_config_settings_view_form
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
 #: model_terms:ir.ui.view,arch_db:sale_management.res_config_settings_view_form
@@ -9831,7 +9831,7 @@ msgstr "Atajo de Fórmula de Dominio"
 msgid "Domestic country of your accounting"
 msgstr "País de origen de su contabilidad"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model.fields,field_description:stock.field_stock_move_line__qty_done
 #: model:ir.model.fields,field_description:stock.field_stock_package_level__is_done
 #: model:ir.model.fields.selection,name:account.selection__res_company__account_dashboard_onboarding_state__done
@@ -9869,7 +9869,7 @@ msgstr ""
 msgid "Double validation amount"
 msgstr "Cantidad doble de validación"
 
-#. modules: account, purchase
+#. modules: purchase, account
 #: model_terms:ir.ui.view,arch_db:account.portal_invoice_page
 #: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_order
 msgid "Download"
@@ -10873,7 +10873,7 @@ msgstr "Mapeo fiscal"
 msgid "Fiscal Periods"
 msgstr "Periodos Fiscales"
 
-#. modules: account, purchase
+#. modules: purchase, account
 #: model:ir.model,name:account.model_account_fiscal_position
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__fiscal_position_id
 #: model:ir.model.fields,field_description:account.field_account_fiscal_position__name
@@ -11023,7 +11023,7 @@ msgstr "Plegable"
 msgid "Follow Customer Payments"
 msgstr "Seguir los pagos del cliente"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model.fields,field_description:account.field_account_account__message_follower_ids
 #: model:ir.model.fields,field_description:account.field_account_account_template__message_follower_ids
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__message_follower_ids
@@ -11041,7 +11041,7 @@ msgstr "Seguir los pagos del cliente"
 msgid "Followers"
 msgstr "Seguidores"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model.fields,field_description:account.field_account_account__message_partner_ids
 #: model:ir.model.fields,field_description:account.field_account_account_template__message_partner_ids
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__message_partner_ids
@@ -11059,7 +11059,7 @@ msgstr "Seguidores"
 msgid "Followers (Partners)"
 msgstr "Seguidores (Contactos)"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model.fields,help:account.field_account_bank_statement_line__activity_type_icon
 #: model:ir.model.fields,help:account.field_account_journal__activity_type_icon
 #: model:ir.model.fields,help:account.field_account_move__activity_type_icon
@@ -11577,7 +11577,7 @@ msgstr "Reembolso completo y nuevo borrador de factura"
 msgid "Fully Billed"
 msgstr "Totalmente facturado"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model_terms:ir.ui.view,arch_db:account.view_account_invoice_filter
 #: model_terms:ir.ui.view,arch_db:account.view_account_payment_search
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_view_search
@@ -11780,7 +11780,7 @@ msgstr "Peso bruto"
 msgid "Group"
 msgstr "Grupo"
 
-#. modules: stock, account, sale_management, purchase
+#. modules: purchase, account, stock, sale_management
 #: model:ir.model.fields,field_description:account.field_account_report_line__groupby
 #: model_terms:ir.ui.view,arch_db:account.account_tax_group_view_search
 #: model_terms:ir.ui.view,arch_db:account.view_account_invoice_filter
@@ -11877,7 +11877,7 @@ msgstr "MITAD-ARRIBA"
 msgid "Has Accounting Entries"
 msgstr "Tiene asientos contables"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model.fields,field_description:account.field_account_account__has_message
 #: model:ir.model.fields,field_description:account.field_account_account_template__has_message
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__has_message
@@ -12019,7 +12019,7 @@ msgstr "Ocultar si es cero"
 msgid "Highest Name"
 msgstr "Nombre más alto"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #. odoo-python
 #: code:addons/stock/models/stock_quant.py:0
 #: model_terms:ir.ui.view,arch_db:account.portal_invoice_page
@@ -12043,7 +12043,7 @@ msgstr ""
 msgid "How total tax amount is computed in orders and invoices"
 msgstr "Cómo se calcula la cantidad total de impuestos en pedidos y facturas"
 
-#. modules: stock, account, sale_management, account_accountant, purchase
+#. modules: account_accountant, account, sale_management, stock, purchase
 #: model:ir.model.fields,field_description:account.field_account_account__id
 #: model:ir.model.fields,field_description:account.field_account_account_tag__id
 #: model:ir.model.fields,field_description:account.field_account_account_template__id
@@ -12169,7 +12169,7 @@ msgstr "Identificación"
 msgid "INV"
 msgstr ""
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__activity_exception_icon
 #: model:ir.model.fields,field_description:account.field_account_journal__activity_exception_icon
 #: model:ir.model.fields,field_description:account.field_account_move__activity_exception_icon
@@ -12182,7 +12182,7 @@ msgstr ""
 msgid "Icon"
 msgstr "Icono"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model.fields,help:account.field_account_bank_statement_line__activity_exception_icon
 #: model:ir.model.fields,help:account.field_account_journal__activity_exception_icon
 #: model:ir.model.fields,help:account.field_account_move__activity_exception_icon
@@ -12209,7 +12209,7 @@ msgstr ""
 msgid "If all products are same"
 msgstr "Si todos los productos son el mismo"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model.fields,help:account.field_account_account__message_needaction
 #: model:ir.model.fields,help:account.field_account_account_template__message_needaction
 #: model:ir.model.fields,help:account.field_account_bank_statement_line__message_needaction
@@ -12228,7 +12228,7 @@ msgid "If checked, new messages require your attention."
 msgstr ""
 "Si se encuentra seleccionado, hay nuevos mensajes que requieren tu atención."
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model.fields,help:account.field_account_account__message_has_error
 #: model:ir.model.fields,help:account.field_account_account__message_has_sms_error
 #: model:ir.model.fields,help:account.field_account_account_template__message_has_error
@@ -12878,7 +12878,7 @@ msgstr ""
 "Fecha de año fiscal incorrecta: el día está fuera del rango del mes. Mes: "
 "%s; Día: %s"
 
-#. modules: account, purchase
+#. modules: purchase, account
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__invoice_incoterm_id
 #: model:ir.model.fields,field_description:account.field_account_move__invoice_incoterm_id
 #: model:ir.model.fields,field_description:account.field_account_payment__invoice_incoterm_id
@@ -13140,7 +13140,7 @@ msgstr ""
 "Número de referencia interno en caso de que difiera del número de Lote/Serie"
 " del fabricante"
 
-#. modules: account, purchase
+#. modules: purchase, account
 #: model:ir.model.fields,help:account.field_account_bank_statement_line__invoice_incoterm_id
 #: model:ir.model.fields,help:account.field_account_move__invoice_incoterm_id
 #: model:ir.model.fields,help:account.field_account_payment__invoice_incoterm_id
@@ -13659,7 +13659,7 @@ msgstr "Coincidencia parcial si hay pagos parciales en facturas"
 msgid "Invoices/Bills Perfect Match"
 msgstr "Coincidencia perfecta de facturas"
 
-#. modules: account, purchase
+#. modules: purchase, account
 #: model:ir.ui.menu,name:account.account_invoicing_menu
 #: model:ir.ui.menu,name:account.menu_finance
 #: model_terms:ir.ui.view,arch_db:account.digest_digest_view_form
@@ -13697,7 +13697,7 @@ msgstr "Está Completo"
 msgid "Is Editor"
 msgstr "Es un editor"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model.fields,field_description:account.field_account_account__message_is_follower
 #: model:ir.model.fields,field_description:account.field_account_account_template__message_is_follower
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__message_is_follower
@@ -13962,7 +13962,7 @@ msgstr "Fecha de bloqueo de asientos de diario"
 msgid "Journal Entries by Date"
 msgstr "Asientos contables por fecha"
 
-#. modules: account, purchase, account_accountant
+#. modules: purchase, account, account_accountant
 #. odoo-python
 #. odoo-javascript
 #: code:addons/account/models/account_move.py:0
@@ -14058,7 +14058,7 @@ msgstr "Grupo de Diarios"
 msgid "Journal Groups"
 msgstr "Grupos de Diarios"
 
-#. modules: account, purchase, account_accountant
+#. modules: purchase, account, account_accountant
 #: model:ir.model,name:purchase.model_account_move_line
 #: model:ir.model.fields,field_description:account.field_account_analytic_line__move_line_id
 #: model_terms:ir.ui.view,arch_db:account.view_account_move_line_filter
@@ -14434,7 +14434,7 @@ msgstr "Último asiento"
 msgid "Last Hash"
 msgstr "Último Hash"
 
-#. modules: stock, account, sale_management, account_accountant, purchase
+#. modules: account_accountant, account, sale_management, stock, purchase
 #: model:ir.model.fields,field_description:account.field_account_account____last_update
 #: model:ir.model.fields,field_description:account.field_account_account_tag____last_update
 #: model:ir.model.fields,field_description:account.field_account_account_template____last_update
@@ -14570,7 +14570,7 @@ msgstr "Trimestre anterior"
 msgid "Last Reconciliation:"
 msgstr "Última conciliación:"
 
-#. modules: stock, account, sale_management, account_accountant, purchase
+#. modules: account_accountant, account, sale_management, stock, purchase
 #: model:ir.model.fields,field_description:account.field_account_account__write_uid
 #: model:ir.model.fields,field_description:account.field_account_account_tag__write_uid
 #: model:ir.model.fields,field_description:account.field_account_account_template__write_uid
@@ -14682,7 +14682,7 @@ msgstr "Última conciliación:"
 msgid "Last Updated by"
 msgstr "Última actualización por"
 
-#. modules: stock, account, sale_management, account_accountant, purchase
+#. modules: account_accountant, account, sale_management, stock, purchase
 #: model:ir.model.fields,field_description:account.field_account_account__write_date
 #: model:ir.model.fields,field_description:account.field_account_account_tag__write_date
 #: model:ir.model.fields,field_description:account.field_account_account_template__write_date
@@ -14835,7 +14835,7 @@ msgstr ""
 msgid "Late"
 msgstr "Retrasado"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model_terms:ir.ui.view,arch_db:account.view_account_invoice_filter
 #: model_terms:ir.ui.view,arch_db:account.view_account_payment_search
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_view_search
@@ -15069,7 +15069,7 @@ msgstr "Pasivos"
 msgid "Liability"
 msgstr "Pasivo"
 
-#. modules: account, account_accountant, sale_management
+#. modules: sale_management, account, account_accountant
 #: model:ir.model.fields,field_description:account.field_account_reconcile_model__line_ids
 #: model:ir.model.fields,field_description:account.field_account_reconcile_model_template__line_ids
 #: model:ir.model.fields,field_description:account_accountant.field_bank_rec_widget__line_ids
@@ -15092,7 +15092,7 @@ msgstr ""
 msgid "Line subtotals tax display"
 msgstr "Visualización de líneas de impuestos subtotales"
 
-#. modules: account, sale_management
+#. modules: sale_management, account
 #: model:ir.model.fields,field_description:account.field_account_report__line_ids
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template__sale_order_template_line_ids
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
@@ -15441,7 +15441,7 @@ msgstr ""
 msgid "Mail Activity Type"
 msgstr "Tipo de actividad del correo electrónico"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model.fields,field_description:account.field_account_account__message_main_attachment_id
 #: model:ir.model.fields,field_description:account.field_account_account_template__message_main_attachment_id
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__message_main_attachment_id
@@ -15565,7 +15565,7 @@ msgstr "Administración"
 msgid "Management Closing"
 msgstr "Cierre gerencial"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:account.payment.method,name:account.account_payment_method_manual_in
 #: model:account.payment.method,name:account.account_payment_method_manual_out
 #: model:ir.model.fields.selection,name:purchase.selection__purchase_order_line__qty_received_method__manual
@@ -15908,7 +15908,7 @@ msgstr ""
 msgid "Memo:"
 msgstr ""
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model.fields,field_description:account.field_account_account__message_has_error
 #: model:ir.model.fields,field_description:account.field_account_account_template__message_has_error
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__message_has_error
@@ -15964,7 +15964,7 @@ msgstr ""
 "Tipo de mensaje: email para mensajes de correo, notification para mensajes "
 "de sistema, comment para otros tipos de mensaje como respuestas de usuarios."
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model.fields,field_description:account.field_account_account__message_ids
 #: model:ir.model.fields,field_description:account.field_account_account_template__message_ids
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__message_ids
@@ -16261,7 +16261,7 @@ msgid ""
 "balance"
 msgstr ""
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__my_activity_date_deadline
 #: model:ir.model.fields,field_description:account.field_account_journal__my_activity_date_deadline
 #: model:ir.model.fields,field_description:account.field_account_move__my_activity_date_deadline
@@ -16335,7 +16335,7 @@ msgstr "Mis SdP en espera"
 msgid "NET"
 msgstr "NETO"
 
-#. modules: stock, account, account_accountant, purchase
+#. modules: purchase, account, stock, account_accountant
 #. odoo-python
 #: code:addons/purchase/controllers/portal.py:0
 #: model:ir.model.fields,field_description:account.field_account_account_template__name
@@ -16440,7 +16440,7 @@ msgstr "Peso neto"
 msgid "Never"
 msgstr "Nunca"
 
-#. modules: account_accountant, stock
+#. modules: stock, account_accountant
 #. odoo-python
 #. odoo-javascript
 #: code:addons/account_accountant/static/src/components/bank_reconciliation/bank_rec_widget.xml:0
@@ -16508,7 +16508,7 @@ msgstr "Más Recientes primero"
 msgid "Next Action Todo"
 msgstr ""
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__activity_calendar_event_id
 #: model:ir.model.fields,field_description:account.field_account_journal__activity_calendar_event_id
 #: model:ir.model.fields,field_description:account.field_account_move__activity_calendar_event_id
@@ -16521,7 +16521,7 @@ msgstr ""
 msgid "Next Activity Calendar Event"
 msgstr "Siguiente evento en el calendario de actividades."
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__activity_date_deadline
 #: model:ir.model.fields,field_description:account.field_account_journal__activity_date_deadline
 #: model:ir.model.fields,field_description:account.field_account_move__activity_date_deadline
@@ -16534,7 +16534,7 @@ msgstr "Siguiente evento en el calendario de actividades."
 msgid "Next Activity Deadline"
 msgstr "Fecha límite de siguiente actividad"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__activity_summary
 #: model:ir.model.fields,field_description:account.field_account_journal__activity_summary
 #: model:ir.model.fields,field_description:account.field_account_move__activity_summary
@@ -16547,7 +16547,7 @@ msgstr "Fecha límite de siguiente actividad"
 msgid "Next Activity Summary"
 msgstr "Resumen de la siguiente actividad"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__activity_type_id
 #: model:ir.model.fields,field_description:account.field_account_journal__activity_type_id
 #: model:ir.model.fields,field_description:account.field_account_move__activity_type_id
@@ -16603,7 +16603,7 @@ msgstr "Sin seguimiento / En litigio"
 msgid "No Formatting"
 msgstr "Sin Formato"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model.fields.selection,name:account.selection__res_partner__invoice_warn__no-message
 #: model:ir.model.fields.selection,name:purchase.selection__product_template__purchase_line_warn__no-message
 #: model:ir.model.fields.selection,name:purchase.selection__res_partner__purchase_warn__no-message
@@ -16931,7 +16931,7 @@ msgstr "No pospuesto"
 msgid "Not done"
 msgstr "No realizado"
 
-#. modules: stock, account, sale_management, purchase
+#. modules: purchase, account, stock, sale_management
 #: model:ir.model.fields,field_description:account.field_account_account_template__note
 #: model:ir.model.fields,field_description:account.field_account_reconcile_model__match_note
 #: model:ir.model.fields,field_description:account.field_account_reconcile_model_template__match_note
@@ -16970,7 +16970,7 @@ msgstr ""
 "Tenga en cuenta que la manera más sencilla para crear una factura "
 "rectificativa es crearla directamente desde la factura del cliente."
 
-#. modules: account, account_accountant, stock, purchase
+#. modules: purchase, account, stock, account_accountant
 #: model:ir.model.fields,field_description:account.field_account_fiscal_position__note
 #: model:ir.model.fields,field_description:account.field_account_fiscal_position_template__note
 #: model:ir.model.fields,field_description:stock.field_stock_picking__note
@@ -17029,7 +17029,7 @@ msgstr "Num de Diarios sin cuenta"
 msgid "Number"
 msgstr "Número"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model.fields,field_description:account.field_account_account__message_needaction_counter
 #: model:ir.model.fields,field_description:account.field_account_account_template__message_needaction_counter
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__message_needaction_counter
@@ -17078,7 +17078,7 @@ msgstr ""
 msgid "Number of entries related to this model"
 msgstr "Número de asientos relacionados con este modelo"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model.fields,field_description:account.field_account_account__message_has_error_counter
 #: model:ir.model.fields,field_description:account.field_account_account_template__message_has_error_counter
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__message_has_error_counter
@@ -17103,7 +17103,7 @@ msgid "Number of incoming stock moves in the past 12 months"
 msgstr ""
 "Número de movimientos entrantes de existencias en los últimos 12 meses"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model.fields,help:account.field_account_account__message_needaction_counter
 #: model:ir.model.fields,help:account.field_account_account_template__message_needaction_counter
 #: model:ir.model.fields,help:account.field_account_bank_statement_line__message_needaction_counter
@@ -17121,7 +17121,7 @@ msgstr ""
 msgid "Number of messages which requires an action"
 msgstr "Número de mensajes que requieren una acción"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model.fields,help:account.field_account_account__message_has_error_counter
 #: model:ir.model.fields,help:account.field_account_account_template__message_has_error_counter
 #: model:ir.model.fields,help:account.field_account_bank_statement_line__message_has_error_counter
@@ -17606,7 +17606,7 @@ msgstr "Tipo de operación (PDF)"
 msgid "Operation type (ZPL)"
 msgstr "Tipo de operación (ZPL)"
 
-#. modules: account_accountant, stock
+#. modules: stock, account_accountant
 #: model:ir.actions.act_window,name:stock.action_get_picking_type_operations
 #: model:ir.model.fields,field_description:stock.field_stock_picking__move_line_ids
 #: model:ir.ui.menu,name:stock.menu_stock_warehouse_mgmt
@@ -17704,7 +17704,7 @@ msgstr "Opcional: siguiente movimiento de stock, cuando se encadenan."
 msgid "Optional: previous stock move when chaining them"
 msgstr "Opcional: movimiento de stock previo cuando se encadenan"
 
-#. modules: stock, sale_management
+#. modules: sale_management, stock
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_portal_content_inherit_sale_management
 #: model_terms:ir.ui.view,arch_db:stock.view_stock_rule_form
 msgid "Options"
@@ -18438,7 +18438,7 @@ msgstr "Parcialmente disponible"
 msgid "Partially Paid"
 msgstr "Pagado Parcialmente"
 
-#. modules: stock, account, account_accountant, purchase
+#. modules: purchase, account, stock, account_accountant
 #. odoo-python
 #. odoo-javascript
 #: code:addons/account/wizard/account_automatic_entry_wizard.py:0
@@ -18720,7 +18720,7 @@ msgstr "Condiciones de pago"
 msgid "Payment Term Details"
 msgstr ""
 
-#. modules: account, purchase
+#. modules: purchase, account
 #: model:ir.actions.act_window,name:account.action_payment_term_form
 #: model:ir.model,name:account.model_account_payment_term
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__invoice_payment_term_id
@@ -18767,7 +18767,7 @@ msgstr "Tipo de pago"
 msgid "Payment term explanation for the customer..."
 msgstr "Explicación del plazo de pago para el cliente..."
 
-#. modules: account, purchase
+#. modules: purchase, account
 #: model_terms:ir.ui.view,arch_db:account.view_move_form
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_portal_content
 msgid "Payment terms"
@@ -19123,7 +19123,7 @@ msgstr ""
 msgid "PoS receivable account"
 msgstr "Cuenta por cobrar PDV"
 
-#. modules: account, purchase
+#. modules: purchase, account
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__access_url
 #: model:ir.model.fields,field_description:account.field_account_move__access_url
 #: model:ir.model.fields,field_description:account.field_account_payment__access_url
@@ -19398,7 +19398,7 @@ msgstr "Precio"
 msgid "Pricing"
 msgstr "Precio"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #. odoo-javascript
 #: code:addons/stock/static/src/components/reception_report_main/stock_reception_report_main.xml:0
 #: code:addons/stock/static/src/components/reception_report_main/stock_reception_report_main.xml:0
@@ -19533,7 +19533,7 @@ msgstr "Línea de producción"
 msgid "Produced Qty"
 msgstr "Ctdad producida"
 
-#. modules: sale_management, account, stock, purchase
+#. modules: purchase, account, stock, sale_management
 #. odoo-javascript
 #: code:addons/stock/static/src/stock_forecasted/forecasted_details.xml:0
 #: model:ir.model,name:stock.model_product_template
@@ -19605,7 +19605,7 @@ msgstr "Disponibilidad del producto"
 msgid "Product Capacity"
 msgstr "Capacidad de producto"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model.fields,field_description:stock.field_stock_route__categ_ids
 #: model:ir.ui.menu,name:account.menu_product_product_categories
 #: model:ir.ui.menu,name:purchase.menu_product_category_config_purchase
@@ -19614,7 +19614,7 @@ msgstr "Capacidad de producto"
 msgid "Product Categories"
 msgstr "Categorías de productos"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model,name:stock.model_product_category
 #: model:ir.model.fields,field_description:account.field_account_analytic_applicability__product_categ_id
 #: model:ir.model.fields,field_description:account.field_account_analytic_distribution_model__product_categ_id
@@ -19798,7 +19798,7 @@ msgstr "Ubicación de producción"
 msgid "Production Locations"
 msgstr "Ubicaciones de producción"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #. odoo-python
 #: code:addons/stock/wizard/stock_quantity_history.py:0
 #: model:ir.actions.act_window,name:account.product_product_action_purchasable
@@ -19908,7 +19908,7 @@ msgstr "Obtener Desde"
 msgid "Pull Rule"
 msgstr "Regla de extracción"
 
-#. modules: account, purchase
+#. modules: purchase, account
 #: model:ir.model.fields,field_description:purchase.field_product_packaging__purchase
 #: model:ir.model.fields.selection,name:account.selection__account_journal__type__purchase
 #: model:ir.ui.menu,name:purchase.menu_purchase_root
@@ -20082,7 +20082,7 @@ msgstr "Recibo de compra creado"
 msgid "Purchase Report"
 msgstr "Informe de Compras"
 
-#. modules: account, purchase
+#. modules: purchase, account
 #: model:ir.model.fields,field_description:purchase.field_purchase_report__user_id
 #: model_terms:ir.ui.view,arch_db:account.portal_invoice_page
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_view_search
@@ -20162,7 +20162,7 @@ msgstr "Comprado en los últimos 7 días"
 msgid "Purchased in the last 365 days"
 msgstr "Comprado en los últimos 365 días"
 
-#. modules: account, purchase
+#. modules: purchase, account
 #: model:ir.actions.act_window,name:account.action_account_moves_journal_purchase
 #: model:ir.model.fields.selection,name:account.selection__account_tax__type_tax_use__purchase
 #: model:ir.model.fields.selection,name:account.selection__account_tax_template__type_tax_use__purchase
@@ -20352,7 +20352,7 @@ msgstr "Cantidades para restablecer"
 msgid "Quantities billed by vendors"
 msgstr "Cantidades facturadas por los proveedores"
 
-#. modules: stock, account, sale_management, purchase
+#. modules: purchase, account, stock, sale_management
 #: model:ir.model.fields,field_description:account.field_account_move_line__quantity
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__product_qty
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_option__quantity
@@ -20499,7 +20499,7 @@ msgstr "Cantidad que ha sido ya reservada para este movimiento"
 msgid "Quantity to print"
 msgstr "Cantidad para imprimir"
 
-#. modules: account, sale_management, purchase
+#. modules: purchase, account, sale_management
 #: model_terms:ir.ui.view,arch_db:account.view_move_form
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_form_quote
@@ -20821,7 +20821,7 @@ msgstr "Recibir en 2 pasos (Entrada + Existencias)"
 msgid "Receive in 3 steps (input + quality + stock)"
 msgstr "Recibir en 3 pasos (Entrada + Control de Calidad + Existencias)"
 
-#. modules: account, account_accountant, purchase
+#. modules: purchase, account, account_accountant
 #: model:ir.model.fields.selection,name:account.selection__account_reconcile_model__match_nature__amount_received
 #: model_terms:ir.ui.view,arch_db:account_accountant.view_account_move_line_search_bank_rec_widget
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
@@ -21021,7 +21021,7 @@ msgstr ""
 msgid "Ref."
 msgstr ""
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #. odoo-python
 #: code:addons/account/controllers/portal.py:0
 #: model:ir.model.fields,field_description:account.field_account_bank_statement__name
@@ -21425,7 +21425,7 @@ msgstr "Línea del informe"
 msgid "Report Line Name"
 msgstr ""
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.ui.menu,name:account.account_report_folder
 #: model:ir.ui.menu,name:account.menu_finance_reports
 #: model:ir.ui.menu,name:purchase.purchase_report_main
@@ -21662,7 +21662,7 @@ msgstr ""
 msgid "Responsible"
 msgstr "Responsable"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__activity_user_id
 #: model:ir.model.fields,field_description:account.field_account_journal__activity_user_id
 #: model:ir.model.fields,field_description:account.field_account_move__activity_user_id
@@ -22090,7 +22090,7 @@ msgstr ""
 msgid "SMS Confirmation"
 msgstr "Confirmación por SMS"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model.fields,field_description:account.field_account_account__message_has_sms_error
 #: model:ir.model.fields,field_description:account.field_account_account_template__message_has_sms_error
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__message_has_sms_error
@@ -22135,7 +22135,7 @@ msgstr "Opciones de venta"
 msgid "Sale Receipt"
 msgstr "Recibo de venta"
 
-#. modules: account, sale_management
+#. modules: sale_management, account
 #: model:ir.actions.act_window,name:account.action_account_moves_journal_sales
 #: model:ir.model.fields.selection,name:account.selection__account_journal__type__sale
 #: model:ir.model.fields.selection,name:account.selection__account_tax__type_tax_use__sale
@@ -22487,7 +22487,7 @@ msgstr ""
 "Busca en la referencia del estado de cuenta para encontrar la referencia de "
 "la factura/pago"
 
-#. modules: account, sale_management, purchase
+#. modules: purchase, account, sale_management
 #: model:ir.model.fields.selection,name:account.selection__account_move_line__display_type__line_section
 #: model:ir.model.fields.selection,name:purchase.selection__purchase_order_line__display_type__line_section
 #: model:ir.model.fields.selection,name:sale_management.selection__sale_order_template_line__display_type__line_section
@@ -22518,7 +22518,7 @@ msgstr "Titulización de %s - %s"
 msgid "Security Lead Time for Purchase"
 msgstr "Plazo de ejecución de seguridad para la compra"
 
-#. modules: account, purchase
+#. modules: purchase, account
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__access_token
 #: model:ir.model.fields,field_description:account.field_account_move__access_token
 #: model:ir.model.fields,field_description:account.field_account_payment__access_token
@@ -22636,7 +22636,7 @@ msgstr ""
 msgid "Selected Payment Method Codes"
 msgstr "Códigos de métodos de pago seleccionados"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model.fields,help:account.field_res_partner__invoice_warn
 #: model:ir.model.fields,help:account.field_res_users__invoice_warn
 #: model:ir.model.fields,help:purchase.field_product_product__purchase_line_warn
@@ -22879,7 +22879,7 @@ msgstr ""
 msgid "September"
 msgstr "Septiembre"
 
-#. modules: stock, account, sale_management, purchase
+#. modules: purchase, account, stock, sale_management
 #. odoo-python
 #: code:addons/stock/models/stock_picking.py:0
 #: code:addons/stock/models/stock_picking.py:0
@@ -23181,7 +23181,7 @@ msgid ""
 " clicked."
 msgstr ""
 
-#. modules: account, account_accountant, stock, purchase
+#. modules: purchase, account, stock, account_accountant
 #. odoo-javascript
 #: code:addons/account_accountant/static/src/xml/account_reconciliation.xml:0
 #: model:ir.actions.act_window,name:account.action_account_config
@@ -23206,7 +23206,7 @@ msgstr "Configurar"
 msgid "Setup your chart of accounts and record initial balances."
 msgstr "Configura tu plan de cuentas y registra tu balance inicial."
 
-#. modules: account, purchase
+#. modules: purchase, account
 #: model:ir.actions.server,name:account.model_account_move_action_share
 #: model:ir.actions.server,name:purchase.model_purchase_order_action_share
 msgid "Share"
@@ -23415,7 +23415,7 @@ msgstr "Mostrar validado"
 msgid "Show active taxes"
 msgstr "Mostrar impuestos activos"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model_terms:ir.ui.view,arch_db:account.view_account_invoice_filter
 #: model_terms:ir.ui.view,arch_db:account.view_account_payment_search
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_view_search
@@ -23649,7 +23649,7 @@ msgstr "Moneda de origen"
 msgid "Source Debit"
 msgstr ""
 
-#. modules: account, purchase, stock
+#. modules: purchase, account, stock
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__origin
 #: model:ir.model.fields,field_description:stock.field_stock_move__origin
 #: model:ir.model.fields,field_description:stock.field_stock_picking__origin
@@ -23889,7 +23889,7 @@ msgstr "Estados"
 msgid "States Count"
 msgstr "Cuenta de Estados"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #. odoo-python
 #: code:addons/account/controllers/portal.py:0
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__state
@@ -23917,7 +23917,7 @@ msgstr "Cuenta de Estados"
 msgid "Status"
 msgstr "Estado"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model.fields,help:account.field_account_bank_statement_line__activity_state
 #: model:ir.model.fields,help:account.field_account_journal__activity_state
 #: model:ir.model.fields,help:account.field_account_move__activity_state
@@ -24240,7 +24240,7 @@ msgstr "Asunto"
 msgid "Subject..."
 msgstr "Asunto..."
 
-#. modules: account, purchase
+#. modules: purchase, account
 #: model:ir.model.fields,field_description:account.field_account_move_line__price_subtotal
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__price_subtotal
 #: model_terms:ir.ui.view,arch_db:account.view_move_form
@@ -24272,7 +24272,7 @@ msgstr "Suma de la cantidad facturada"
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_report_view_tree
 msgid "Sum of Qty Ordered"
-msgstr "Suma de la cantidad ordenada"
+msgstr "Suma de la cantidad pedida"
 
 #. module: purchase
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_report_view_tree
@@ -24412,7 +24412,7 @@ msgstr "Etiqueta de expresión de destino"
 msgid "Target Line"
 msgstr ""
 
-#. modules: account, account_accountant, purchase
+#. modules: purchase, account, account_accountant
 #: model:ir.model,name:account.model_account_tax
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__amount_tax
 #: model:ir.model.fields,field_description:account.field_account_move__amount_tax
@@ -24471,7 +24471,7 @@ msgstr "Asiento de cierre de impuestos"
 msgid "Tax Computation"
 msgstr "Cálculo de impuestos"
 
-#. modules: account, purchase
+#. modules: purchase, account
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__tax_country_id
 #: model:ir.model.fields,field_description:account.field_account_move__tax_country_id
 #: model:ir.model.fields,field_description:account.field_account_payment__tax_country_id
@@ -24788,7 +24788,7 @@ msgstr "Impuestos a aplicar"
 msgid "TaxCloud"
 msgstr ""
 
-#. modules: account, account_accountant, purchase
+#. modules: purchase, account, account_accountant
 #. odoo-python
 #. odoo-javascript
 #: code:addons/account/models/account_account.py:0
@@ -24988,7 +24988,7 @@ msgstr ""
 msgid "Terms"
 msgstr "Plazo de pago"
 
-#. modules: account, sale_management
+#. modules: sale_management, account
 #: model:ir.model.fields,field_description:account.field_res_config_settings__invoice_terms
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
 msgid "Terms & Conditions"
@@ -25017,7 +25017,7 @@ msgstr "Términos y condiciones: %s"
 msgid "Terms &amp; Conditions"
 msgstr "Términos y condiciones"
 
-#. modules: account, purchase
+#. modules: purchase, account
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__narration
 #: model:ir.model.fields,field_description:account.field_account_move__narration
 #: model:ir.model.fields,field_description:account.field_account_payment__narration
@@ -25085,7 +25085,7 @@ msgid "The Bill/Refund date is required to validate this document."
 msgstr ""
 "Se requiere la fecha de Facturación / Reembolso para validar este documento."
 
-#. modules: account, purchase
+#. modules: purchase, account
 #: model:ir.model.fields,help:account.field_account_bank_statement_line__country_code
 #: model:ir.model.fields,help:account.field_account_journal__country_code
 #: model:ir.model.fields,help:account.field_account_move__country_code
@@ -27376,7 +27376,7 @@ msgstr "Cantidad a Facturar"
 #: model:ir.model.fields,field_description:stock.field_stock_replenishment_option__qty_to_order
 #: model:ir.model.fields,field_description:stock.field_stock_warehouse_orderpoint__qty_to_order
 msgid "To Order"
-msgstr "Para Ordenar"
+msgstr "Para enviar"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_immediate_transfer_line__to_immediate
@@ -27387,7 +27387,7 @@ msgstr "A Procesar"
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.stock_reorder_report_search
 msgid "To Reorder"
-msgstr "Para reordenar"
+msgstr "Para reenviar"
 
 #. module: purchase
 #. odoo-javascript
@@ -27416,7 +27416,7 @@ msgstr "Para agilizar la conciliación, define"
 msgid "Today"
 msgstr "Hoy"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model_terms:ir.ui.view,arch_db:account.view_account_invoice_filter
 #: model_terms:ir.ui.view,arch_db:account.view_account_payment_search
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_view_search
@@ -27430,7 +27430,7 @@ msgstr "Actividades de hoy"
 msgid "Todo Command"
 msgstr ""
 
-#. modules: account, purchase
+#. modules: purchase, account
 #. odoo-python
 #. odoo-javascript
 #: code:addons/account/static/src/components/tax_totals/tax_totals.xml:0
@@ -27933,7 +27933,7 @@ msgstr "Tipo"
 msgid "Type Name"
 msgstr "Nombre del tipo"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model_terms:ir.ui.view,arch_db:account.partner_view_buttons
 #: model_terms:ir.ui.view,arch_db:purchase.res_partner_view_purchase_buttons
 #: model_terms:ir.ui.view,arch_db:purchase.view_product_supplier_inherit
@@ -27963,7 +27963,7 @@ msgstr ""
 "Tipo de código QR a generar para el pago de esta factura, al imprimirla. Si "
 "se deja en blanco, se utilizará el primer método disponible y utilizable."
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model.fields,help:account.field_account_bank_statement_line__activity_exception_decoration
 #: model:ir.model.fields,help:account.field_account_journal__activity_exception_decoration
 #: model:ir.model.fields,help:account.field_account_move__activity_exception_decoration
@@ -28056,7 +28056,7 @@ msgstr ""
 msgid "Unit"
 msgstr "Unidad"
 
-#. modules: stock, account, sale_management, purchase
+#. modules: purchase, account, stock, sale_management
 #: model:ir.model.fields,field_description:account.field_account_move_line__price_unit
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__price_unit
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_option__price_unit
@@ -28067,14 +28067,14 @@ msgstr "Unidad"
 msgid "Unit Price"
 msgstr "Precio unitario"
 
-#. modules: account, sale_management, purchase
+#. modules: purchase, account, sale_management
 #: model_terms:ir.ui.view,arch_db:account.view_move_form
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_form
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_form_quote
 msgid "Unit Price:"
 msgstr "Precio unitario:"
 
-#. modules: stock, account, sale_management, purchase
+#. modules: purchase, account, stock, sale_management
 #: model:ir.model.fields,field_description:account.field_account_invoice_report__product_uom_id
 #: model:ir.model.fields,field_description:account.field_account_move_line__product_uom_id
 #: model:ir.model.fields,field_description:purchase.field_purchase_order_line__product_uom
@@ -28245,7 +28245,7 @@ msgstr ""
 msgid "Untaxed"
 msgstr "Base imponible"
 
-#. modules: account, purchase
+#. modules: purchase, account
 #. odoo-python
 #: code:addons/account/models/account_tax.py:0
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__amount_untaxed
@@ -28254,7 +28254,7 @@ msgstr "Base imponible"
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__amount_untaxed
 #, python-format
 msgid "Untaxed Amount"
-msgstr "Base Imponible"
+msgstr "Base imponible"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__amount_untaxed_signed
@@ -28263,13 +28263,13 @@ msgstr "Base Imponible"
 msgid "Untaxed Amount Signed"
 msgstr "Importe sin impuestos con signo"
 
-#. modules: account, purchase
+#. modules: purchase, account
 #: model:ir.model.fields,field_description:account.field_account_invoice_report__price_subtotal
 #: model:ir.model.fields,field_description:purchase.field_purchase_report__untaxed_total
 msgid "Untaxed Total"
-msgstr "Base Imponible"
+msgstr "Base imponible"
 
-#. modules: sale_management, account, stock, purchase
+#. modules: purchase, account, stock, sale_management
 #: model:ir.model.fields,field_description:stock.field_stock_move__product_uom
 #: model:ir.ui.menu,name:stock.menu_stock_uom_form_action
 #: model_terms:ir.ui.view,arch_db:account.view_move_form
@@ -28542,7 +28542,7 @@ msgstr ""
 "Utilizado para registrar una ganancia cuando el saldo final de un registro "
 "de caja difiere de lo que el sistema calcula"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model,name:account.model_res_users
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__user_id
 #: model:ir.model.fields,field_description:account.field_account_move__user_id
@@ -28583,7 +28583,7 @@ msgstr "Requiere IVA"
 msgid "Valid"
 msgstr "Válido"
 
-#. modules: account_accountant, stock
+#. modules: stock, account_accountant
 #: model:ir.actions.server,name:stock.action_validate_picking
 #: model_terms:ir.ui.view,arch_db:account_accountant.view_account_reconcile_model_widget_wizard
 #: model_terms:ir.ui.view,arch_db:account_accountant.view_bank_rec_widget_form
@@ -28675,7 +28675,7 @@ msgstr "Entrada de la cuadrícula de variante"
 msgid "Variants"
 msgstr "Variantes"
 
-#. modules: account, purchase, stock
+#. modules: purchase, account, stock
 #: model:ir.model.fields,field_description:purchase.field_purchase_bill_union__partner_id
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__partner_id
 #: model:ir.model.fields,field_description:purchase.field_purchase_report__partner_id
@@ -28699,7 +28699,7 @@ msgstr "Proveedor"
 msgid "Vendor Bank Account"
 msgstr "Cuenta bancaria de proveedor"
 
-#. modules: account, purchase
+#. modules: purchase, account
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__invoice_vendor_bill_id
 #: model:ir.model.fields,field_description:account.field_account_move__invoice_vendor_bill_id
 #: model:ir.model.fields,field_description:account.field_account_payment__invoice_vendor_bill_id
@@ -28724,7 +28724,7 @@ msgstr "Número de facturas de proveedor"
 msgid "Vendor Bill Created"
 msgstr "Factura de proveedor creada"
 
-#. modules: account, purchase
+#. modules: purchase, account
 #. odoo-python
 #: code:addons/account/models/chart_template.py:0
 #: model:ir.actions.act_window,name:purchase.act_res_partner_2_supplier_invoices
@@ -28812,7 +28812,7 @@ msgstr "Impuestos de proveedor"
 msgid "Vendor:"
 msgstr "Proveedor:"
 
-#. modules: account, purchase
+#. modules: purchase, account
 #: model:ir.actions.act_window,name:account.res_partner_action_supplier
 #: model:ir.ui.menu,name:account.menu_account_supplier
 #: model:ir.ui.menu,name:account.menu_finance_payables
@@ -28841,7 +28841,7 @@ msgstr ""
 msgid "Verify"
 msgstr "Verificar"
 
-#. modules: account, account_accountant, stock, purchase
+#. modules: purchase, account, stock, account_accountant
 #. odoo-python
 #. odoo-javascript
 #: code:addons/account/static/src/components/account_payment_field/account_payment.xml:0
@@ -29035,7 +29035,7 @@ msgstr "Aviso Cantidad Insuficiente"
 msgid "Warn Insufficient Scrap Quantity"
 msgstr "Aviso Cantidad de Desecho Insuficiente"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #. odoo-python
 #: code:addons/purchase/models/purchase.py:0
 #: code:addons/stock/models/stock_move.py:0
@@ -29065,7 +29065,7 @@ msgstr ""
 msgid "Warning Message"
 msgstr "Mensaje de advertencia"
 
-#. modules: account, purchase
+#. modules: purchase, account
 #. odoo-python
 #: code:addons/account/models/account_move.py:0
 #: code:addons/purchase/models/purchase.py:0
@@ -29106,7 +29106,7 @@ msgstr "¡Alerta!"
 msgid "Warning: this bill might be a duplicate of"
 msgstr "Advertencia: esta factura puede ser un duplicado de"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model_terms:ir.ui.view,arch_db:account.res_config_settings_view_form
 #: model_terms:ir.ui.view,arch_db:purchase.purchase_order_view_search
 #: model_terms:ir.ui.view,arch_db:purchase.res_config_settings_view_form_purchase
@@ -29152,7 +29152,7 @@ msgstr ""
 "validarlas. Elige cómo deseas probar nuestro motor de inteligencia "
 "artificial:"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model.fields,field_description:account.field_account_account__website_message_ids
 #: model:ir.model.fields,field_description:account.field_account_account_template__website_message_ids
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__website_message_ids
@@ -29170,7 +29170,7 @@ msgstr ""
 msgid "Website Messages"
 msgstr "Mensajes del sitio web"
 
-#. modules: account, stock, purchase
+#. modules: purchase, account, stock
 #: model:ir.model.fields,help:account.field_account_account__website_message_ids
 #: model:ir.model.fields,help:account.field_account_account_template__website_message_ids
 #: model:ir.model.fields,help:account.field_account_bank_statement_line__website_message_ids
@@ -31108,7 +31108,7 @@ msgstr ""
 "tercero en el contexto de un reclamo por daños presentado contra el cliente "
 "por un consumidor final."
 
-#. modules: account, purchase
+#. modules: purchase, account
 #: model_terms:ir.ui.view,arch_db:account.portal_invoice_error
 #: model_terms:ir.ui.view,arch_db:account.portal_invoice_success
 #: model_terms:ir.ui.view,arch_db:purchase.portal_my_purchase_order
@@ -31120,7 +31120,7 @@ msgstr "cerrar"
 msgid "day(s) before"
 msgstr "día(s) antes"
 
-#. modules: stock, sale_management
+#. modules: sale_management, stock
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
 #: model_terms:ir.ui.view,arch_db:stock.view_stock_rule_form
 #: model_terms:ir.ui.view,arch_db:stock.view_template_property_form
@@ -31665,7 +31665,7 @@ msgstr "{{ object.company_id.name }} Factura (Ref {{ object.name or 'n/a' }})"
 #: model:mail.template,subject:purchase.email_template_edi_purchase_done
 #: model:mail.template,subject:purchase.email_template_edi_purchase_reminder
 msgid "{{ object.company_id.name }} Order (Ref {{ object.name or 'n/a' }})"
-msgstr "{{ object.company_id.name }} Orden (Ref {{ object.name or 'n/a' }})"
+msgstr "{{ object.company_id.name }} Pedido (Ref {{ object.name or 'n/a' }})"
 
 #. module: account
 #: model:mail.template,subject:account.mail_template_data_payment_receipt
