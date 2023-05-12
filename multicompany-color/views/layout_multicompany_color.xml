@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="layout_multicompany_color" model="ir.ui.view">
+        <field name="name">layout.multicompany.color</field>
+<!--        <field name="model">res.partner</field>-->
+        <field name="inherit_id" ref="web.layout"/>
+        <field name="arch" type="xml">
+
+          <xpath expr="//body" position="inside">
+            <t t-if="request.httprequest.cookies.get('cids') and request.httprequest.cookies.get('cids')[0] == '1'">
+              <style>.o_main_navbar {background: linear-gradient(45deg, #57596F, #57596F);
+                                                 background-color: #57596F!important;border-bottom: 0px;}</style></t>
+            <t t-if="request.httprequest.cookies.get('cids') and request.httprequest.cookies.get('cids')[0] == '2'">
+              <style>.o_main_navbar {background: linear-gradient(45deg, #6B3C3C, #6B3C3C);
+                                                 background-color: #6B3C3C!important;border-bottom: 0px;}</style></t>
+            <t t-if="request.httprequest.cookies.get('cids') and request.httprequest.cookies.get('cids')[0] == '3'">
+            <style>.o_main_navbar {background: linear-gradient(45deg, #2B441F, #63831F);
+                                                 background-color: #63831F!important;border-bottom: 0px;}</style></t>
+          </xpath>
+
+        </field>
+    </record>
+</odoo>
