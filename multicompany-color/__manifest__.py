@@ -22,6 +22,6 @@
                 ],
 
     'data': [
-        'views/layout_multiompany_color.xml',
+        'views/layout_multicompany_color.xml',
     ],
 }
