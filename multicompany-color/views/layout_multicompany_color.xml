@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<odoo>
+
     <data inherit_id="web.layout">
       <xpath expr="//body" position="inside">
         <t t-if="request.httprequest.cookies.get('cids') and request.httprequest.cookies.get('cids')[0] == '1'">
@@ -10,4 +9,4 @@
                                              background-color: #6B3C3C!important;border-bottom: 0px;}</style></t>
        </xpath>
     </data>
-</odoo>
+
