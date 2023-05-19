@@ -1,19 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 <template id="web_layout_custom" inherit_id="web.layout">
-<!--    <data inherit_id="web.layout">-->
       <xpath expr="//body" position="inside">
         <t t-if="request.httprequest.cookies.get('cids') and request.httprequest.cookies.get('cids')[0] == '1'">
           <style>.o_main_navbar {background: linear-gradient(45deg, #57596F, #57596F);
                 background-color: #57596F!important;border-bottom: 0px;}</style></t>
         <t t-if="request.httprequest.cookies.get('cids') and request.httprequest.cookies.get('cids')[0] == '2'">
+          <style>.o_main_navbar {background: linear-gradient(45deg, #0f52ba, #4285f4);
+                background-color: #63831F!important;border-bottom: 0px;}</style></t>
+        <t t-if="request.httprequest.cookies.get('cids') and request.httprequest.cookies.get('cids')[0] == '3'">
           <style>.o_main_navbar {background: linear-gradient(45deg, #6B3C3C, #6B3C3C);
                 background-color: #6B3C3C!important;border-bottom: 0px;}</style></t>
-        <t t-if="request.httprequest.cookies.get('cids') and request.httprequest.cookies.get('cids')[0] == '3'">
+        <t t-if="request.httprequest.cookies.get('cids') and request.httprequest.cookies.get('cids')[0] == '4'">
+            <style>.o_main_navbar {background: linear-gradient(45deg, #bf3da2, #e666c9);
+                background-color: #63831F!important;border-bottom: 0px;}</style></t>
+        <t t-if="request.httprequest.cookies.get('cids') and request.httprequest.cookies.get('cids')[0] == '5'">
             <style>.o_main_navbar {background: linear-gradient(45deg, #2B441F, #63831F);
                 background-color: #63831F!important;border-bottom: 0px;}</style></t>
+
        </xpath>
-<!--    </data>-->
 </template>
 </odoo>
 
