@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate = "1">
+
+    <record id="ir_cron_hr_employee_fingerprintreader" model="ir.cron">
+        <field name="name">Lector: Obtener datos</field>
+        <field name="model_id" ref="fingerprintreader_biotime.model_hr_attendance"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_get_signings()</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="nextcall" eval="(DateTime.now().replace(hour=3, minute=0) + timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S')" />
+    </record>
+</odoo>
