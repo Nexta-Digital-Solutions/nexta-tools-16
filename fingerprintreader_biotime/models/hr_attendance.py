@@ -111,8 +111,7 @@ class fingerprintreader_biotime(models.Model):
                         total_seconds_day = 0
                     attendance_insert = False
     
-                aux_signings_date = signings_date
-            return aux_signings_date
+                aux_signings_date = signings_date     
                 
     def setAttendance (self, employee, check_in, check_out, worked_hours):
         m, s = divmod(worked_hours.total_seconds(), 60)
