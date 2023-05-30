@@ -4,6 +4,8 @@ from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 from odoo.fields import first
 
+from odoo.odoo.tools import get_lang
+
 
 class SaleOrderLine(models.Model):
     _inherit = "sale.order.line"
@@ -35,6 +37,115 @@ class SaleOrderLine(models.Model):
         help="This is a technical field in order to check if pack lines has to be expanded",
     )
 
+    @api.onchange('product_id')
+    def product_id_change(self):
+        if not self.product_id:
+            return
+        valid_values = self.product_id.product_tmpl_id.valid_product_template_attribute_line_ids.product_template_value_ids
+        # remove the is_custom values that don't belong to this template
+        for pacv in self.product_custom_attribute_value_ids:
+            if pacv.custom_product_template_attribute_value_id not in valid_values:
+                self.product_custom_attribute_value_ids -= pacv
+
+        # remove the no_variant attributes that don't belong to this template
+        for ptav in self.product_no_variant_attribute_value_ids:
+            if ptav._origin not in valid_values:
+                self.product_no_variant_attribute_value_ids -= ptav
+
+        vals = {}
+        if not self.product_uom or (self.product_id.uom_id.id != self.product_uom.id):
+            vals['product_uom'] = self.product_id.uom_id
+            vals['product_uom_qty'] = self.product_uom_qty or 1.0
+
+        product = self.product_id.with_context(
+            lang=get_lang(self.env, self.order_id.partner_id.lang).code,
+            partner=self.order_id.partner_id,
+            quantity=vals.get('product_uom_qty') or self.product_uom_qty,
+            date=self.order_id.date_order,
+            pricelist=self.order_id.pricelist_id.id,
+            uom=self.product_uom.id
+        )
+
+        vals.update(name=self.get_sale_order_line_multiline_description_sale(product))
+
+        self._compute_tax_id()
+
+        if self.order_id.pricelist_id and self.order_id.partner_id:
+            vals['price_unit'] = self.env['account.tax']._fix_tax_included_price_company(
+                self._get_display_price(), product.taxes_id, self.tax_id, self.company_id)
+        self.update(vals)
+
+        if product.sale_line_warn != 'no-message':
+            if product.sale_line_warn == 'block':
+                self.product_id = False
+
+            return {
+                'warning': {
+                    'title': _("Warning for %s", product.name),
+                    'message': product.sale_line_warn_msg,
+                }
+            }
+    @api.onchange('product_uom', 'product_uom_qty')
+    def product_uom_change(self):
+        if not self.product_uom or not self.product_id:
+            self.price_unit = 0.0
+            return
+        if self.order_id.pricelist_id and self.order_id.partner_id:
+            product = self.product_id.with_context(
+                lang=self.order_id.partner_id.lang,
+                partner=self.order_id.partner_id,
+                quantity=self.product_uom_qty,
+                date=self.order_id.date_order,
+                pricelist=self.order_id.pricelist_id.id,
+                uom=self.product_uom.id,
+                fiscal_position=self.env.context.get('fiscal_position')
+            )
+            self.price_unit = self.env['account.tax']._fix_tax_included_price_company(self._get_display_price(), product.taxes_id, self.tax_id, self.company_id)
+
+    @api.onchange('product_id', 'price_unit', 'product_uom', 'product_uom_qty', 'tax_id')
+    def _onchange_discount(self):
+        if not (self.product_id and self.product_uom and
+                self.order_id.partner_id and self.order_id.pricelist_id and
+                self.order_id.pricelist_id.discount_policy == 'without_discount' and
+                self.env.user.has_group('product.group_discount_per_so_line')):
+            return
+
+        self.discount = 0.0
+        product = self.product_id.with_context(
+            lang=self.order_id.partner_id.lang,
+            partner=self.order_id.partner_id,
+            quantity=self.product_uom_qty,
+            date=self.order_id.date_order,
+            pricelist=self.order_id.pricelist_id.id,
+            uom=self.product_uom.id,
+            fiscal_position=self.env.context.get('fiscal_position')
+        )
+
+        product_context = dict(self.env.context, partner_id=self.order_id.partner_id.id, date=self.order_id.date_order, uom=self.product_uom.id)
+
+        price, rule_id = self.order_id.pricelist_id.with_context(product_context).get_product_price_rule(self.product_id, self.product_uom_qty or 1.0, self.order_id.partner_id)
+        new_list_price, currency = self.with_context(product_context)._get_real_price_currency(product, rule_id, self.product_uom_qty, self.product_uom, self.order_id.pricelist_id.id)
+
+        if new_list_price != 0:
+            if self.order_id.pricelist_id.currency_id != currency:
+                # we need new_list_price in the same currency as price, which is in the SO's pricelist's currency
+                new_list_price = currency._convert(
+                    new_list_price, self.order_id.pricelist_id.currency_id,
+                    self.order_id.company_id or self.env.company, self.order_id.date_order or fields.Date.today())
+            discount = (new_list_price - price) / new_list_price * 100
+            if (discount > 0 and new_list_price > 0) or (discount < 0 and new_list_price < 0):
+                self.discount = discount
+    def get_sale_order_line_multiline_description_sale(self, product):
+        """ Compute a default multiline description for this sales order line.
+
+        In most cases the product description is enough but sometimes we need to append information that only
+        exists on the sale order line itself.
+        e.g:
+        - custom attributes and attributes that don't create variants, both introduced by the "product configurator"
+        - in event_sale we need to know specifically the sales order line as well as the product to generate the name:
+          the product is not sufficient because we also need to know the event_id and the event_ticket_id (both which belong to the sale order line).
+        """
+        return product.get_product_multiline_description_sale() + self._get_sale_order_line_multiline_description_variants()
     @api.depends_context("update_prices", "update_pricelist")
     def _compute_do_no_expand_pack_lines(self):
         do_not_expand = self.env.context.get("update_prices") or self.env.context.get(
