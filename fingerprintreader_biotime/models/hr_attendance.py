@@ -25,6 +25,7 @@ class fingerprintreader_biotime(models.Model):
     def _cron_get_signings(self):
         lastDate = self.get_employees()
         self.saveLastSigning(lastDate)
+        self.updateHours()
         
     def api_login (self):
         headers = {
@@ -126,3 +127,14 @@ class fingerprintreader_biotime(models.Model):
         
     def saveLastSigning(self, lastDate):
         self.env['ir.config_parameter'].set_param(self.KEY_LAST_START_TIME, lastDate)
+        
+    def updateHours (self):
+        systemdate = datetime.fromisoformat(datetime.today().isoformat()).replace(second=0, minute=0, hour=0)
+        records = self.search([('create_date', '>=', str(systemdate)), ('worked_hours', '>', '8.30')], order = 'employee_id')
+        for assistence in records:
+            horas = assistence.worked_hours
+            diferencia = 8 - horas
+            fecha = assistence.check_out - timedelta( hours = abs(diferencia)) + timedelta(minutes = random.uniform(1,20))
+            assistence.update ({
+                'check_out': fecha
+            })
