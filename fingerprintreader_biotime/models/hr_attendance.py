@@ -101,15 +101,11 @@ class fingerprintreader_biotime(models.Model):
                     if (aux_signings_date.date() == signings_date.date()):
                         hours = total_seconds * 60 * 60
                         worked_hours = timedelta(hours=hours)
+                        if (total_seconds_day > 28800):
+                            diferencia = total_seconds - 28800
+                            worked_hours = - timedelta( hours = abs(diferencia)) + timedelta(minutes = random.uniform(1,20))
                         self.setAttendance(employee, aux_signings_date, signings_date, worked_hours)
-                    else:
-                        total_seconds_day = total_seconds_day * 60 * 60
-                        total_hours = timedelta(hours = total_seconds_day)
-                        random_minutes = random.uniform(1, 20)
-                        total_hours_workday = hours_workday - total_hours + timedelta(minutes = random_minutes)
-                        _logger.debug ("%s --> %s  = %i segundos, %s hours" % (employee.name, aux_signings_date, total_seconds, total_hours_workday))
-                        cont = 1
-                        total_seconds_day = 0
+                   
                     attendance_insert = False
     
                 aux_signings_date = signings_date     
