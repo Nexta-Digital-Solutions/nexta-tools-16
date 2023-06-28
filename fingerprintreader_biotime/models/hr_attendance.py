@@ -25,6 +25,7 @@ class fingerprintreader_biotime(models.Model):
     def _cron_get_signings(self):
         lastDate = self.get_employees()
         self.saveLastSigning(lastDate)
+
         
     def api_login (self):
         headers = {
@@ -76,44 +77,29 @@ class fingerprintreader_biotime(models.Model):
     
     def get_employees(self):
         employees = self.env['hr.employee'].search( [ ('barcode', '!=', False) ], order = 'barcode')
-        hours_workday = timedelta(days=0, seconds=0, microseconds=0, milliseconds=0, minutes=0, hours=8, weeks=0)
         for employee in employees:
+            total_seconds = 0
             data_signings = self.get_signings(employee.barcode)
-            aux_signings_date = datetime.today()
-            total_seconds_day = total_seconds = 0
-            cont = 0
-            attendance_insert = False
+          
             for idx, record in enumerate(data_signings):
-                signings_date = datetime.strptime(record['date'], '%Y-%m-%d %H:%M:%S')
-                _logger.debug ('### %s - %s ' % (employee.name, signings_date))
-                cont += 1
+                signings = datetime.strptime(record['date'], '%Y-%m-%d %H:%M:%S')
                 if (idx == 0):
-                    aux_signings_date = signings_date  
-                elif ( aux_signings_date.date() == signings_date.date() and cont % 2 == 0 ):
-                    time_start = aux_signings_date
-                    time_end   = signings_date
-                    total_seconds = round((time_end - time_start).total_seconds())
-                    total_seconds_day += total_seconds
-                    attendance_insert = True
-                    
-                if (attendance_insert):
-                    if (aux_signings_date.date() == signings_date.date()):
-                        hours = total_seconds * 60 * 60
-                        worked_hours = timedelta(hours=hours)
-                        self.setAttendance(employee, aux_signings_date, signings_date, worked_hours)
-                    else:
-                        total_seconds_day = total_seconds_day * 60 * 60
-                        total_hours = timedelta(hours = total_seconds_day)
-                        random_minutes = random.uniform(1, 20)
-                        total_hours_workday = hours_workday - total_hours + timedelta(minutes = random_minutes)
-                        _logger.debug ("%s --> %s  = %i segundos, %s hours" % (employee.name, aux_signings_date, total_seconds, total_hours_workday))
-                        cont = 1
-                        total_seconds_day = 0
-                    attendance_insert = False
-    
-                aux_signings_date = signings_date
-            return aux_signings_date
+                    aux_signings = datetime.today()  
                 
+                _logger.debug ('### %s - %s ' % (employee.name, signings))
+                
+                if (aux_signings and aux_signings.date() != signings.date()):
+                    time_start = signings
+                    time_end   = time_start + timedelta (seconds = 28800) + timedelta(seconds = random.uniform(60,1200))
+                    total_seconds = (time_end - time_start).total_seconds() 
+                    seconds = total_seconds 
+                    worked_hours = timedelta(seconds = seconds)
+                                                
+                    self.setAttendance(employee, signings,time_end, worked_hours)
+                    aux_signings = signings
+                    
+        return signings
+                            
     def setAttendance (self, employee, check_in, check_out, worked_hours):
         m, s = divmod(worked_hours.total_seconds(), 60)
         h, m = divmod(m, 60)
@@ -124,6 +110,7 @@ class fingerprintreader_biotime(models.Model):
             'worked_hours': h + m + s,
             'physical_reader': True
         })
+        _logger.debug ('Grabando ### %s - %s - %s - %s' % (employee.name, check_in, check_out, worked_hours))
         
     def saveLastSigning(self, lastDate):
         self.env['ir.config_parameter'].set_param(self.KEY_LAST_START_TIME, lastDate)
