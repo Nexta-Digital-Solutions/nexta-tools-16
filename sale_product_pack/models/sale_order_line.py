@@ -4,7 +4,7 @@ from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 from odoo.fields import first
 
-from odoo.tools import get_lang
+from odoo.odoo.tools import get_lang
 
 
 class SaleOrderLine(models.Model):
