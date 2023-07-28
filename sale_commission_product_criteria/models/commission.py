@@ -6,7 +6,7 @@ from odoo.tools import float_repr
 
 
 class SaleCommission(models.Model):
-    _inherit = "sale.commission"
+    _inherit = "commission"
 
     commission_type = fields.Selection(
         selection_add=[("product", "Product criteria")],
@@ -68,7 +68,7 @@ class CommissionItem(models.Model):
     sequence = fields.Integer(default=10)
     active = fields.Boolean(default=True)
     commission_id = fields.Many2one(
-        "sale.commission",
+        "commission",
         string="Commission Type",
         domain=[("commission_type", "=", "product")],
         required=True,
