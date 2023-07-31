@@ -104,7 +104,7 @@
             ref="intrastat_product.intrastat_product_declaration_view_form"
         />
         <field name="arch" type="xml">
-            <button name="generate_xml" position="attributes">
+            <button name="action_gather" position="attributes">
                 <attribute name="string">Generate CSV Declaration File</attribute>
             </button>
             <form position="attributes">
