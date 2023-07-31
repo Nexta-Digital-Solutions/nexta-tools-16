@@ -12,7 +12,7 @@
             ref="intrastat_product.intrastat_product_computation_line_view_form"
         />
         <field name="arch" type="xml">
-            <field name="region_id" position="after">
+            <field name="intrastat_region_id" position="after">
                 <field name="intrastat_state_id" />
             </field>
             <field name="incoterm_id" position="attributes">
@@ -41,7 +41,7 @@
             ref="intrastat_product.intrastat_product_computation_line_view_tree"
         />
         <field name="arch" type="xml">
-            <field name="region_id" position="after">
+            <field name="intrastat_region_id" position="after">
                 <field name="intrastat_state_id" />
             </field>
             <field name="amount_accessory_cost_company_currency" position="attributes">
@@ -90,7 +90,7 @@
             ref="intrastat_product.intrastat_product_declaration_line_view_tree"
         />
         <field name="arch" type="xml">
-            <field name="region_id" position="after">
+            <field name="intrastat_region_id" position="after">
                 <field name="intrastat_state_id" />
             </field>
             <field name="hs_code_id" position="after">
