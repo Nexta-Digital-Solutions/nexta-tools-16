@@ -87,7 +87,7 @@
             ref="intrastat_product.intrastat_product_declaration_line_view_tree"
         />
         <field name="arch" type="xml">
-            <field name="region_id" position="after">
+            <field name="region_code" position="after">
                 <field name="intrastat_state_id" />
             </field>
             <field name="hs_code_id" position="after">
