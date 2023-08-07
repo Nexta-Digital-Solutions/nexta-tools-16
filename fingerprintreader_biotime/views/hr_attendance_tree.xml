@@ -8,7 +8,7 @@
         <xpath expr="//field[@name='employee_id']" position="before">
           <field name = "physical_reader"/>
         </xpath>
-        <xpath expr = "//field[@name='worked_hours']" position = "replace">
+        <xpath expr = "//field[@name='worked_hours']" position = "after">
           <field name="worked_hours_nexta" string="Work Hours" widget="float_time"/>
         </xpath>
       </field>
