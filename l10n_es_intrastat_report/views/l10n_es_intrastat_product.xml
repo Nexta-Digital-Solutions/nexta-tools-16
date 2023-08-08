@@ -7,10 +7,7 @@
         <field name="name">l10n.es.intrastat.product.computation.line.form</field>
         <field name="model">l10n.es.intrastat.product.computation.line</field>
         <field name="mode">primary</field>
-        <field
-            name="inherit_id"
-            ref="intrastat_product.intrastat_product_computation_line_view_form"
-        />
+        <field name="inherit_id"  ref="intrastat_product.intrastat_product_computation_line_view_form" />
         <field name="arch" type="xml">
             <field name="region_id" position="after">
                 <field name="intrastat_state_id" />
@@ -90,7 +87,7 @@
             ref="intrastat_product.intrastat_product_declaration_line_view_tree"
         />
         <field name="arch" type="xml">
-            <field name="region_id" position="after">
+            <field name="region_code" position="after">
                 <field name="intrastat_state_id" />
             </field>
             <field name="hs_code_id" position="after">
@@ -107,7 +104,7 @@
             ref="intrastat_product.intrastat_product_declaration_view_form"
         />
         <field name="arch" type="xml">
-            <button name="generate_xml" position="attributes">
+            <button name="action_gather" position="attributes">
                 <attribute name="string">Generate CSV Declaration File</attribute>
             </button>
             <form position="attributes">
