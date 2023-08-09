@@ -13,10 +13,11 @@
     'website': "https://www.nextads.es",
     'license': 'LGPL-3',
     'category': 'Asistencias',
-    'version': '16.0.0.1',
+    'version': '16.0.0.2',
     'depends': [
         'base',
-        'hr_attendance'
+        'hr_attendance',
+        'rest_time'
     ],
     'data': [
         'views/hr_attendance_tree.xml',
