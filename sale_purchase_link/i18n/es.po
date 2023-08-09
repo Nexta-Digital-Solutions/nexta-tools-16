@@ -1,0 +1,60 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* product_pricelist_margin_cost
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-10-26 15:34+0000\n"
+"PO-Revision-Date: 2022-10-26 15:34+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: product_pricelist_margin_cost
+#: model:ir.model.fields,field_description:product_pricelist_margin_cost.field_product_pricelist_item__percent_margin
+msgid "Percent margin"
+msgstr "Margen sobre venta"
+
+#. module: product_pricelist_margin_cost
+#: model:ir.model,name:product_pricelist_margin_cost.model_product_pricelist_item
+msgid "Pricelist Rule"
+msgstr "Regla de Tarifa"
+
+#. module: product_pricelist_margin_cost
+#: model:ir.model.fields,field_description:product_pricelist_margin_cost.field_product_pricelist_item__product_pricelist_price
+msgid "Product Pricelist Price"
+msgstr "Precio de venta"
+
+#. module: product_pricelist_margin_cost
+#: model:ir.model.fields,help:product_pricelist_margin_cost.field_product_pricelist_item__percent_margin
+msgid ""
+"Specify percentage to add to the product cost to calculate de product price."
+msgstr ""
+"Especifique el porcentaje a agregar al costo del producto para calcular el precio del producto."
+
+#. module: product
+#: model_terms:ir.ui.view,arch_db:product.product_pricelist_view_kanban
+msgid "<i class=\"fa fa-money\" role=\"img\" aria-label=\"Currency\" title=\"Currency\"/>"
+msgstr "<i class=\"fa fa-money\" role=\"img\" aria-label=\"Moneda\" title=\"Moneda\"/>"
+
+#. module: product
+#: model_terms:ir.ui.view,arch_db:product.product_template_form_view
+msgid ""
+"<span attrs=\"{'invisible': [('pricelist_item_count', '=', 1)]}\">\n"
+"                                        Extra Prices\n"
+"                                    </span>\n"
+"                                    <span attrs=\"{'invisible': [('pricelist_item_count', '!=', 1)]}\">\n"
+"                                        Extra Price\n"
+"                                    </span>"
+msgstr ""
+"<span attrs=\"{'invisible': [('pricelist_item_count', '=', 1)]}\">\n"
+"                                        Tarifas\n"
+"                                    </span>\n"
+"                                    <span attrs=\"{'invisible': [('pricelist_item_count', '!=', 1)]}\">\n"
+"                                        Tarifas\n"
+"                                    </span>"
