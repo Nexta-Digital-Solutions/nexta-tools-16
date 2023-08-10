@@ -11,7 +11,9 @@
     'website': "https://www.nextads.es",
     'category': 'Uncategorized',
     'version': '16.0.0.1',
-    'depends': ['base'],
+    'depends': ['base',
+                'hr_attendance'
+     ],
     'license': 'LGPL-3',
     'data': [
         'views/hr_attendance_tree.xml',

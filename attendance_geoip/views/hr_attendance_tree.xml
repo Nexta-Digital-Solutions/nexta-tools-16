@@ -1,6 +1,6 @@
 <odoo>
   <data> 
-    <record model="ir.ui.view" id="presto.biotime_tree">
+    <record model="ir.ui.view" id="attendance_geoip.attendance_tree">
       <field name = "name">Attendance</field>
       <field name = "model">hr.attendance</field>
       <field name = "inherit_id" ref = "hr_attendance.view_attendance_tree"/>
