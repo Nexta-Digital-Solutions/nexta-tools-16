@@ -8,6 +8,7 @@ from odoo.exceptions import AccessError
 from datetime import datetime, timedelta
 import random
 import pandas as pd
+import pytz
 
 _logger = logging.getLogger(__name__)
 
@@ -84,7 +85,13 @@ class fingerprintreader_biotime(models.Model):
             data_signings = self.get_signings(employee.barcode)
           
             for idx, record in enumerate(data_signings):
-                signings = datetime.strptime(record['date'], '%Y-%m-%d %H:%M:%S')
+                tz = 'Europe/Paris'
+                dt_aware = pytz.timezone(tz)    
+                signings_tz = datetime.strptime(record['date'], '%Y-%m-%d %H:%M:%S')
+                local_dt =dt_aware.localize(signings_tz, is_dst=None)
+                signings_utc= local_dt.astimezone(pytz.utc).strftime('%Y-%m-%d %H:%M:%S')
+                signings = datetime.strptime(signings_utc, '%Y-%m-%d %H:%M:%S')
+                
                 if (idx == 0):
                     aux_signings = datetime.today()  
                 
