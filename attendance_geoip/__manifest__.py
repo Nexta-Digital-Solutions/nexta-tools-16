@@ -10,7 +10,7 @@
     'author': "NextaDS",
     'website': "https://www.nextads.es",
     'category': 'Uncategorized',
-    'version': '16.0.0.1',
+    'version': '16.0.0.2',
     'depends': ['base',
                 'hr_attendance'
      ],
