@@ -8,6 +8,7 @@ from odoo.exceptions import AccessError
 from datetime import datetime, timedelta
 import random
 import pandas as pd
+import pytz
 
 _logger = logging.getLogger(__name__)
 
@@ -15,7 +16,7 @@ class fingerprintreader_biotime(models.Model):
     _inherit = "hr.attendance"
     
     physical_reader = fields.Boolean( string = "Physical reader")
-    worked_hours_nexta = fields.Float(string='Worked Hours',  readonly=True)
+    worked_hours_nexta = fields.Float(string='Worked Hours')
     
     KEY_LOGIN    = 'biotime_url_login'
     KEY_FICHADAS = 'biotime_url_fichadas'
@@ -84,7 +85,13 @@ class fingerprintreader_biotime(models.Model):
             data_signings = self.get_signings(employee.barcode)
           
             for idx, record in enumerate(data_signings):
-                signings = datetime.strptime(record['date'], '%Y-%m-%d %H:%M:%S')
+                tz = 'Europe/Paris'
+                dt_aware = pytz.timezone(tz)    
+                signings_tz = datetime.strptime(record['date'], '%Y-%m-%d %H:%M:%S')
+                local_dt =dt_aware.localize(signings_tz, is_dst=None)
+                signings_utc= local_dt.astimezone(pytz.utc).strftime('%Y-%m-%d %H:%M:%S')
+                signings = datetime.strptime(signings_utc, '%Y-%m-%d %H:%M:%S')
+                
                 if (idx == 0):
                     aux_signings = datetime.today()  
                 
@@ -92,27 +99,56 @@ class fingerprintreader_biotime(models.Model):
                 
                 if (aux_signings and aux_signings.date() != signings.date()):
                     time_start = signings
-                    time_end   = time_start + timedelta (seconds = 34200) 
-                    #total_seconds = (time_end - time_start).total_seconds() 
-                    total_seconds = timedelta(seconds = 28800) + timedelta(seconds = random.uniform(60,180))
-                    worked_hours  = timedelta(seconds = total_seconds.seconds)
+                    rest_time = self.getRestTime(employee)
+                    hours_time = self.getTimeHorario(employee)
+                    time_end   = time_start + timedelta (seconds = hours_time) + timedelta(seconds = round(random.uniform(60,240),0))
+                    worked_hours_nexta  = (time_end - time_start).total_seconds() - rest_time
                                                 
-                    self.setAttendance(employee, signings,time_end, worked_hours)
+                    self.setAttendance(employee, signings,time_end, worked_hours_nexta)
                     aux_signings = signings
                     
         return signings
-                            
+    
+    def getTimeHorario(self, employee):
+        calendar_employee = employee.resource_calendar_id
+        total_time = calendar_employee.hours_per_day
+        try:
+            seconds = (total_time * 60) * 60
+        except Exception:
+            seconds = 0          
+        
+        return seconds
+    
+    def getRestTime(self, employee):
+        calendar_employee = employee.resource_calendar_id
+        total_time = calendar_employee.rest_time 
+        try:
+            seconds = (total_time * 60) * 60
+        except Exception:
+            seconds = 0          
+        
+        return seconds
+        
     def setAttendance (self, employee, check_in, check_out, worked_hours):
-        m, s = divmod(worked_hours.total_seconds(), 60)
-        h, m = divmod(m, 60)
+        #m, s = divmod(worked_hours.total_seconds(), 60)
+        #h, m = divmod(m, 60)
         self.create ({
             'employee_id': employee.id,
             'check_in': check_in,
             'check_out': check_out,
-            'worked_hours_nexta': worked_hours.seconds / 3600.0,
+            'worked_hours_nexta': worked_hours / 3600.0,
             'physical_reader': True
         })
         _logger.debug ('Grabando ### %s - %s - %s - %s' % (employee.name, check_in, check_out, worked_hours))
         
     def saveLastSigning(self, lastDate):
         self.env['ir.config_parameter'].set_param(self.KEY_LAST_START_TIME, lastDate)
+        
+    @api.onchange('check_in', 'check_out')
+    def onchange_dates(self):
+        if (self.check_in and self.check_out):
+            time_start  = self.check_in
+            time_end    = self.check_out
+            rest_time   = self.getRestTime(self.employee_id)
+            hours_nextads = (time_end - time_start).total_seconds() - rest_time
+            self.worked_hours_nexta = hours_nextads / 3600.0
