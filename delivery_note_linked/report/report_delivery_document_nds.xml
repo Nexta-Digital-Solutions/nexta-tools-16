@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<template id="report_delivery_document_nds" inherit_id="stock.report_delivery_document">
+
+    <xpath expr="//div[@name('signature')]" position="after">
+        <div t-if="purchase_note" name="notes">
+            <span t-field="purchase_note"/>
+        </div>
+        <div t-if="sale_note" name="notes">
+            <span t-field="sale_note"/>
+        </div>
+    </xpath>
+
+    </template>
+</odoo>
