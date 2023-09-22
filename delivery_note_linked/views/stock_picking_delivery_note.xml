@@ -11,7 +11,7 @@
         <field name="arch" type="xml">
             <xpath expr="//page[@name='note']" position="replace">
                 <page string="Notas de compras" name="note" attrs="{'invisible': [('picking_type_code', '!=', 'incoming')]}">
-                    <field name="note" string="Note" placeholder="Add an internal note that will be printed on the Picking Operations sheet"/>
+                    <field name="purchase_note" string="Note" placeholder="Add an internal note that will be printed on the Picking Operations sheet"/>
                 </page>
             </xpath>
             <xpath expr="//page[@name='note']" position="after">

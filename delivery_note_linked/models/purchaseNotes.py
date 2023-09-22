@@ -9,13 +9,10 @@ from odoo import models, fields, api, _
 class PurchaseNote(models.Model):
     _inherit = "purchase.order"
 
-    delivery_note = fields.Text(required=False, readonly=False)
+    delivery_note_purchase = fields.Text(required=False, readonly=False)
 
 
-class DeliveryNotePurchase(models.Model):
-    _inherit = "stock.picking"
 
-    note = fields.Text(related="purchase_id.delivery_note", readonly=False)
 #     @api.onchange('delivery_note')
 #
 #     def _onchange_delivery_note(self):

@@ -9,20 +9,3 @@ class PurchaseNote(models.Model):
     _inherit = "sale.order"
 
     delivery_note_sale = fields.Text(required=False, readonly=False)
-class SaleNote(models.Model):
-    _inherit = "stock.picking"
-
-    sale_notes = fields.Text(related="sale_id.delivery_note_sale", required=False, readonly=False)
-
-    # @api.onchange('delivery_note_sale')
-    # def _onchange_delivery_note_sale(self):
-    #     for order in self:
-    #         if order.picking_ids:
-    #             for picking in order.picking_ids:
-    #                 picking.note = order.delivery_note_sale
-    # @api.onchange('delivery_note_sale')
-    # def _onchange_delivery_note_sale(self):
-    #     for order in self:
-    #         if order.picking_ids:
-    #             order.picking_ids.update({'note':  order.delivery_note})
-

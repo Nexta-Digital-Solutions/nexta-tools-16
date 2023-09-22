@@ -10,7 +10,7 @@
         <field name="inherit_id" ref="purchase.purchase_order_form"/>
         <field name="arch" type="xml">
             <xpath expr="//group//field[@name='notes']" position="after">
-                <field colspan="2" name="delivery_note" nolabel="1" placeholder="Escribre las notas para el albarán..."/>
+                <field colspan="2" name="delivery_note_purchase" nolabel="1" placeholder="Escribre las notas para el albarán..."/>
             </xpath>
         </field>
     </record>
