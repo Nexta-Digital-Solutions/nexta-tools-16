@@ -16,7 +16,7 @@
             </xpath>
             <xpath expr="//page[@name='note']" position="after">
                  <page string="Notas de ventas" name="note" attrs="{'invisible': [('picking_type_code', '!=', 'outgoing')]}">
-                    <field name="sale_notes" string="Note"/>
+                    <field name="sale_note" string="Note"/>
                  </page>
             </xpath>
         </field>
