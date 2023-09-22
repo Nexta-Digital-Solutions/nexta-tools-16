@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+# (c) 2023 Nexta - Jaume Basiero <jbasiero@nextads.es>
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+-->
+<odoo>
+    <record id="stock_picking_delivery_note" model="ir.ui.view">
+        <field name="name">stock.picking.delivery.note</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='note']" position="replace">
+                <page string="Notas de compras" name="note" attrs="{'invisible': [('picking_type_code', '!=', 'incoming')]}">
+                    <field name="note" string="Note" placeholder="Add an internal note that will be printed on the Picking Operations sheet"/>
+                </page>
+            </xpath>
+            <xpath expr="//page[@name='note']" position="after">
+                 <page string="Notas de ventas" name="note" attrs="{'invisible': [('picking_type_code', '!=', 'outgoing')]}">
+                    <field name="sale_notes" string="Note"/>
+                 </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>
