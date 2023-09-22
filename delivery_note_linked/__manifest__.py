@@ -8,7 +8,7 @@
     'author': "NextaDS",
     'website': "https://www.nextads.es",
     'category': '',
-    'version': '16.0.0.3',
+    'version': '15.0.0.3',
     'license': "LGPL-3",
     'depends': [
         'sale',
