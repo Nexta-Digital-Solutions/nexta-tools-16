@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+<!--        Así puedo montar donde yo quiera una etiqueta para imprimir con el nombre que le indico -->
+        <record id="paperformat_albaran" model="report.paperformat">
+            <field name="name">Albaran A4</field>
+            <field name="default" eval="True" />
+            <field name="format">A4</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">40</field>
+            <field name="margin_bottom">32</field>
+            <field name="margin_left">7</field>
+            <field name="margin_right">7</field>
+            <field name="header_line" eval="False" />
+            <field name="header_spacing">35</field>
+            <field name="dpi">90</field>
+        </record>
+
+        <record id="report_deliveryslip_document_albaran_action" model="ir.actions.report">
+            <field name="name">Albarán sin valorar</field>
+            <field name="model">stock.picking</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">no_valued_stock_picking_report.report_albaran_sin_valorar</field>
+            <field name="report_file">no_valued_stock_picking_report.report_albaran_sin_valorar</field>
+            <field name="print_report_name">'Albaran sin valorar - %s' % (object.name)</field>
+            <field name="binding_model_id" ref="stock.model_stock_picking"/>
+            <field name="paperformat_id" ref="paperformat_albaran"/>
+            <field name="binding_type">report</field>
+        </record>
+
+
+        <record id="base.paperformat_euro" model="report.paperformat">
+            <field name="margin_top">28</field>
+            <field name="header_spacing">23</field>
+         </record>
+
+    </data>
+</odoo>

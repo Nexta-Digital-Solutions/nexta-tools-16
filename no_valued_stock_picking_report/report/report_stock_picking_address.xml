@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<template id="report_delivery_document_nds" inherit_id="stock.report_delivery_document">
+
+    <xpath expr="//td[2]//span[@t-field='move.product_uom']" position="attributes">
+        <attribute name="t-if">1!=1</attribute>
+    </xpath>
+     <xpath expr="//td[3]//span[@t-field='move.product_uom']" position="attributes">
+        <attribute name="t-if">1!=1</attribute>
+    </xpath>
+
+    <xpath expr="//div[@t-field='partner.self']" position="attributes">
+        <attribute name="t-if">1!=1</attribute>
+    </xpath>
+
+    <xpath expr="//div[@name='partner_header']//div[@t-field='partner.self']" position="before">
+
+        <span t-field="partner.name"/>
+
+    </xpath>
+
+    <xpath expr="//div[@name='partner_header']//div[@t-field='partner.self']" position="after">
+
+        <span t-field="partner.sudo().city"/>
+        <span t-field="partner.sudo().state_id"/>
+        <span t-field="partner.sudo().zip"/>
+        <span t-field="partner.sudo().street"/> <br/>
+        <t t-if="partner.sudo().ref">
+          <span>Referencia:</span>
+          <span t-esc="partner.sudo().ref"/>
+        </t>
+
+    </xpath>
+
+    <xpath expr="//tr[@t-foreach='lines']//td[1]" position="replace">
+      <td>
+        <t t-if="move.sale_line_id">
+              <span t-field="move.sale_line_id.name"/>
+        </t>
+        <t t-else="">
+            <span  t-field="move.product_id"/>
+            <p t-if="move.description_picking != move.product_id.name and move.description_picking != move.product_id.display_name">
+              <span t-field="move.description_picking"/>
+            </p>
+        </t>
+        </td>
+    </xpath>
+
+</template>
+</odoo>
