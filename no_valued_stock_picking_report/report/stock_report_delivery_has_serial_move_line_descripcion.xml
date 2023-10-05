@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<template id="stock_report_delivery_has_serial_move_line_descripcion" inherit_id="stock.stock_report_delivery_has_serial_move_line">
+
+    <xpath expr="//td[1]" position="replace">
+        <td>
+        <t t-if="move_line.move_id.sale_line_id">
+              <span t-field="move_line.move_id.sale_line_id.name"/>
+        </t>
+        <t t-else="">
+            <span t-field="move_line.product_id"/>
+             this is an annoying workaround for the multiple types of descriptions (often auto-filled) that we do not want to print
+             this makes it so we can pre-filter the descriptions in inherited templates since we cannot extend the standard "if" condition
+             let's agree that pre-filtered descriptions will be set to ""
+            <t t-if="not description and description != ''">
+                <t t-set="description" t-value="move_line.move_id.description_picking"/>
+            </t>
+            <p t-if="description !='' and description != move_line.product_id.name">
+                <span t-esc="description"/>
+            </p>
+        </t>
+        </td>
+    </xpath>
+
+
+</template>
+</odoo>
