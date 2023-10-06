@@ -1,17 +1,19 @@
 <odoo>
-  <data> 
-    <record model="ir.ui.view" id="attendance_geoip.attendance_tree">
-      <field name = "name">Attendance</field>
-      <field name = "model">hr.attendance</field>
-      <field name = "inherit_id" ref = "hr_attendance.view_attendance_tree"/>
-      <field name = "arch" type="xml">
-        <xpath expr="//field[@name='employee_id']" position="before">
-          <field name = "lat_in"/>
-          <field name = "long_in"/>
-          <field name = "lat_out"/>
-          <field name = "long_out"/>
-        </xpath>
-      </field>
-    </record>
-  </data>
+    <data>
+        <record model="ir.ui.view" id="attendance_geoip.attendance_tree">
+            <field name="name">Attendance</field>
+            <field name="model">hr.attendance</field>
+            <field name="inherit_id" ref="hr_attendance.view_attendance_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='employee_id']" position="before">
+                    <field name="lat_in"/>
+                    <field name="long_in"/>
+                    <button name="open_map_in" string="Map" type="object" class="oe_highlight d-block mx-auto"/>
+                    <field name="lat_out"/>
+                    <field name="long_out"/>
+                    <button name="open_map_out" string="Map" type="object" class="oe_highlight d-block mx-auto"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
 </odoo>
