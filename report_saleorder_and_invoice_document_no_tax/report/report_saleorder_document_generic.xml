@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_saleorder_document_generic" inherit_id="sale.report_saleorder_document">
+
+        <xpath expr="//th[@name='th_taxes']" position="attributes">
+            <attribute name="t-if">1!=1</attribute>
+        </xpath>
+
+        <xpath expr="//td[@name='td_taxes']" position="attributes">
+            <attribute name="t-if">1!=1</attribute>
+        </xpath>
+
+        <xpath expr="//td[@name='td_quantity']" position="replace">
+            <td name="td_quantity" class="text-end">
+                <span t-field="line.product_uom_qty"/>
+            </td>
+        </xpath>
+    </template>
+</odoo>

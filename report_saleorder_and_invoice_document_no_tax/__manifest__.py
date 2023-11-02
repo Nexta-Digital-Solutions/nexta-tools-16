@@ -27,8 +27,8 @@
                 ],
 
     'data': [
-        'report/report_saleorder_document_custom.xml',
-        'report/report_invoice_document_custom.xml',
+        'report/report_saleorder_document_generic.xml',
+        'report/report_invoice_document_generic.xml',
 
 
     ],
