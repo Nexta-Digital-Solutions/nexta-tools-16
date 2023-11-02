@@ -63,7 +63,7 @@ msgstr "<strong>Pedido:</strong>"
 #. module: no_valued_stock_picking_report
 #: model_terms:ir.ui.view,arch_db:no_valued_stock_picking_report.report_albaran_sin_valorar
 msgid "<strong>Ordered</strong>"
-msgstr "<strong>Ordenado</strong>"
+msgstr "<strong>Demanda</strong>"
 
 #. module: no_valued_stock_picking_report
 #: model_terms:ir.ui.view,arch_db:no_valued_stock_picking_report.report_albaran_sin_valorar
