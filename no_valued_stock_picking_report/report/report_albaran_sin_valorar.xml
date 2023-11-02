@@ -88,13 +88,13 @@
                                 <table class="table table-sm" t-if="o.state!='done'" name="stock_move_table">
                                     <thead>
                                         <tr>
-                                            <th name="th_sm_product">
+                                            <th name="th_sm_product" class="text-start">
                                                 <strong>Product</strong>
                                             </th>
-                                            <th name="th_sm_ordered">
+                                            <th name="th_sm_ordered" class="text-start">
                                                 <strong>Ordered</strong>
                                             </th>
-                                            <th name="th_sm_quantity">
+                                            <th name="th_sm_quantity" class="text-start">
                                                 <strong>Delivered</strong>
                                             </th>
                                         </tr>
