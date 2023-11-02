@@ -2,7 +2,7 @@
 # (c) 2023 Nexta - Jaume Basiero <jbasiero@nextads.es>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/a
 {
-    'name': "Sin impuestos",
+    'name': "Reports sin impuestos",
 
     'summary': """
         Este módulo elimina los impuestos en los reports de ventas y facturación""",
@@ -20,7 +20,7 @@
     'license': "LGPL-3",
 
     'category': 'Account',
-    'version': '15.0.1',
+    'version': '16.0.1',
 
     'depends': ['sale',
                 'account'
