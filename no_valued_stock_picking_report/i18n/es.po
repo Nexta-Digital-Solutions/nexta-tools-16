@@ -1,0 +1,97 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* no_valued_stock_picking_report
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e-20231006\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-11-02 12:25+0000\n"
+"PO-Revision-Date: 2023-11-02 12:25+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: no_valued_stock_picking_report
+#: model:ir.actions.report,print_report_name:no_valued_stock_picking_report.report_deliveryslip_document_albaran_action
+msgid "'Albaran sin valorar - %s' % (object.name)"
+msgstr ""
+
+#. module: no_valued_stock_picking_report
+#: model_terms:ir.ui.view,arch_db:no_valued_stock_picking_report.report_albaran_sin_valorar
+msgid "<span><strong>Customer Address:</strong></span>"
+msgstr "<span><strong>Dirección del Cliente:</strong></span>"
+
+#. module: no_valued_stock_picking_report
+#: model_terms:ir.ui.view,arch_db:no_valued_stock_picking_report.report_albaran_sin_valorar
+msgid "<span><strong>Delivery Address:</strong></span>"
+msgstr "<span><strong>Dirección de Entrega:</strong></span>"
+
+#. module: no_valued_stock_picking_report
+#: model_terms:ir.ui.view,arch_db:no_valued_stock_picking_report.report_albaran_sin_valorar
+msgid "<span><strong>Vendor Address:</strong></span>"
+msgstr "<span><strong>Dirección del Proveedor:</strong></span>"
+
+#. module: no_valued_stock_picking_report
+#: model_terms:ir.ui.view,arch_db:no_valued_stock_picking_report.report_albaran_sin_valorar
+msgid "<span><strong>Warehouse Address:</strong></span>"
+msgstr "<span><strong>Dirección del Almacén:</strong></span>"
+
+#. module: no_valued_stock_picking_report
+#: model_terms:ir.ui.view,arch_db:no_valued_stock_picking_report.report_albaran_sin_valorar
+msgid "<span>Referencia:</span>"
+msgstr "<span>Referencia:</span>"
+
+#. module: no_valued_stock_picking_report
+#: model_terms:ir.ui.view,arch_db:no_valued_stock_picking_report.report_albaran_sin_valorar
+msgid "<span>Cantidades restantes no entregadas aún:</span>"
+msgstr "<span>Cantidades restantes no entregadas aún:</span>"
+
+#. module: no_valued_stock_picking_report
+#: model_terms:ir.ui.view,arch_db:no_valued_stock_picking_report.report_albaran_sin_valorar
+msgid "<strong>Delivered</strong>"
+msgstr "<strong>Entregado</strong>"
+
+#. module: no_valued_stock_picking_report
+#: model_terms:ir.ui.view,arch_db:no_valued_stock_picking_report.report_albaran_sin_valorar
+msgid "<strong>Order:</strong>"
+msgstr "<strong>Pedido:</strong>"
+
+#. module: no_valued_stock_picking_report
+#: model_terms:ir.ui.view,arch_db:no_valued_stock_picking_report.report_albaran_sin_valorar
+msgid "<strong>Ordered</strong>"
+msgstr "<strong>Demanda</strong>"
+
+#. module: no_valued_stock_picking_report
+#: model_terms:ir.ui.view,arch_db:no_valued_stock_picking_report.report_albaran_sin_valorar
+msgid "<strong>Product</strong>"
+msgstr "<strong>Producto</strong>"
+
+#. module: no_valued_stock_picking_report
+#: model_terms:ir.ui.view,arch_db:no_valued_stock_picking_report.report_albaran_sin_valorar
+msgid "<strong>Quantity</strong>"
+msgstr "<strong>Cantidad</strong>"
+
+#. module: no_valued_stock_picking_report
+#: model_terms:ir.ui.view,arch_db:no_valued_stock_picking_report.report_albaran_sin_valorar
+msgid "<strong>Shipping Date:</strong>"
+msgstr "<strong>Fecha de Envío:</strong>"
+
+#. module: no_valued_stock_picking_report
+#: model:ir.actions.report,name:no_valued_stock_picking_report.report_deliveryslip_document_albaran_action
+msgid "Albarán sin valorar"
+msgstr "Albarán sin valorar"
+
+#. module: no_valued_stock_picking_report
+#: model_terms:ir.ui.view,arch_db:no_valued_stock_picking_report.report_albaran_sin_valorar
+msgid "Lot/Serial Number"
+msgstr "Número de Lote/Serie"
+
+#. module: no_valued_stock_picking_report
+#: model:ir.model,name:no_valued_stock_picking_report.model_stock_move_line
+msgid "Product Moves (Stock Move Line)"
+msgstr "Movimientos de Producto (Stock Move Line)"
+
