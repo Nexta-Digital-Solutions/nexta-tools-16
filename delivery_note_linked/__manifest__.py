@@ -22,8 +22,8 @@
         'views/sale_order_delivery_note.xml',
         'views/purchase_order_delivery_note.xml',
         'views/stock_picking_delivery_note.xml',
-        'report/report_delivery_document_nds.xml',
-        'report/report_saleorder_document_nds.xml',
+        'report/report_delivery_document_note.xml',
+        'report/report_saleorder_document_note.xml',
 
     ],
 
