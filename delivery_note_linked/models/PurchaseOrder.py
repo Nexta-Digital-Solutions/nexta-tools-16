@@ -6,7 +6,7 @@ from odoo import models, fields, api, _
 
 
 
-class PurchaseNote(models.Model):
+class PurchaseOrder(models.Model):
     _inherit = "purchase.order"
 
     delivery_note_purchase = fields.Text(required=False, readonly=False)

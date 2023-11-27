@@ -5,7 +5,7 @@
 from odoo import models, fields, api, _
 
 
-class PurchaseNote(models.Model):
-    _inherit = "sale.order"
+class AccountMove(models.Model):
+    _inherit = "account.move"
 
-    delivery_note_sale = fields.Text(required=False, readonly=False)
+    sale_note = fields.Text(related="sale_id.delivery_note_sale", required=False, readonly=False)
