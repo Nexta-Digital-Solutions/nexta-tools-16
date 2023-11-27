@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-<template id="report_delivery_document_nds" inherit_id="stock.report_delivery_document">
+<template id="report_delivery_document_note" inherit_id="stock.report_delivery_document">
 
     <xpath expr="//div[@name='signature']" position="after">
         <div t-if="o.purchase_note" name="notes">
