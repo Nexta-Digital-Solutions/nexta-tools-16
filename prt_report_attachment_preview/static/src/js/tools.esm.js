@@ -2,28 +2,40 @@
 
 import {_t} from "web.core";
 
-export const _getReportUrl = (action, type) => {
-    let url = `/report/${type}/${action.report_name}`;
+export const _getReportUrl = (action, type, env) => {
+    const url = new URL(
+        `/report/${type}/${action.report_name}`,
+        window.location.origin
+    );
     const actionContext = action.context || {};
     if (action.data && JSON.stringify(action.data) !== "{}") {
         // Build a query string with `action.data` (it's the place where reports
         // using a wizard to customize the output traditionally put their options)
-        const options = encodeURIComponent(JSON.stringify(action.data));
-        const context = encodeURIComponent(JSON.stringify(actionContext));
-        url += `?options=${options}&context=${context}`;
+        url.searchParams.set(
+            "options",
+            encodeURIComponent(JSON.stringify(action.data))
+        );
+        url.searchParams.set(
+            "context",
+            encodeURIComponent(JSON.stringify(actionContext))
+        );
     } else {
         if (actionContext.active_ids) {
-            url += `/${actionContext.active_ids.join(",")}`;
+            url.pathname += `/${actionContext.active_ids.join(",")}`;
+        }
+        if (actionContext.allowed_company_ids) {
+            const cid = actionContext.allowed_company_ids.join();
+            url.searchParams.set("cid", cid);
         }
         if (type === "html") {
             /* eslint-disable no-undef */
-            const context = encodeURIComponent(
-                JSON.stringify(env.services.user.context)
+            url.searchParams.set(
+                "context",
+                encodeURIComponent(JSON.stringify(env.services.user.context))
             );
-            url += `?context=${context}`;
         }
     }
-    return url;
+    return url.toString();
 };
 
 const link =
