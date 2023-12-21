@@ -23,7 +23,7 @@ registry
             }
             if (state === "upgrade" || state === "ok") {
                 // Trigger the download of the PDF report
-                const url = _getReportUrl(action, "pdf");
+                const url = _getReportUrl(action, "pdf", env);
                 // AAB: this check should be done in get_file service directly,
                 // should not be the concern of the caller (and that way, get_file
                 // could return a deferred)
