@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+# (c) 2023 Nexta - Jaume Basiero <jbasiero@nextads.es>
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+-->
+<odoo>
+    <!-- Inherit Form View to Modify it -->
+    <record id="view_partner_property_form_nds" model="ir.ui.view">
+        <field name="name">view.partner.property.form.nds</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="product.view_partner_property_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='property_product_pricelist']" position="replace">
+                <field name="property_product_pricelist" groups="product.group_product_pricelist"/>
+            </xpath>
+
+            <xpath expr="//div[@name='parent_pricelists']" position="attributes">
+                <attribute name="t-if">1!=1</attribute>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>
