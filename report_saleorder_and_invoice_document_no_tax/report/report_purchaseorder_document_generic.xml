@@ -10,8 +10,5 @@
             <attribute name="t-if">1!=1</attribute>
         </xpath>
 
-        <xpath expr="//span[@t-field='line.product_uom.name']" position="attributes">
-            <attribute name="t-if">1!=1</attribute>
-        </xpath>
     </template>
 </odoo>
