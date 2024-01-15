@@ -19,16 +19,18 @@
     'website': "http://www.nextads.es",
     'license': "LGPL-3",
 
-    'category': 'Account',
-    'version': '16.0.1',
+    'category': '',
+    'version': '0.0.0.2',
 
     'depends': ['sale',
-                'account'
+                'account',
+                'purchase',
                 ],
 
     'data': [
         'report/report_saleorder_document_generic.xml',
         'report/report_invoice_document_generic.xml',
+        'report/report_purchaseorder_document_generic.xml',
 
 
     ],
