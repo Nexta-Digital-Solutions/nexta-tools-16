@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+# (c) 2024 NextaDS - Jaume Basiero <jbasiero@nextads.es>
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+-->
+<odoo>
+
+    <!-- Inherit Form View to Modify it -->
+    <record id="view_invoice_tree_custom" model="ir.ui.view">
+        <field name="name">view.invoice.tree.custom</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_invoice_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='invoice_date_due']" position="replace">
+                <field name="invoice_date_due" optional="show"
+                       attrs="{'invisible': [['payment_state', 'in', ('paid', 'in_payment', 'reversed')]]}"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
