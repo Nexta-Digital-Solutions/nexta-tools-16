@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Inherit Form View to Modify it -->
+    <record id="view_account_journal_form" model="ir.ui.view">
+        <field name="name">account.journal.form</field>
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="account.view_account_journal_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//page[@name='advanced_settings']//group" position="inside">
+                <group>
+                    <field name="cancel_effect" attrs="{'invisible': [('type','!=','bank')]}"/>
+                    <field name="cancel_account_id" domain="[('code','ilike', '5208')]" attrs="{'invisible': ['|',('type','!=','bank'),('cancel_effect','=',False)]}"/>
+                </group>
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="account_journal_dashboard_kanban_view" model="ir.ui.view">
+        <field name="name">account.journal.dashboard.kanban</field>
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="account.account_journal_dashboard_kanban_view" />
+        <field name="arch" type="xml">
+            <field name="alias_domain" position="after">
+                <field name="cancel_effect"/>
+                <field name="cancel_account_id"/>
+            </field>
+            <!-- JournalMiscelaneous -->
+            <xpath expr="//t[@t-name='JournalMiscelaneous']//div[hasclass('o_kanban_primary_left')]" position="inside">
+                <t t-if="record.cancel_effect.raw_value">
+                    <button type="object" name="open_cancel_effects" class="btn btn-primary o_invoice_new">
+                        <span>Cancel Effects</span>
+                    </button>
+                </t>
+            </xpath>
+
+            <!-- JournalBodyBankCash -->
+            <xpath expr="//t[@t-name='JournalBodyBankCash']//div[hasclass('o_kanban_primary_left')]" position="inside">
+                <t t-if="record.cancel_effect.raw_value">
+                    <button type="object" name="open_cancel_effects" class="btn btn-primary o_invoice_new">
+                        <span>Cancel Effects</span>
+                    </button>
+                </t>
+            </xpath>
+
+            <!-- JournalBodySalePurchase -->
+            <xpath expr="//t[@t-name='JournalBodySalePurchase']//div[hasclass('o_kanban_primary_left')]" position="inside">
+                <t t-if="record.cancel_effect.raw_value">
+                    <button type="object" name="open_cancel_effects" class="btn btn-primary o_invoice_new">
+                        <span>Cancel Effects</span>
+                    </button>
+                </t>
+            </xpath>
+
+            <!-- action_configure_bank_journal -->
+        </field>
+    </record>
+
+    <record model="ir.actions.server" id="action_view_account_move_line_cancel_effects">
+            <field name="name">Cancel Effects</field>
+            <field name="model_id" ref="account.model_account_move_line"/>
+            <field name="binding_model_id" ref="account.model_account_move_line" />
+            <field name="state">code</field>
+            <field name="groups_id" eval="[(4,ref('account.group_account_user'))]"/>
+            <field name="code">
+                if records:
+                    action = records.cancel_effects()
+            </field>
+     </record>
+
+
+</odoo>

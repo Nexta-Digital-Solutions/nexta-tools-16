@@ -1,0 +1,60 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* cancel_effects
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-10-27 07:29+0000\n"
+"PO-Revision-Date: 2023-10-27 07:29+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: cancel_effects
+#: model_terms:ir.ui.view,arch_db:cancel_effects.account_journal_dashboard_kanban_view
+msgid "<span>Cancel Effects</span>"
+msgstr "<span>Dar de baja Effecto</span>"
+
+#. module: cancel_effects
+#: model:ir.model.fields,field_description:cancel_effects.field_account_journal__cancel_account_id
+msgid "Cancel Account"
+msgstr "Cuenta de baja"
+
+#. module: cancel_effects
+#: model:ir.actions.server,name:cancel_effects.action_view_account_move_line_cancel_effects
+msgid "Cancel Effects"
+msgstr "Dar de baja Effecto"
+
+#. module: cancel_effects
+#: model:ir.model.fields,field_description:cancel_effects.field_account_journal__cancel_effect
+msgid "Cancel efffect"
+msgstr "Dar de baja Effecto"
+
+#. module: cancel_effects
+#: model:ir.model,name:cancel_effects.model_account_journal
+msgid "Journal"
+msgstr "Diario"
+
+#. module: cancel_effects
+#: model:ir.model,name:cancel_effects.model_account_move_line
+msgid "Journal Item"
+msgstr "Apunte contable"
+
+#. module: cancel_effects
+#. odoo-python
+#: code:addons/cancel_effects/models/account_move_line.py:0
+#, python-format
+msgid "Need insert cancel effect account in journal {}"
+msgstr "Es necesario insertar una cuenta de baja en el diario"
+
+#. module: cancel_effects
+#. odoo-python
+#: code:addons/cancel_effects/models/account_move_line.py:0
+#, python-format
+msgid "Risk decrease due to effect maturity."
+msgstr "Baja de riesgo por vencimiento  de efecto"
