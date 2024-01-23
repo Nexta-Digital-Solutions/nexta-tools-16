@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+# (c) 2024 Nexta - Jaume Basiero <jbasiero@nextads.es>
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+-->
+<odoo>
+    <!-- Inherit Form View to Modify it -->
+    <record id="view_picking_form_nds" model="ir.ui.view">
+        <field name="name">view.picking.form.nds</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='backorder_id']" position="after">
+                <field name="partner_ref" help="Esta referencia pertenece a la compra, es por eso que solo está visible el campo cuando el albarán proviene de una compra"
+                       attrs="{'invisible': [('picking_type_code', '=', 'outgoing')]}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

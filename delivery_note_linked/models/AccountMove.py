@@ -8,5 +8,5 @@ from odoo import models, fields, api, _
 class AccountMove(models.Model):
     _inherit = "account.move"
 
-    order_id = fields.Many2one(comodel_name="sale.order", string="Pedido origen", required=False, )
-    sale_note = fields.Text(related="sale_id.delivery_note_sale", required=False, readonly=False)
+    order_id = fields.Many2one("sale.order", string="Pedido origen", required=False, )
+    sale_note = fields.Text(related="order_id.delivery_note_sale", required=False, readonly=False)

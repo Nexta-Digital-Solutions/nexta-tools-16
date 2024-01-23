@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+# (c) 2024 Nexta - Jaume Basiero <jbasiero@nextads.es>
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+-->
+<odoo>
+    <!-- Inherit Form View to Modify it -->
+    <record id="vpicktree_nds" model="ir.ui.view">
+        <field name="name">vpicktree.nds</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.vpicktree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="partner_ref" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

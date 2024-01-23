@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+# (c) 2024 Nexta - Jaume Basiero <jbasiero@nextads.es>
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+-->
+<odoo>
+    <!-- Inherit Form View to Modify it -->
+    <record id="view_invoice_tree_nds" model="ir.ui.view">
+        <field name="name">view.invoice.tree.nds</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_invoice_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="partner_ref" readonly="True"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
