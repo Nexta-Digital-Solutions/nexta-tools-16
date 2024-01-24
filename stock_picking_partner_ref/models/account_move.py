@@ -18,4 +18,8 @@ class AccountMove(models.Model):
                 record.partner_ref = ', '.join(partner_refs) if partner_refs else False
             else:
                 record.partner_ref = False
+    def _get_first_invoice_fields(self, invoice):
+        res = super(AccountMove, self)._get_first_invoice_fields(invoice)
+        res["partner_ref"] = invoice.partner_ref
 
+        return res
