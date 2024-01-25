@@ -10,7 +10,7 @@
     'author': "NextaDS",
     'website': "https://www.nextads.es",
     'category': 'Stock',
-    'version': '0.0.0.2',
+    'version': '0.0.0.3',
     'license': "LGPL-3",
     'depends': [
         'purchase',
@@ -19,6 +19,7 @@
         'account',
         'purchase_stock_picking_invoice_link',
         'picking_create_invoice',
+        'account_invoice_merge',
 
     ],
 

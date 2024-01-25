@@ -9,6 +9,7 @@ class AccountMove(models.Model):
     _inherit = 'account.move'
 
     partner_ref = fields.Char(string="Albarán de proveedor", required=False, compute="_compute_partner_ref")
+    partner_reference = fields.Char(string="Albarán de proveedor", required=False)
 
     @api.depends('picking_ids.partner_ref')
     def _compute_partner_ref(self):
@@ -18,8 +19,8 @@ class AccountMove(models.Model):
                 record.partner_ref = ', '.join(partner_refs) if partner_refs else False
             else:
                 record.partner_ref = False
-    def _get_first_invoice_fields(self, invoice):
-        res = super(AccountMove, self)._get_first_invoice_fields(invoice)
-        res["partner_ref"] = invoice.partner_ref
-
-        return res
+    # def _get_invoice_key_cols(self):
+    #     res = super(AccountMove, self)._get_invoice_key_cols(self)
+    #     res = "partner_ref"
+    #
+    #     return res
