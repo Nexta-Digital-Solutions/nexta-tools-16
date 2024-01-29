@@ -4,13 +4,15 @@
 {
     'name': "Referencia proveedor de compras",
     'summary': """En las facturas, modelo account.move, se crea un campo referencia de albarán de proveedor que tiene su valor del stock.picking.
-    """,
+    y al fusionar facturas conservará la concatenación de las 3 referencias de proveedor.
+    Permite filtrar por la referencia del proveedor tanto en la compra como en el albarán.""",
     'description': """En las facturas, modelo account.move, se crea un campo referencia de albarán de proveedor que tiene su valor del stock.picking
-    Permite filtrar por la referencia del proveedor tanto en la compra como en el albarán""",
+    y al fusionar facturas conservará la concatenación de las 3 referencias de proveedor.
+    Permite filtrar por la referencia del proveedor tanto en la compra como en el albarán.""",
     'author': "NextaDS",
     'website': "https://www.nextads.es",
     'category': 'Stock',
-    'version': '0.0.0.3',
+    'version': '0.0.0.6',
     'license': "LGPL-3",
     'depends': [
         'purchase',
