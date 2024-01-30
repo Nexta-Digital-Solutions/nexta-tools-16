@@ -8,24 +8,12 @@ from odoo.tools import float_is_zero
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
-    partner_ref = fields.Char(string="Albarán de proveedor", required=False, compute="_compute_partner_ref")
-    partner_reference = fields.Char(string="Albarán de proveedor", required=False)
-
-    @api.depends('picking_ids.partner_ref')
-    def _compute_partner_ref(self):
-        for record in self:
-            if record.picking_ids and any(picking.partner_ref for picking in record.picking_ids):
-                partner_refs = [picking.partner_ref for picking in record.picking_ids if picking.partner_ref]
-                record.partner_ref = ', '.join(partner_refs) if partner_refs else False
-            else:
-                record.partner_ref = False
-
-
+    partner_ref = fields.Char(string="Albarán de proveedor", required=False)
 
     @api.model
     def _get_first_invoice_fields(self, invoice):
         res = super(AccountMove, self)._get_first_invoice_fields(invoice)
-        res["partner_reference"] = invoice.partner_ref or ""
+        res["partner_ref"] = invoice.partner_ref or ""
         return res
 
     def do_merge(
@@ -102,8 +90,7 @@ class AccountMove(models.Model):
                         account_invoice.partner_ref
                         and account_invoice.partner_ref
                 ):
-                    invoice_infos["partner_reference"] = invoice_infos.get("partner_reference") + ", " + str(
-                        account_invoice.partner_ref)
+                    invoice_infos["partner_ref"] = invoice_infos.get("partner_ref") + ", " + str(account_invoice.partner_ref)
 
             for invoice_line in account_invoice.invoice_line_ids:
                 line_key = self.make_key(
