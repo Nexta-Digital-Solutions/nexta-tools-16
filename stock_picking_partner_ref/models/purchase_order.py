@@ -13,11 +13,11 @@ class PurchaseOrder(models.Model):
         invoice_vals = super(PurchaseOrder, self)._prepare_invoice()
 
         partner_refs = self.picking_ids.mapped('partner_ref')
-
-        if partner_refs == False:
-            partner_reference = ', '.join(partner_refs)
-            invoice_vals.update({'partner_ref': partner_reference})
-        else:
-            invoice_vals.update({'partner_ref': ''})
+        for ref in partner_refs:
+            if ref == False:
+                invoice_vals.update({'partner_ref': ''})
+            else:
+                partner_reference = ', '.join(partner_refs)
+                invoice_vals.update({'partner_ref': partner_reference})
         return invoice_vals
 
