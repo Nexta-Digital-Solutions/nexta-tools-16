@@ -12,7 +12,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='name']" position="after">
                 <field name="partner_ref" readonly="True"/>
-                <field name="partner_reference" string="Fusión de albarán de proveedor" readonly="True"/>
+<!--                <field name="partner_reference" string="Fusión de albarán de proveedor" readonly="True" optional="hide"/>-->
             </xpath>
         </field>
     </record>
