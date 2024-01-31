@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+# (c) 2023 Nexta - Jaume Basiero <jbasiero@nextads.es>
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+-->
+<odoo>
+
+
+    <record id="action_stock_move_line" model="ir.actions.act_window">
+        <field name="name">Movimiento de albaranes</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">stock.move.line</field>
+        <!--        <field name="view_id" ref="view_quotation_tree_with_onboarding"/>-->
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="stock.stock_move_line_view_search"/>
+        <field name="context">{'search_default_cliente': 1, 'search_default_outgoing': 1, 'search_default_todo': 1}</field>
+    </record>
+
+    <!-- MENU item -->
+    <menuitem id="menuitem_stock_move_line" name="Movimiento de albaranes" sequence="220"
+              parent="stock.menu_warehouse_report"
+              action="action_stock_move_line"/>
+</odoo>
