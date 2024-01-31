@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+# (c) 2024 Nexta - Jaume Basiero <jbasiero@nextads.es>
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+-->
+<odoo>
+    <!-- Inherit Form View to Modify it -->
+    <record id="stock_move_line_view_search_nds" model="ir.ui.view">
+        <field name="name">stock.move.line.view.search.nds</field>
+        <field name="model">stock.move.line</field>
+        <field name="inherit_id" ref="stock.stock_move_line_view_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='owner_id']" position="after">
+                <separator/>
+                <filter string="Cliente" name="cliente" domain="[('picking_partner_id', '!=', False)]"/>
+            </xpath>
+            <xpath expr="//filter[@name='by_state']" position="after">
+                <filter string="Cliente" name="by_picking_partner_id" domain="[]" context="{'group_by': 'picking_partner_id'}"/>
+                <filter string="Albarán" name="by_picking_id" domain="[]" context="{'group_by': 'picking_id'}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

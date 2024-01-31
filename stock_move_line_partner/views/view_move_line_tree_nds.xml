@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+# (c) 2023 Nexta - Jaume Basiero <jbasiero@nextads.es>
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+-->
+<odoo>
+    <!-- Inherit Form View to Modify it -->
+    <record id="view_move_line_tree_nds" model="ir.ui.view">
+        <field name="name">view.move.line.tree.nds</field>
+        <field name="model">stock.move.line</field>
+        <field name="inherit_id" ref="stock.view_move_line_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='date']" position="after">
+                <field name="picking_id" optional="show"/>
+                <field name="picking_partner_id" optional="show"/>
+            </xpath>
+            <xpath expr="//field[@name='qty_done']" position="before">
+                <field name="product_uom_qty" optional="show"/>
+                <field name="reserved_uom_qty" optional="show"/>
+                <field name="reserved_qty" optional="hide"/>
+            </xpath>
+            <xpath expr="//field[@name='reference']" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+
+</odoo>
