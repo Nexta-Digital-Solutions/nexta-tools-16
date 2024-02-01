@@ -10,4 +10,3 @@ class StockPicking(models.Model):
 
     partner_ref = fields.Char(string="Albarán de proveedor", required=False,)
     picking_partner = fields.Many2one(comodel_name="stock.move", string="Cliente", required=False,)
-

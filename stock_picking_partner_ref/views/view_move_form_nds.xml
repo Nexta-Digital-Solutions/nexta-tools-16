@@ -12,7 +12,10 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='partner_shipping_id']" position="after">
                 <field name="partner_ref" help="Esta referencia pertenece al albarán de compra, es por eso que su valor solo está visible el campo cuando el albarán proviene de una compra"
-                       readonly="True"/>
+                       attrs="{'invisible': [('move_type', 'not in', ['in_invoice', 'in_refund'])]}"/>
+
+<!--                <field name="partner_reference" help="Esta referencia pertenece al albarán de compra, es por eso que su valor solo está visible el campo cuando el albarán proviene de una compra"-->
+<!--                       readonly="True" attrs="{'invisible': [('move_type', 'not in', ['in_invoice', 'in_refund']), ('partner_ref', '!=', False), ('partner_reference', '=', False)]}"/>-->
             </xpath>
         </field>
     </record>
