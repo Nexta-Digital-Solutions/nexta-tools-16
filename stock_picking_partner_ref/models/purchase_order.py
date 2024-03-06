@@ -18,6 +18,7 @@ class PurchaseOrder(models.Model):
                 invoice_vals.update({'partner_ref': ''})
             else:
                 partner_reference = ', '.join(partner_refs)
+                partner_reference = str(partner_reference)
                 invoice_vals.update({'partner_ref': partner_reference})
         return invoice_vals
 
