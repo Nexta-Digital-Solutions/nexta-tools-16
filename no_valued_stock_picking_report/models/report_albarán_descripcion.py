@@ -21,9 +21,11 @@ class StockMoveLine(models.Model):
         """
         aggregated_move_lines = super()._get_aggregated_product_quantities(**kwargs)
         if self.move_id and self.move_id.sale_line_id:
-            kit_name = self.move_id.sale_line_id.name
-            if kit_name:
-                for aggregated_move_line in aggregated_move_lines:
-                    aggregated_move_lines[aggregated_move_line]['description'] = ""
-                    aggregated_move_lines[aggregated_move_line]['name'] = kit_name
+            sale_line_ids = self.move_id.sale_line_id
+            if sale_line_ids:
+                kit_name = sale_line_ids[0].name
+                if bool(kit_name):
+                    for aggregated_move_line in aggregated_move_lines:
+                        aggregated_move_lines[aggregated_move_line]['description'] = ""
+                        aggregated_move_lines[aggregated_move_line]['name'] = kit_name
         return aggregated_move_lines
