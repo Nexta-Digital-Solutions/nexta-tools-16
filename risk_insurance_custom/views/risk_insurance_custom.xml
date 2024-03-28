@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Inherit Form View to Modify it -->
+    <record id="view_partner_form_custom" model="ir.ui.view">
+        <field name="name">view.partner.form.custom</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="partner_risk_insurance.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group/field[@name='insurance_credit_limit']" position="after">
+                <field name="requested_amount"/>
+            </xpath>
+            <xpath expr="//group/field[@name='risk_insurance_grant_date']" position="after">
+                <field name="risk_group"/>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>
