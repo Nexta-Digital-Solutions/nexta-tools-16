@@ -18,5 +18,10 @@ class AccountMove(models.Model):
             "partner_bank_id",
         ]
 
+    @api.model
+    def _get_first_invoice_fields(self, invoice):
+        res = super(AccountMove, self)._get_first_invoice_fields(invoice)
+        res.pop("user_id", None)
 
+        return res
 
