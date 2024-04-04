@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
+<!--NO FUNCIONA, hay que darle una vuelta-->
     <record id="product_template_form_view_service_to_purchase_nds" model="ir.ui.view">
         <field name="name">product.template.form.service.to.purchase.nds</field>
         <field name="model">product.template</field>
