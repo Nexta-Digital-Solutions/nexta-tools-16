@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+# (c) 2024 Nexta - Jaume Basiero <jbasiero@nextads.es>
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+-->
+<odoo>
+    <record id="product_template_form_view_sale_project_nds" model="ir.ui.view">
+        <field name="name">product.template.sale.project.nds</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="sale_project.product_template_form_view_invoice_policy_inherit_sale_project"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='service_tracking']" position="attributes">
+                <attribute name="attrs"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
