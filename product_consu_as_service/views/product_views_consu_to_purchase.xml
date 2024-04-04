@@ -6,7 +6,7 @@
         <field name="model">product.template</field>
         <field name="inherit_id" ref="sale_purchase.product_template_form_view_inherit"/>
         <field name="arch" type="xml">
-            <xpath expr="//group[@string='Reordering']" position="replace">
+            <xpath expr="//group[1]" position="replace">
 <!--                <group string="Reordering" attrs="{'invisible': [('type','!=','service')]}">-->
                 <group string="Reordering">
                     <field name="service_to_purchase"/>
