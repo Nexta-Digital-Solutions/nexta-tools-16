@@ -19,7 +19,7 @@
                 'sale_project',
                 'project',
                 'sale_purchase',
-                'puchase',
+                'purchase',
     ],
 
     'data': [
