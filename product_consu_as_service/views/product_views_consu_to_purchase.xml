@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-<!--NO FUNCIONA, hay que darle una vuelta-->
+    <!--NO FUNCIONA, hay que darle una vuelta-->
     <record id="product_template_form_view_service_to_purchase_nds" model="ir.ui.view">
         <field name="name">product.template.form.service.to.purchase.nds</field>
         <field name="model">product.template</field>
         <field name="inherit_id" ref="sale_purchase.product_template_form_view_inherit"/>
         <field name="arch" type="xml">
-            <xpath expr="//page[@name='purchase']//group[@name='purchase']//group" position="replace">
-<!--                <group string="Reordering" attrs="{'invisible': [('type','!=','service')]}">-->
+            <xpath expr="//page[@name='purchase']//group[@name='purchase']//group[1]" position="replace">
+                <!--                <group string="Reordering" attrs="{'invisible': [('type','!=','service')]}">-->
                 <group string="Reordering">
-                    <field name="service_to_purchase"/>
+                    <div class="o_td_label d-inline-flex">
+                        <label for="service_to_purchase"/>
+                        <field name="service_to_purchase"/>
+                        <span class="fa fa-lg fa-building-o fa-fw" title="Service to Purchase"/>
+                    </div>
                 </group>
             </xpath>
         </field>
