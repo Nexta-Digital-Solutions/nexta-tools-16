@@ -19,7 +19,6 @@
                 'sale_project',
                 'project',
                 'sale_purchase',
-                'purchase',
     ],
 
     'data': [
