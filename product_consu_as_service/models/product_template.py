@@ -16,7 +16,7 @@ class ProductTemplate(models.Model):
                     raise ValidationError(_("Product that is not a service can not create RFQ."))
                 template._check_vendor_for_service_to_purchase(template.seller_ids)
 
-    # @api.onchange('type', 'expense_policy')
-    # def _onchange_service_to_purchase(self):
-    #     products_template = self.filtered(lambda p: p.type != 'service' or p.expense_policy != 'no')
-    #     products_template.service_to_purchase = False
+    @api.onchange('type', 'expense_policy')
+    def _onchange_service_to_purchase(self):
+        products_template = self.filtered(lambda p: p.type == 'product' or p.expense_policy != 'no')
+        products_template.service_to_purchase = False
