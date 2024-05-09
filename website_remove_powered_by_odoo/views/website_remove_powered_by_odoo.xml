@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <template id="brand_promotion_message_hide" inherit_id="web.brand_promotion_message">
+            <xpath expr="//t[@t-set='odoo_logo']" position="replace" />
+            <xpath expr="//t[@t-set='final_message']" position="replace" />
+            <xpath expr="//t[@t-out]" position="replace" />
+        </template>
+    </data>
+</openerp>
