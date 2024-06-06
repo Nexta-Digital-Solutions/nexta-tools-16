@@ -3,6 +3,7 @@
     <data>
 <!--        Así puedo montar donde yo quiera una etiqueta para imprimir con el nombre que le indico -->
         <record id="paperformat_albaran" model="report.paperformat">
+
             <field name="name">Albaran A4</field>
             <field name="default" eval="True" />
             <field name="format">A4</field>
@@ -16,6 +17,7 @@
             <field name="header_line" eval="False" />
             <field name="header_spacing">35</field>
             <field name="dpi">90</field>
+
         </record>
 
         <record id="report_deliveryslip_document_albaran_action" model="ir.actions.report">

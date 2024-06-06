@@ -33,8 +33,5 @@
         'report/paperformat_albaran_report.xml',
 
     ],
-    'css': [
-        'static/src/css/report_style.css',
-    ],
 
 }
