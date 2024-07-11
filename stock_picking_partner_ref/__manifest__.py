@@ -12,7 +12,7 @@
     'author': "NextaDS",
     'website': "https://www.nextads.es",
     'category': 'Stock',
-    'version': '0.0.0.6',
+    'version': '16.0.0.7',
     'license': "LGPL-3",
     'depends': [
         'purchase',
