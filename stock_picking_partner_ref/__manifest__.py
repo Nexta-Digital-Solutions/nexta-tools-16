@@ -20,7 +20,7 @@
         'stock_picking_invoice_link',
         'account',
         'purchase_stock_picking_invoice_link',
-        'picking_create_invoice',
+        # 'picking_create_invoice',
         'account_invoice_merge',
 
     ],

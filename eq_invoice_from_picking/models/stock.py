@@ -155,7 +155,8 @@ class wizard_stock_picking_invoice(models.TransientModel):
                 if picking.purchase_id:
                     user_id = picking.purchase_id.user_id.id or False
                 key = (picking.get_picking_invoice_partner(), picking.company_id.id, user_id)
-                invoice_vals = picking.with_context(journal_id=self.journal_id.id, invoice_date=self.invoice_date, invoice_type=self.invoice_type, user_id=user_id)._prepare_invoice()
+                invoice_vals = picking.with_context(journal_id=self.journal_id.id, invoice_date=self.invoice_date,
+                invoice_type=self.invoice_type, user_id=user_id)._prepare_invoice()
                 if key not in invoice_lst:
                     invoice_id = self.env['account.move'].with_context(default_type=self.invoice_type).create(invoice_vals)
                     invoice_lst[key] = invoice_id
