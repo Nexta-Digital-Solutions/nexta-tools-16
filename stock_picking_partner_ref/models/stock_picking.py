@@ -8,5 +8,5 @@ from odoo import models, fields, api, _
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
-    partner_ref = fields.Char(string="Albarán de proveedor", required=False, related="purchase_id.partner_ref", readonly="False")
+    partner_ref = fields.Char(string="Albarán de proveedor", required=False)
     picking_partner = fields.Many2one(comodel_name="stock.move", string="Cliente", required=False,)
