@@ -7,8 +7,8 @@ class AccountPaymentRegister(models.TransientModel):
 
     def _create_payment_vals_from_batch(self, batch_result):
         res = super(AccountPaymentRegister,self)._create_payment_vals_from_batch(batch_result)
-        if batch_result.get('lines') and batch_result.get('lines').date_maturity:
-            date = batch_result.get('lines').date_maturity
+        if batch_result.get('lines') and batch_result.get('lines')[0].date_maturity:
+            date = batch_result.get('lines')[0].date_maturity
 
             res['date'] = date
 

@@ -6,7 +6,7 @@
     'author': "NextaDS",
     'website': "https://www.nextads.es",
     'category': 'Uncategorized',
-    'version': '15.0.0.1',
+    'version': '16.0.0.1',
     'license': "LGPL-3",
     'depends': [
         'account',

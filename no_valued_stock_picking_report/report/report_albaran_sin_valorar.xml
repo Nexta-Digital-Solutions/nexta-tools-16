@@ -113,10 +113,10 @@
                                                     </p>
                                                 </t>
                                             </td>
-                                            <td>
+                                            <td name="td_product_qty">
                                                 <span t-field="move.product_uom_qty"/>
                                             </td>
-                                            <td>
+                                            <td name="td_product_qty_done">
                                                 <span t-field="move.quantity_done"/>
                                             </td>
                                         </tr>

@@ -87,8 +87,7 @@ class AccountMove(models.Model):
                     client_refs.add(account_invoice.payment_reference)
 
                 if (
-                        account_invoice.partner_ref
-                        and account_invoice.partner_ref
+                        account_invoice.partner_ref and account_invoice.partner_ref
                 ):
                     invoice_infos["partner_ref"] = invoice_infos.get("partner_ref") + ", " + str(account_invoice.partner_ref)
 
