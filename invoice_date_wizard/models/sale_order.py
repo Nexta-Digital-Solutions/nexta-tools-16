@@ -72,7 +72,8 @@ class SaleOrder(models.Model):
             invoice_vals_list = sorted(
                 invoice_vals_list,
                 key=lambda x: [
-                    x.get(grouping_key) for grouping_key in invoice_grouping_keys
+                    x.get(grouping_key, 0) or 0
+                    for grouping_key in invoice_grouping_keys
                 ]
             )
             for grouping_keys, invoices in groupby(invoice_vals_list, key=lambda x: [x.get(grouping_key) for grouping_key in invoice_grouping_keys]):
