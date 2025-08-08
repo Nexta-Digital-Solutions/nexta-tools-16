@@ -34,10 +34,27 @@ class AccountMove(models.Model):
             if new_invoice_date_due != self.invoice_date_due:
                 self.invoice_date_due = new_invoice_date_due
 
+
+    # ORIGINAL: el metodo original retorna directamente false, pero los modulos de riesgos agregan el return del act window informando
+    # riesgo excedido (si es el caso) y permite cancelar o continuar haciendo el post, asi que aqui ya no se puede retornar False
+    # def action_post(self):
+    #     """Inject a context for getting the partner when computing payment term."""
+    #     for move in self:
+    #         super(
+    #             AccountMove, self.with_context(move_partner_id=move.partner_id.id)
+    #         ).action_post()
+    #     return False
+
+
+    # NUEVO: considera un posible return y lo devuelve, de esta manera si es el caso se muestra el popup de riesgo excedido
+    # permitiendo cancelar o hacer el post efectivamente
     def action_post(self):
         """Inject a context for getting the partner when computing payment term."""
+        ret = False
         for move in self:
-            super(
+            r = super(
                 AccountMove, self.with_context(move_partner_id=move.partner_id.id)
             ).action_post()
-        return False
+            if not ret and r:
+                ret = r
+        return ret
