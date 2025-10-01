@@ -1,0 +1,86 @@
+<odoo>
+    <!-- Acción para abrir el wizard de ayuda -->
+    <record id="verifactu_help_wizard_action" model="ir.actions.act_window">
+        <field name="name">Ayuda VeriFactu</field>
+        <field name="res_model">verifactu.help.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <record id="verifactu_endpoint_config_form_view" model="ir.ui.view">
+        <field name="name">verifactu.endpoint.config.form</field>
+        <field name="model">verifactu.endpoint.config</field>
+        <field name="arch" type="xml">
+            <form string="Configuración VeriFactu" edit="true">
+                <sheet>
+                    <group>
+                        <group string="Configuración del Endpoint" col="2">
+                            <field name="endpoint_url" placeholder="https://www1.agenciatributaria.gob.es/wlpl/TIKE-CONT/ws/SistemaFacturacion/VerifactuSOAP"/>
+                            <field name="show_qr_always"/>
+                            <field name="auto_send_to_verifactu"/>
+                            <field name="cron_auto_send_enabled"/>
+                            <separator/>
+                            <div style="background-color: #f5f5f5; padding: 10px; border-radius: 5px; margin-bottom: 10px;width: 200%;">
+                                <p><b>🔗 Modo VeriFactu</b></p>
+                                <p><b>Producción:</b> https://www1.agenciatributaria.gob.es/wlpl/TIKE-CONT/ws/SistemaFacturacion/VerifactuSOAP</p>
+                                <p><b>Pruebas:</b> https://prewww1.aeat.es/wlpl/TIKE-CONT/ws/SistemaFacturacion/VerifactuSOAP</p>
+                            </div>
+
+                            <div style="background-color: #f5f5f5; padding: 10px; border-radius: 5px;width: 220%;">
+                                <p><b>🔗 Modo NO VeriFactu (Remisión bajo requerimiento)</b></p>
+                                <p><b>Producción:</b> https://www1.agenciatributaria.gob.es/wlpl/TIKE-CONT/ws/SistemaFacturacion/RequerimientoSOAP</p>
+                                <p><b>Pruebas:</b> https://prewww1.aeat.es/wlpl/TIKE-CONT/ws/SistemaFacturacion/RequerimientoSOAP</p>
+                            </div>
+                        </group>
+
+                        <group string="Certificado Digital" col="2">
+                            <field name="cert_password" password="True" placeholder="Contraseña del certificado"/>
+                            <field name="cert_pfx" filename="cert_pfx_filename" />
+                            <field name="cert_pfx_filename" readonly="1" />
+                        </group>
+
+                        <div class="o_form_label text-success" attrs="{'invisible': [('cert_pfx', '=', False)]}">
+                            ✅ Certificado cargado correctamente.
+                        </div>
+
+                        <!-- Botones con espaciado -->
+                        <div class="o_form_buttons">
+                            <button name="action_test_certificate"
+                                    type="object"
+                                    string="Probar certificado"
+                                    class="btn-primary"
+                                    attrs="{'invisible': [('cert_pfx', '=', False)]}"/>
+
+                        </div>
+                    </group>
+
+                    <separator string="¿Dudas sobre el módulo?" colspan="4"/>
+                    <div>
+                        <button name="%(verifactu_help_wizard_action)d"
+                                type="action"
+                                string="⚙️ Mostrar Ayuda del Módulo"
+                                class="btn btn-warning"
+                                context="{}"/>
+                    </div>
+                    <div style="color: #999; font-size: 12px; margin-top: 20px;">
+                        Módulo desarrollado por <strong>Juan Ormaechea</strong> — Mr. Rubik · <i>Versión licenciada. Redistribución prohibida.</i>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_verifactu_endpoint_config" model="ir.actions.act_window">
+        <field name="name">VeriFactu</field>
+        <field name="res_model">verifactu.endpoint.config</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="verifactu_endpoint_config_form_view"/>
+        <field name="target">current</field>
+    </record>
+
+    <menuitem id="menu_verifactu_main"
+              name="VeriFactu"
+              sequence="10"
+              parent="account.menu_finance"
+              action="action_verifactu_endpoint_config"/>
+</odoo>
