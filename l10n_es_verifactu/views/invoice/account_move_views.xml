@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+	<record id="view_move_form_verifactu" model="ir.ui.view">
+		<field name="name">account.move.verifactu.form</field>
+		<field name="model">account.move</field>
+		<field name="inherit_id" ref="account.view_move_form"/>
+		<field name="arch" type="xml">
+
+			<!-- Botón superior en el header -->
+			<xpath expr="//header" position="inside">
+				<button name="send_xml"
+						type="object"
+						string="Procesar VeriFactu"
+						class="btn-primary"
+						attrs="{'invisible': ['|', ('state', '!=', 'posted'), ('verifactu_status', '!=', 'pending')]}"/>
+				<button name="send_xml"
+						type="object"
+						string="Reenviar VeriFactu"
+						class="btn-primary"
+						icon="fa-tools"
+						attrs="{'invisible': ['|', ('state', '!=', 'posted'), '&amp;', ('verifactu_status', '!=', 'sent'), ('verifactu_status', '!=', 'accepted_with_errors'), ('verifactu_status', '!=', 'canceled')]}"/>
+				<button name="send_xml"
+						type="object"
+						string="Subsanar VeriFactu"
+						class="btn-primary"
+						icon="fa-tools"
+						attrs="{'invisible': ['|', ('state', '!=', 'posted'), '&amp;', ('verifactu_status', '!=', 'error'), ('verifactu_status', '!=', 'rejected')]}"/>
+
+			</xpath>
+
+			<!-- Pestaña adicional para VeriFactu -->
+			<xpath expr="//sheet/notebook" position="inside">
+				<page string="VeriFactu">
+				<group>
+					<field name="verifactu_sent" readonly="1"/>
+					<field name="verifactu_sent_with_errors" readonly="1"/>
+					<field name="verifactu_status" readonly="1"/>
+					<field name="verifactu_hash" readonly="1"/>
+					<field name="verifactu_previous_hash" readonly="1"/>
+					<field name="verifactu_processed" attrs="{'invisible': True}"/>
+					<field name="verifactu_is_active" attrs="{'invisible': True}"/>
+					<field name="anomaly_cron_enabled" attrs="{'invisible': True}"/>
+					<field name="verifactu_generated" attrs="{'invisible': True}"/>
+					<field name="verifactu_qr_url" widget="url" attrs="{'invisible': [('verifactu_qr_url', '=', False)]}"/>
+
+					<separator string="Descargar Archivos VeriFactu"/>
+					<div class="btn-group1" style="display: inline-flex; gap: 10px;">
+						<button name="open_verifactu_xml"
+								type="object"
+								string="Descargar XML VeriFactu"
+								class="btn-secondary1"
+								icon="fa-download"
+								style="white-space: nowrap; padding: 8px 16px; min-width: 180px;"
+								attrs="{'invisible': [('verifactu_generated', '=', False)]}"/>
+
+						<button name="open_verifactu_soap_xml"
+								type="object"
+								string="Descargar XML SOAP VeriFactu"
+								class="btn-secondary"
+								icon="fa-download"
+								style="white-space: nowrap; padding: 8px 16px; min-width: 180px;"
+								attrs="{'invisible': [('verifactu_generated', '=', False)]}"/>
+
+						<button name="open_verifactu_qr"
+								type="object"
+								string="Descargar QR VeriFactu"
+								class="btn-outline-secondary"
+								icon="fa-qrcode"
+								style="white-space: nowrap; padding: 8px 16px; min-width: 180px;"
+								attrs="{'invisible': [('verifactu_generated', '=', False)]}"/>
+					</div>
+
+
+					<separator string="Verificaciones"/>
+					<div class="btn-group" style="display: inline-flex; gap: 10px;">
+						<button name="verify_verifactu_hash"
+								type="object"
+								string="Verificar Hash"
+								class="btn-info"
+								style="white-space: nowrap; padding: 8px 16px; min-width: 180px;"
+								icon="fa-check-circle"/>
+						<button name="verify_verifactu_signature"
+								type="object"
+								string="Verificar Firma Electrónica"
+								class="btn-success"
+								style="white-space: nowrap; padding: 8px 16px; min-width: 180px;"
+								icon="fa-key"/>
+						<button name="detect_anomalies"
+								type="object"
+								string="Verificar Integridad"
+								class="btn-warning"
+								style="white-space: nowrap; padding: 8px 16px; min-width: 180px;"
+								icon="fa-shield-alt"/>
+						<button name="verify_chain"
+								type="object"
+								style="white-space: nowrap; padding: 8px 16px; min-width: 180px;"
+								string="Comprobar Encadenamiento"
+								class="btn-dark"
+								icon="fa-link"/>
+					</div>
+
+					<separator string="Registros de Eventos VeriFactu"/>
+					<div class="btn-group" style="display: inline-flex; gap: 10px;">
+						<button name="open_requirement_wizard"
+								type="object"
+								string="Iniciar NO VERI*FACTU"
+								class="btn-danger"
+								icon="fa-power-off"
+								style="white-space: nowrap; padding: 8px 16px; min-width: 180px;"
+								attrs="{'invisible': [('verifactu_is_active', '=', False)]}"/>
+
+						<button name="stop_no_verifactu_mode"
+								type="object"
+								string="Finalizar NO VERI*FACTU"
+								class="btn-danger"
+								style="white-space: nowrap; padding: 8px 16px; min-width: 180px;"
+								icon="fa-power-off"
+								attrs="{'invisible': [('verifactu_is_active', '=', True)]}"/>
+
+						<button name="toggle_anomaly_cron"
+								type="object"
+								string="Activar Detección anomalias"
+								class="btn-warning"
+								icon="fa-play"
+								style="white-space: nowrap; padding: 8px 16px; min-width: 180px;"
+								attrs="{'invisible': [('anomaly_cron_enabled', '=', True)]}"/>
+
+						<button name="toggle_anomaly_cron"
+								type="object"
+								string="Desactivar Detección anomalias"
+								class="btn-secondary"
+								style="white-space: nowrap; padding: 8px 16px; min-width: 180px;"
+								icon="fa-stop"
+								attrs="{'invisible': [('anomaly_cron_enabled', '=', False)]}"/>
+
+						<button name="export_event_records"
+								type="object"
+								string="Exportar Registros de Eventos"
+								class="btn-info"
+								style="white-space: nowrap; padding: 8px 16px; min-width: 180px;"
+								icon="fa-download"/>
+
+						<button name="log_backup_restore"
+								type="object"
+								style="white-space: nowrap; padding: 8px 16px; min-width: 180px;"
+								string="Restaurar desde Copia de Seguridad"
+								class="btn-outline-secondary"
+								icon="fa-undo"/>
+					</div>
+
+					<separator string="Historial de Eventos"/>
+					<field name="verifactu_event_logs" widget="many2many_tags" readonly="1"/>
+
+					<separator string="Gestión de Errores" attrs="{'invisible': ['&amp;', '&amp;', ('verifactu_status', '!=', 'error'), ('verifactu_status', '!=', 'rejected'), ('verifactu_status', '!=', 'accepted_with_errors')]}"/>
+					<div class="btn-group" style="display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-start; width: max-content;">
+						<button name="view_verifactu_error"
+							type="object"
+							style="white-space: nowrap; padding: 8px 16px; min-width: 180px;"
+							string="Ver Error en detalle"
+							class="btn-warning"
+							icon="fa-exclamation-circle"
+							attrs="{'invisible': ['&amp;', '&amp;', ('verifactu_status', '!=', 'error'), ('verifactu_status', '!=', 'rejected'), ('verifactu_status', '!=', 'accepted_with_errors')]}"/>
+
+						<button name="open_error_wizard"
+							type="object"
+							style="white-space: nowrap; padding: 8px 16px; min-width: 180px;"
+							string="Ver códigos de error"
+							class="oe_highlight"
+							attrs="{'invisible': ['&amp;', '&amp;', ('verifactu_status', '!=', 'error'), ('verifactu_status', '!=', 'rejected'), ('verifactu_status', '!=', 'accepted_with_errors')]}"/>
+					</div>
+
+					<separator string="Histórico de Estados VeriFactu"/>
+						<field name="verifactu_status_logs">
+							<tree readonly="1">
+								<field name="date"/>
+								<field name="status"/>
+								<field name="user_id"/>
+							</tree>
+						</field>
+
+					<separator string="Anulación"/>
+					<div class="btn-group" style="display: inline-flex; gap: 10px;">
+						<button name="generate_verifactu_anulacion"
+								type="object"
+								style="white-space: nowrap; padding: 8px 16px; min-width: 180px;"
+								string="Anular Factura VeriFactu"
+								class="btn-danger"
+								icon="fa-times-circle"/>
+								
+					</div>
+				</group>
+				</page>
+			</xpath>
+		</field>
+	</record>
+</odoo>
