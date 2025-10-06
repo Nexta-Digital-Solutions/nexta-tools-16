@@ -1,6 +1,6 @@
 <odoo>
     <template id="invoice_qr_above_layout" inherit_id="account.report_invoice_document">
-        <xpath expr="//t[@t-call='web.external_layout']" position="before">
+        <xpath expr="//t[@t-set='information_block']" position="before">
             <t t-if="o.move_type in ('out_invoice', 'out_refund') and o.verifactu_qr_image">
                 <div style="margin: 10mm 0 5mm 0; text-align: left;">
                     <div style="font-weight: bold;">QR tributario:</div>
