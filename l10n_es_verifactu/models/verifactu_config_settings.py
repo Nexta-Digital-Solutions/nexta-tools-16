@@ -47,6 +47,9 @@ class VerifactuResConfigSettings(models.TransientModel):
     show_qr_always = fields.Boolean("Mostrar siempre el QR")
     auto_send_to_verifactu = fields.Boolean("Envío automático al validar")
     cron_auto_send_enabled = fields.Boolean("Activar envío periódico")
+    
+    # Campo temporal para evitar error de instalación
+    default_age_partner_config_id = fields.Many2one('res.partner', string="Partner Config (deprecated)")
 
     # El enmascarado va en la VISTA
     cert_password = fields.Char("Contraseña del certificado")
