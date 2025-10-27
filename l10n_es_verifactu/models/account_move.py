@@ -145,6 +145,23 @@ def _vf_reset_to_pending(inv):
 
 class AccountMove(models.Model):
     _inherit = "account.move"
+    
+        #VARIABLES CRON
+    verifactu_processing = fields.Boolean(
+        string="Procesando VeriFactu",
+        default=False,
+        help="Marcado por el CRON/worker para evitar dobles envíos en paralelo."
+    )
+    verifactu_last_try = fields.Datetime(
+        string="Último intento de envío VeriFactu",
+        help="Fecha/hora del último intento de envío (lo actualiza CRON/worker)."
+    )
+    verifactu_retry_count = fields.Integer(
+        string="Reintentos VeriFactu",
+        default=0,
+        help="Número de reintentos realizados (para backoff exponencial)."
+    )
+    
 
     verifactu_last_emisor_nif = fields.Char(readonly=True)
     verifactu_last_numero = fields.Char(readonly=True)
@@ -237,6 +254,11 @@ class AccountMove(models.Model):
         attachment=True,
     )
     
+    date_invoice_operation = fields.Date(
+        string="Fecha de Operación",
+        help="Indica la fecha en la que se realiza la operación económica real si es distinta a la fecha de expedición.",
+    )
+    
     verifactu_dev_hash = fields.Char(string='Verifactu Hash Dev', default='mrrubik:vf-v1.3.20250611', readonly=True)
     
     verifactu_hash = fields.Char(string="Hash VeriFactu", readonly=True)
@@ -266,6 +288,66 @@ class AccountMove(models.Model):
         compute="_compute_show_qr_always",
         store=False  # o True si te interesa indexarlo
     )
+    
+    
+    def copy(self, default=None):
+        """Evita que al duplicar se copien los datos VeriFactu."""
+        default = dict(default or {})
+
+        default.update({
+            "verifactu_status": "pending",
+            "verifactu_sent": False,
+            "verifactu_sent_with_errors": False,
+            "verifactu_generated": False,
+            "verifactu_processed": False,
+            "verifactu_processing": False,
+            "verifactu_retry_count": 0,
+            "verifactu_hash": False,
+            "verifactu_previous_hash": False,
+            "verifactu_qr": False,
+            "verifactu_qr_image": False,
+            "verifactu_soap_xml": False,
+            "verifactu_detailed_error_msg": False,
+            "verifactu_error_msg": False,
+            "verifactu_requerimiento": False,
+            "verifactu_event_logs": [(5, 0, 0)],
+            "verifactu_status_logs": [(5, 0, 0)],
+            "verifactu_hash_calculated_at": False,
+            "verifactu_date_sent": False,
+            "verifactu_issued_at": False,
+            "verifactu_last_emisor_nif": False,
+            "verifactu_last_numero": False,
+            "verifactu_last_fecha": False,
+            "verifactu_last_tipo": False,
+            "verifactu_is_active": True,
+            "anomaly_cron_enabled": False,
+        })
+        return super(type(self), self).copy(default)
+
+
+        
+
+
+    def button_cancel(self):
+        """Intercepta el botón Cancelar (todas las versiones Odoo 10–18)."""
+        for move in self:
+            status = getattr(move, "verifactu_status", None)
+            if status in ("sent", "accepted_with_errors"):
+                raise UserError(_(
+                    "Esta factura ya fue registrada en VeriFactu. "
+                    "Antes de cancelarla debes anularla."
+                ))
+
+        # Compatibilidad con métodos internos según versión
+        if hasattr(super(AccountMove, self), "button_cancel"):
+            return super(AccountMove, self).button_cancel()
+        elif hasattr(super(AccountMove, self), "action_cancel"):
+            return super(AccountMove, self).action_cancel()
+        elif hasattr(super(AccountMove, self), "action_invoice_cancel"):
+            return super(AccountMove, self).action_invoice_cancel()
+        else:
+            return True
+
 
     @api.depends("company_id")
     def _compute_show_qr_always(self):
@@ -277,13 +359,26 @@ class AccountMove(models.Model):
        
 
     
-    def _log_verifactu_status(self, status, notes=""):
+    def _log_verifactu_status(self, status, code=None, notes=""):
+        """Registra un nuevo estado VeriFactu en el historial."""
         self.ensure_one()
-        self.env["verifactu.status.log"].create({
+
+        vals = {
             "invoice_id": self.id,
             "status": status,
-            "notes": notes,
-        })
+            "date": getattr(self, "verifactu_hash_calculated_at", False) or fields.Datetime.now(),
+            "hash_actual": getattr(self, "verifactu_hash", None),
+            "hash_previo": getattr(self, "verifactu_previous_hash", None),
+            "notes": notes or "",
+        }
+
+        # Solo añadimos si existen en el modelo
+        if "aeat_code" in self.env["verifactu.status.log"]._fields:
+            vals["aeat_code"] = code or None
+        if "xml_soap" in self.env["verifactu.status.log"]._fields:
+            vals["xml_soap"] = getattr(self, "verifactu_soap_xml", None)
+
+        self.env["verifactu.status.log"].sudo().create(vals)
 
 
     @api.depends('invoice_line_ids', 'invoice_line_ids.product_id', 'invoice_line_ids.quantity')
@@ -391,6 +486,21 @@ class AccountMove(models.Model):
             if _vf_get_move_type(inv) not in ("out_invoice", "out_refund"):
                 continue
             if inv.state != "posted":
+                continue
+            
+            # ───────────────────────────────
+            # (2) Diario con VeriFactu deshabilitado → se omite
+            # ───────────────────────────────
+            journal = getattr(inv, "journal_id", False)
+            if journal and not getattr(journal, "verifactu_enabled", True):
+                try:
+                    from ..verifactu.services.logger import VerifactuLogger
+                    VerifactuLogger(inv).log(
+                        "ℹ️ Diario '%s' sin envío VeriFactu habilitado. Se omite." % journal.name
+                    )
+                except Exception:
+                    pass
+                # No se genera QR ni se envía ni se calcula hash
                 continue
 
             # (1) Detectar cambio de IDFactura vs snapshot → reset a 'pending'
@@ -588,32 +698,6 @@ class AccountMove(models.Model):
         else:
             detector.enable_cron()
             
-    @api.model
-    def cron_send_pending_verifactu(self):
-        
-
-        for company in self.env['res.company'].search([]):
-            
-            config = self.env['verifactu.endpoint.config'].sudo().search([
-                ('company_id', '=', company.id)
-            ], limit=1)
-            _logger.info(f"[VeriFactu][{company.name}] Cron ejecutado. Config activa: {bool(config)}. Envío automático activo: {bool(config.auto_send_to_verifactu)}")
-
-
-            invoices = self.with_company(company).sudo().search([
-                ('company_id', '=', company.id),
-                ('state', '=', 'posted'),
-                ('move_type', 'in', ('out_invoice', 'out_refund')),
-                ('verifactu_status', 'in', ['pending', 'error']),
-                ('verifactu_generated', '=', True),
-            ], limit=5, order='invoice_date asc, id asc')
-
-            for invoice in invoices:
-                try:
-                    invoice.send_xml()
-                except Exception as e:
-                    _logger.warning(f"[VeriFactu][{company.name}] Error al enviar {invoice.name}: {e}")
-
     @api.depends()
     def _compute_anomaly_cron_enabled(self):
         # Detecta si el CRON está activo

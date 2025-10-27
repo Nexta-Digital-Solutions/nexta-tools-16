@@ -1,16 +1,16 @@
 {
-    "name": "VeriFactu - Integración con la AEAT (España)",
+    "name": "Veri*Factu - Integración con la AEAT (España)",
     "id":"l10n_es_verifactu",
-    "version": "2.0.3",
+    "version": "2.0.8",
     "author": "Mr Rubik",
     "maintainer": "Mr Rubik",
     "website": "https://www.mrrubik.com",
     "price": 270,
     "currency": "USD",
     "category": "Accounting",
-    "summary": "Integración técnica con AEAT mediante VeriFactu para facturas electrónicas .",
+    "summary": "Integración técnica con AEAT mediante Veri*Factu para facturas electrónicas .",
     "description": """
-Este módulo permite enviar facturas electrónicas a la AEAT siguiendo el esquema técnico de VeriFactu, conforme a la normativa española vigente.
+Este módulo permite enviar facturas electrónicas a la AEAT siguiendo el esquema técnico de Veri*Factu, conforme a la normativa española vigente.
 
 Genera un XML estructurado, lo firma digitalmente, lo adjunta a la factura y gestiona el envío a la Agencia Tributaria, registrando el estado, errores y reintentos si es necesario.
 
@@ -24,6 +24,7 @@ Este módulo cumple con los requisitos técnicos establecidos por la AEAT en el 
     "data": [
         'data/ir_cron.xml',
         'data/ir_cron_verifactu.xml',
+        'data/verifactu_cron_daily.xml',
         "security/ir.model.access.csv",
         "views/invoice/account_move_views.xml",
         "views/wizards/no_verifactu_requirement_wizard.xml",

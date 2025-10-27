@@ -1,6 +1,154 @@
 # Changelog - VeriFactu
-Todas las notas de cambios de este módulo. El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/) y [SemVer](https://semver.org/lang/es-ES/).
+Todas las notas de cambios de este módulo.  
+El formato sigue Keep a Changelog (https://keepachangelog.com/es-ES/1.0.0/) y SemVer (https://semver.org/lang/es-ES/).
 
+## [2.0.8] - 2025-10-08
+### Añadido
+- Nuevo modelo `verifactu.status.log` para registrar el histórico completo de cambios de estado de cada factura VeriFactu.
+  - Guarda usuario, fecha, notas, hash actual, hash previo y código AEAT devuelto.
+  - Incluye copia del XML SOAP enviado o generado por la AEAT.
+  - Compatible con versiones Odoo 10 → 18 (sin romper en entornos antiguos).
+- Campo `aeat_code` para almacenar el código de respuesta devuelto por la AEAT (ej. 2000, 4102, 3000…).
+- Campo `xml_soap` para conservar la evidencia técnica del envío en formato binario.
+
+### Mejorado
+- Sistema de verificación de integridad (`VerifactuHashVerifier`) totalmente reescrito:
+  - Verifica que el hash calculado coincida con el último hash ENVIADO registrado en logs.
+  - Comprueba la continuidad de la cadena (`prev_hash` vs hash anterior real).
+  - Permite encadenamientos alternativos válidos (subsanaciones o anulaciones).
+  - Muestra resultados legibles en el chatter, con formato HTML claro y un único mensaje.
+- El verificador ahora usa notificaciones visuales (`notify_success` / `notify_warning`) sin duplicar logs en el chatter.
+- Mensajes más limpios y estructurados en los resultados de integridad (sin triplicación).
+
+### Corregido
+- Eliminados los mensajes duplicados en el chatter durante la verificación de cadena.
+- Resuelto error de compatibilidad por `lambda self` en `fields.Selection` (no soportado en Odoo 10–12).
+- Sustituido `fields.Datetime.now` por `lambda self: fields.Datetime.now()` para compatibilidad universal.
+
+### Técnico
+- Refactor general del código de verificación y trazabilidad.
+- Estandarización del estilo de código y comentarios (bloques “──────────”).
+- Preparado para extensión futura: sincronización automática del histórico con AEAT o backups externos.
+
+---
+
+
+## [2.0.7] - 2025-10-08
+
+### Added
+- Sección **“Automatizaciones”** en *Ajustes → Veri*Factu* (misma tarjeta):
+  - Activación de envío periódico por `cron` → campo `cron_auto_send_enabled`.
+  - Parámetros editables: `cron_batch_size`, `retry_backoff_min`, `retry_backoff_cap_min`, `request_min_interval_sec`.
+- **Envío diario a hora fija**:
+  - Campos `daily_auto_send_enabled` y `daily_send_time (HH:MM)`.
+  - Nuevo `ir.cron` diario que reutiliza el servicio de envío.
+- **Servicio universal de CRON** `verifactu.cron.service` (Odoo 10 → 18):
+  - *Advisory lock* PostgreSQL para evitar solapes.
+  - Backoff exponencial con *jitter* y **cap** por factura.
+  - **Circuit breaker** por compañía.
+  - **Watchdog** que libera `verifactu_processing` atascados.
+  - **Rate-limit por compañía** (marca `verifactu.last_send_ts.<company_id>` en `ir.config_parameter`).
+  - Procesado con *savepoint* por factura y `commit` fuera del *savepoint*.
+- Controles de **certificado** en ajustes:
+  - Subida `cert_pfx`, `cert_password`, botón **“Probar certificado”**.
+- Bloque de **Licencia**:
+  - Campos `verifactu_license_key`, `verifactu_license_token_display`, estado y acciones **emitir/validar** token (JWT).
+- **Declaración Responsable**:
+  - Subida/descarga del PDF desde ajustes (`verifactu_declaracion_file`, `action_download_declaracion`).
+
+### Changed
+- Compatibilidad ampliada **Odoo 10 → 18**:
+  - Detección dinámica de dominio ventas usando `move_type` (v13+) o `type` (v10–12).
+  - Entorno por compañía con `api.Environment(cr, SUPERUSER_ID, ctx)` usando `force_company` + `allowed_company_ids`.
+  - Escrituras con contexto limpio para evitar *warnings* del chatter: `tracking_disable` / `mail_notrack`.
+- Reorganizada la vista: la configuración de `cron` queda bajo el H2 **Automatizaciones** en el mismo bloque del módulo.
+
+### Fixed
+- Eliminado el *warning*: `Context key 'force_company' is no longer supported…` en flujos de chatter/escritura.
+- Evitado error de *savepoint* liberado: `commit` se realiza **fuera** del *savepoint*.
+- Fallback del dominio cuando no existen `type`/`move_type`.
+- Manejo seguro de transacciones y reintentos (`verifactu_retry_count`, `verifactu_last_try`).
+
+### Notas de migración
+- No se requieren cambios en `account.move` si ya existen:
+  - `verifactu_generated`, `verifactu_status`, `verifactu_processing`, `verifactu_retry_count`, `verifactu_last_try`
+  - y el método `send_xml()`.
+- Tras actualizar:
+  1. Revisa **Ajustes → Veri*Factu → Automatizaciones** y activa lo necesario.
+  2. Comprueba la hora en **Envío diario** si usas el cron diario.
+  3. Verifica el certificado y licencia desde los botones de la vista.
+EOF
+
+
+## [2.0.6] - 2025-10-08
+
+### Added
+- Controlador universal `/verifactu/download_qr/<id>` compatible con Odoo 10 → 18.  
+  - Soporte para `account.invoice` (v10–12) y `account.move` (v13+).  
+  - Recupera la URL persistida `verifactu_qr_url` o la regenera dinámicamente mediante `VerifactuQRContentGenerator`.  
+  - Fallback automático a la URL AEAT basada en el hash truncado si no existe URL válida.  
+  - Generación del QR en memoria y descarga directa en formato PNG.  
+  - Limpieza de nombres de archivo para evitar caracteres no válidos.
+  
+- Integración del mixin `verifactu.qr.url.mixin` para almacenar y regenerar la URL del QR AEAT.  
+  - Métodos `action_open_verifactu_qr_url` y `action_regenerate_verifactu_qr_url` disponibles en factura.  
+  - Invocación automática tras `action_post()` (Odoo 13+) o `action_invoice_open()` (Odoo 11–12).  
+
+- Compatibilidad ampliada de todos los componentes VeriFactu (XML Builder, Hash Calculator, Sender, Controller) con Odoo 10 → 18.
+
+### Fixed
+- Error 2000 (“El cálculo de la huella suministrada es incorrecta”) solucionado:  
+  - Se unifica la lógica entre el cálculo de huella y la estructura XML, garantizando coincidencia exacta con la AEAT.  
+  - Manejo correcto del encadenamiento (`Encadenamiento`) y del campo `PrimerRegistro`.  
+
+- Corrección del error `AttributeError: 'bool' object has no attribute 'decode'` en la plantilla `web.external_layout_standard`.  
+  - Ahora se utiliza `image_data_uri()` para incrustar imágenes QR sin decodificación manual.
+
+### Changed
+- Refactor en la inserción del nodo `Encadenamiento` dentro del XML para reflejar correctamente el estado de la cadena:  
+  - `Huella` incluida solo si existe hash anterior válido.  
+  - `PrimerRegistro` solo si no hay encadenamiento previo.
+
+- Actualización de logs y mensajes informativos durante el cálculo y envío a la AEAT para mejorar trazabilidad y depuración.
+
+
+## [2.0.4] - 2025-10-02
+### Added
+- Compatibilidad completa **Odoo 10 → 18** en todos los builders (normal, no-verifactu, subsanación y anulación): campos `name/number`, `invoice_date/date_invoice/date`, `tax_ids/invoice_line_tax_ids`, `move_type/type`.
+- **Snapshot del IDFactura** enviado (`verifactu_last_*`) y **preflight reset** automático si cambia (fuerza envío como nuevo).
+- Inclusión de **URI de referencia** en firmas cuando el signer lo soporta (atributo `Id` en nodos firmados).
+- Heurística de **parseo de respuesta AEAT** basada en texto: *canceled*, *accepted_with_errors*, *error* (por código) y *sent*.
+- En mensajes de error, el *summary* ahora muestra **código y explicación** (faultstring) cuando estén disponibles.
+
+### Changed
+- Unificación de helpers de huella: `_iso_with_tz`, `_safe_str`, `_fmt_amount` y coacciones de fecha para alinear **cálculo de hash** y **XML**.
+- **`previous_hash`**: se deja vacío cuando no existe (no se usa `"SINHUELLA"`), y solo se genera nodo **Encadenamiento** si hay valor.
+- Totales (`CuotaTotal`, `ImporteTotal`) formateados con `_fmt_amount` (redondeo según moneda/2 decimales).
+- Builders:
+  - Emisor siempre desde `company_id` con **NIF normalizado**.
+  - Destinatario: prioriza NIF; si no hay, crea bloque **IDOtro** con validaciones.
+  - Desglose por **calificación** e **impuesto**, soporte de **recargo de equivalencia** y **BaseImponibleACoste** (régimen 06 y tipos F2/F3/R5).
+  - **Subsanación**: usa exactamente el mismo *timestamp* que el cálculo de huella y encadenamiento opcional.
+  - **No-Verifactu**: SOAP Envelope manteniendo cabecera de **Remisión por requerimiento**.
+  - **Anulación**: versión normal con atributo `Id` para el signer; versión no-verifactu con cabecera SOAP.
+- Sender:
+  - Lógica de estados simplificada:  
+    1) si texto contiene *anulad* ⇒ `canceled`  
+    2) si texto contiene *aceptad* y *error* ⇒ `accepted_with_errors`  
+    3) si hay **código** ⇒ `error` (siempre)  
+    4) si texto contiene *Correcto* ⇒ `sent`  
+    5) en otro caso ⇒ `error`
+  - Mensajería: guarda `verifactu_detailed_error_msg` solo si cambia.
+
+### Fixed
+- Caso en que la **huella anterior** terminaba grabándose como `False` en XML (encadenamiento) por coerciones; ahora se limpia correctamente.
+- **Desalineación** entre base string de hash y XML (fecha/huso, formato de importes, presencia de encadenamiento).
+- **Hash de anulación**: asegura timestamp y previous hash con misma fuente que alta.
+- Evita fallos en Odoo 10/11 donde `date_invoice` o `number` pueden ser **str**.
+
+### Notes
+- Si usas firmadores externos, asegúrate de que aceptan `reference_uri` (cuando se aporte `Id`); el código hace *fallback* a firma sin URI si no lo soporta.
+- Para depuración se recomienda habilitar `logger` en lugar de `print`.
 ## [2.0.3] - 2025-09-26
 ### Changed
 - XML de datos de adjunto (`ir.attachment`) normalizado para compatibilidad 10→18: añadido envoltorio `<odoo><data>…</data></odoo>`, y ruta del PDF externalizada en atributo `file` (carga base64).

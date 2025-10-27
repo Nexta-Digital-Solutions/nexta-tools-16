@@ -6,4 +6,5 @@ from . import verifactu_config_settings
 from . import verifactu_license
 from . import licen
 from . import _qr_url_mixin
-
+from . import cron
+from . import journal
