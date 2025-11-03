@@ -1,14 +1,16 @@
 <odoo>
   <template id="invoice_qr_below_logo" inherit_id="web.external_layout_standard">
-    <xpath expr="//img[contains(@t-att-src, 'company.logo')]" position="after">
-      <div style="text-align: center; margin-top: 5mm;">
-        <div style="font-weight: bold;">QR tributario:</div>
-        <img t-att-src="'data:image/png;base64,%s' % o.verifactu_qr_image.decode()"
-             style="width: 40mm; height: 40mm; border: 1px solid #ccc; padding: 5px; background-color: #fff;" />
-        <t t-if="o.verifactu_status not in ('error', 'rejected', 'pending')">
-          <div style="font-weight: bold;">VERI*FACTU</div>
-        </t>
-      </div>
-    </xpath>
+        <xpath expr="//t[@t-set='information_block']" position="before">
+            <t t-if="o.move_type in ('out_invoice', 'out_refund') and o.verifactu_qr_image">
+                <div style="margin: 10mm 0 5mm 0; text-align: left;">
+                    <div style="font-weight: bold;">QR tributario:</div>
+                    <img t-att-src="'data:image/png;base64,%s' % o.verifactu_qr_image.decode()" style="width:40mm; height:40mm; border: 1px solid #ccc; padding: 5px; background-color: #fff;"/>
+                    <t t-if="o.verifactu_status not in ('error', 'rejected', 'pending')">
+                        <div style="font-weight: bold;">VERI*FACTU</div>
+                    </t>
+                </div>
+            </t>
+        </xpath>
+        
   </template>
 </odoo>
