@@ -5,7 +5,7 @@
 import requests
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
-from odoo import _, models, fields, api
+from odoo import _, models, fields, api, SUPERUSER_ID
 from odoo.exceptions import UserError
 import hashlib
 import logging
@@ -20,31 +20,31 @@ from datetime import datetime, timedelta, timezone
 import re
 import platform
 import socket
-from ..verifactu.services.xml_builder.xml_builder import VerifactuXMLBuilder
-from ..verifactu.services.xml_signer import VerifactuXMLSigner
-from ..verifactu.services.attachment import VerifactuAttachmentService
-from ..verifactu.services.hash_calculator import VerifactuHashCalculator
-from ..verifactu.services.logger import VerifactuLogger
-from ..verifactu.services.show_notification import VerifactuNotifier
-from ..verifactu.services.xml_sender import VerifactuSender
-from ..verifactu.services.qr_content import VerifactuQRContentGenerator
-from ..verifactu.services.resender import VerifactuResender
-from ..verifactu.services.chain_verifier import VerifactuChainVerifier
-from ..verifactu.services.event_exporter import VerifactuEventExporter
-from ..verifactu.services.hash_verifier import VerifactuHashVerifier
-from ..verifactu.services.integrity_verifier import VerifactuIntegrityVerifier
-from ..verifactu.services.xml_builder.xml_builder_simple import VerifactuSimpleXMLBuilder
-from ..verifactu.services.anomaly_detector import VerifactuAnomalyDetector
-from ..verifactu.services.xml_builder.envelope_builder import VerifactuEnvelopeBuilder
-from ..verifactu.services.xml_builder.xml_builder_subsanacion import VerifactuXMLBuilderSubsanacion
-from ..verifactu.services.xml_builder.xml_builder_anulacion import VerifactuXMLBuilderAnulacion
-from ..verifactu.services.xml_builder.envelope_builder_anluacion import (
+from ...verifactu.services.xml_builder.xml_builder import VerifactuXMLBuilder
+from ...verifactu.services.xml_signer import VerifactuXMLSigner
+from ...verifactu.services.attachment import VerifactuAttachmentService
+from ...verifactu.services.hash_calculator import VerifactuHashCalculator
+from ...verifactu.services.logger import VerifactuLogger
+from ...verifactu.services.show_notification import VerifactuNotifier
+from ...verifactu.services.xml_sender import VerifactuSender
+from ...verifactu.services.qr_content import VerifactuQRContentGenerator
+from ...verifactu.services.resender import VerifactuResender
+from ...verifactu.services.chain_verifier import VerifactuChainVerifier
+from ...verifactu.services.event_exporter import VerifactuEventExporter
+from ...verifactu.services.hash_verifier import VerifactuHashVerifier
+from ...verifactu.services.integrity_verifier import VerifactuIntegrityVerifier
+from ...verifactu.services.xml_builder.xml_builder_simple import VerifactuSimpleXMLBuilder
+from ...verifactu.services.anomaly_detector import VerifactuAnomalyDetector
+from ...verifactu.services.xml_builder.envelope_builder import VerifactuEnvelopeBuilder
+from ...verifactu.services.xml_builder.xml_builder_subsanacion import VerifactuXMLBuilderSubsanacion
+from ...verifactu.services.xml_builder.xml_builder_anulacion import VerifactuXMLBuilderAnulacion
+from ...verifactu.services.xml_builder.envelope_builder_anluacion import (
     VerifactuEnvelopeBuilderAnulacion,
 )
-from ..verifactu.services.xml_builder.xml_builder_no_verifactu_subsanacion import VerifactuXMLBuilderNoVerifactuSubsanacion
-from ..verifactu.services.xml_builder.no_verifactu_xml_builder import VerifactuXMLBuilderNoVerifactu
-from ..verifactu.services.xml_builder.xml_builder_no_verifactu_anulacion import VerifactuXMLBuilderNoVerifactuAnulacion
-
+from ...verifactu.services.xml_builder.xml_builder_no_verifactu_subsanacion import VerifactuXMLBuilderNoVerifactuSubsanacion
+from ...verifactu.services.xml_builder.no_verifactu_xml_builder import VerifactuXMLBuilderNoVerifactu
+from ...verifactu.services.xml_builder.xml_builder_no_verifactu_anulacion import VerifactuXMLBuilderNoVerifactuAnulacion
+from .account_move_rectificativa_mixin import AccountMoveRectificativaMixin
 
 _logger = logging.getLogger(__name__)
 
@@ -76,7 +76,7 @@ def _vf_resolve_tipo_factura(inv):
     """Usa tu resolver si está disponible; fallback básico."""
     try:
         # Import local para no romper si no existe en esta base
-        from ..verifactu.utils.invoice_type_resolve import VerifactuTipoFacturaResolver
+        from ...verifactu.utils.invoice_type_resolve import VerifactuTipoFacturaResolver
         return VerifactuTipoFacturaResolver.resolve(inv)
     except Exception:
         mt = _vf_get_move_type(inv)
@@ -141,10 +141,55 @@ def _vf_reset_to_pending(inv):
     # Mantén verifactu_date_sent si quieres histórico; aquí no lo tocamos
     inv.sudo().with_context(check_move_validity=False).write(vals)
 
+def _vf_get_invoice_date(inv):
+    """Compat: devuelve la fecha de factura (v12: date_invoice, v13+: invoice_date)."""
+    return getattr(inv, 'invoice_date', False) or getattr(inv, 'date_invoice', False)
 
+
+def _vf_is_customer_doc(inv):
+    """Solo ventas y abonos de ventas."""
+    t = (_vf_get_move_type(inv) or '').strip()
+    return t in ('out_invoice', 'out_refund')
+
+def _vf_display_name(inv):
+    """Compat: un identificador entendible de la factura para mensajes."""
+    for attr in ('name', 'number', 'payment_reference', 'ref', 'reference'):
+        val = getattr(inv, attr, False)
+        if val:
+            return val
+    return str(inv.id)
+
+def _vf_is_posted_domain(model):
+    """
+    Compat: dominio para 'factura posteada'.
+    - v13+: state == 'posted'
+    - v12: state in ('open','paid')
+    """
+    if 'state' in model._fields:
+        # asumimos v13+ por defecto
+        return [('state', '=', 'posted')]
+    # fallback (v12)
+    return [('state', 'in', ('open', 'paid'))]
 
 class AccountMove(models.Model):
     _inherit = "account.move"
+    
+        #VARIABLES CRON
+    verifactu_processing = fields.Boolean(
+        string="Procesando VeriFactu",
+        default=False,
+        help="Marcado por el CRON/worker para evitar dobles envíos en paralelo."
+    )
+    verifactu_last_try = fields.Datetime(
+        string="Último intento de envío VeriFactu",
+        help="Fecha/hora del último intento de envío (lo actualiza CRON/worker)."
+    )
+    verifactu_retry_count = fields.Integer(
+        string="Reintentos VeriFactu",
+        default=0,
+        help="Número de reintentos realizados (para backoff exponencial)."
+    )
+    
 
     verifactu_last_emisor_nif = fields.Char(readonly=True)
     verifactu_last_numero = fields.Char(readonly=True)
@@ -158,12 +203,47 @@ class AccountMove(models.Model):
     verifactu_qr = fields.Binary(
         "QR VeriFactu", help="Código QR generado tras la validación VeriFactu."
     )
-
+    
     verifactu_is_active = fields.Boolean(
         string="VeriFactu Activo",
-        default=True,
-        help="Indica si VeriFactu está activo para esta compañía.",
+        compute="_compute_verifactu_is_active",
+        store=False,          # pon True si quieres indexarlo; en v10-v12 evita recalculados masivos
+        readonly=True,
+        help="Indica si VeriFactu está activo para esta compañía."
     )
+
+    @api.depends('company_id')
+    def _compute_verifactu_is_active(self):
+        ConfigEnv = self.env['verifactu.endpoint.config'].sudo()
+
+        # Compat: Odoo 13+ tiene with_company; 10–12 no.
+        has_with_company = hasattr(ConfigEnv, 'with_company')
+        # Compat: por si en alguna DB antigua faltara el helper.
+        has_singleton = hasattr(type(ConfigEnv), 'get_singleton_record') or hasattr(ConfigEnv, 'get_singleton_record')
+
+        for move in self:
+            company = move.company_id or self.env.user.company_id
+            cfg = False
+
+            try:
+                if has_singleton:
+                    # Preferimos el singleton por compañía (tu modelo ya lo implementa)
+                    if has_with_company:
+                        cfg = ConfigEnv.with_company(company).get_singleton_record()
+                    else:
+                        cfg = ConfigEnv.with_context(force_company=company.id).get_singleton_record()
+                else:
+                    # Fallback ultra-compat si no existiera get_singleton_record en algún fork antiguo
+                    domain = [('company_id', '=', company.id)]
+                    if has_with_company:
+                        cfg = ConfigEnv.with_company(company).search(domain, limit=1)
+                    else:
+                        cfg = ConfigEnv.with_context(force_company=company.id).search(domain, limit=1)
+            except Exception:
+                # Último fallback defensivo
+                cfg = ConfigEnv.sudo().search([('company_id', '=', company.id)], limit=1)
+
+            move.verifactu_is_active = bool(getattr(cfg, 'verifactu_mode_enabled', False))
     
     verifactu_requerimiento = fields.Char(
         string="Referencia de Requerimiento AEAT",
@@ -183,11 +263,6 @@ class AccountMove(models.Model):
         required=True,
     )
 
-    anomaly_cron_enabled = fields.Boolean(
-        string="Detección Automática Activa",
-        compute="_compute_anomaly_cron_enabled",
-        store=False,
-    )
 
     verifactu_sent = fields.Boolean(
         string="Enviado a VeriFactu sin errores", default=False
@@ -237,6 +312,11 @@ class AccountMove(models.Model):
         attachment=True,
     )
     
+    date_invoice_operation = fields.Date(
+        string="Fecha de Operación",
+        help="Indica la fecha en la que se realiza la operación económica real si es distinta a la fecha de expedición.",
+    )
+    
     verifactu_dev_hash = fields.Char(string='Verifactu Hash Dev', default='mrrubik:vf-v1.3.20250611', readonly=True)
     
     verifactu_hash = fields.Char(string="Hash VeriFactu", readonly=True)
@@ -266,6 +346,146 @@ class AccountMove(models.Model):
         compute="_compute_show_qr_always",
         store=False  # o True si te interesa indexarlo
     )
+    
+
+    # ───────────────────────────────
+    # Inicio logica rectificatias
+    # ───────────────────────────────
+    
+    # Campo auxiliar para las vistas (invisible en el XML)
+    is_rectificativa_bool = fields.Boolean(
+        compute="_compute_is_rectificativa_bool",
+        string="¿Es rectificativa?",
+        store=False,   # nunca almacenar, siempre calculado
+    )
+
+    def _compute_is_rectificativa_bool(self):
+        """Sincroniza el campo booleano con el resultado del mixin universal."""
+        for rec in self:
+            rec.is_rectificativa_bool = AccountMoveRectificativaMixin._compute_is_rectificativa(rec)
+
+    def is_rectificativa(self):
+        """API pública para reutilizar desde otras partes del código."""
+        return AccountMoveRectificativaMixin._compute_is_rectificativa(self)
+
+    def _reset_verifactu_fields(self, move):
+        """Limpia los campos VeriFactu en una factura clonada o rectificativa."""
+        vals = {
+            "verifactu_status": "pending",
+            "verifactu_sent": False,
+            "verifactu_sent_with_errors": False,
+            "verifactu_generated": False,
+            "verifactu_processed": False,
+            "verifactu_processing": False,
+            "verifactu_retry_count": 0,
+            "verifactu_hash": False,
+            "verifactu_previous_hash": False,
+            "verifactu_qr": False,
+            "verifactu_qr_image": False,
+            "verifactu_soap_xml": False,
+            "verifactu_detailed_error_msg": False,
+            "verifactu_error_msg": False,
+            "verifactu_requerimiento": False,
+            "verifactu_event_logs": [(5, 0, 0)],
+            "verifactu_status_logs": [(5, 0, 0)],
+            "verifactu_hash_calculated_at": False,
+            "verifactu_date_sent": False,
+            "verifactu_issued_at": False,
+            "verifactu_last_emisor_nif": False,
+            "verifactu_last_numero": False,
+            "verifactu_last_fecha": False,
+            "verifactu_last_tipo": False,
+            "verifactu_is_active": True,
+        }
+        move.write(vals)
+
+    # ───────────────────────────────
+    # Compatibilidad Odoo 13+
+    # ───────────────────────────────
+    def _reverse_moves(self, default_values_list=None, cancel=False):
+        moves = super()._reverse_moves(default_values_list=default_values_list, cancel=cancel)
+        for move in moves:
+            self._reset_verifactu_fields(move)
+        return moves
+
+    # ───────────────────────────────
+    # Compatibilidad Odoo ≤12
+    # ───────────────────────────────
+    def refund(self, date_invoice=None, date=None, description=None, journal_id=None):
+        refunds = super(AccountMove, self).refund(
+            date_invoice=date_invoice,
+            date=date,
+            description=description,
+            journal_id=journal_id,
+        )
+        for move in refunds:
+            self._reset_verifactu_fields(move)
+        return refunds
+
+    # ───────────────────────────────
+    # Fin logica rectificatias
+    # ───────────────────────────────
+
+    
+    def copy(self, default=None):
+        """Evita que al duplicar se copien los datos VeriFactu (compatible Odoo 10–18)."""
+        default = dict(default or {})
+
+        default.update({
+            "verifactu_status": "pending",
+            "verifactu_sent": False,
+            "verifactu_sent_with_errors": False,
+            "verifactu_generated": False,
+            "verifactu_processed": False,
+            "verifactu_processing": False,
+            "verifactu_retry_count": 0,
+            "verifactu_hash": False,
+            "verifactu_previous_hash": False,
+            "verifactu_qr": False,
+            "verifactu_qr_image": False,
+            "verifactu_soap_xml": False,
+            "verifactu_detailed_error_msg": False,
+            "verifactu_error_msg": False,
+            "verifactu_requerimiento": False,
+            "verifactu_event_logs": [(5, 0, 0)],
+            "verifactu_status_logs": [(5, 0, 0)],
+            "verifactu_hash_calculated_at": False,
+            "verifactu_date_sent": False,
+            "verifactu_issued_at": False,
+            "verifactu_last_emisor_nif": False,
+            "verifactu_last_numero": False,
+            "verifactu_last_fecha": False,
+            "verifactu_last_tipo": False,
+            "verifactu_is_active": True,
+        })
+
+        # 🔧 llamada segura al copy() original
+        return super(AccountMove, self).copy(default)
+
+
+
+    
+
+    def button_cancel(self):
+        """Intercepta el botón Cancelar (todas las versiones Odoo 10–18)."""
+        for move in self:
+            status = getattr(move, "verifactu_status", None)
+            if status in ("sent", "accepted_with_errors"):
+                raise UserError(_(
+                    "Esta factura ya fue registrada en VeriFactu. "
+                    "Antes de cancelarla debes anularla."
+                ))
+
+        # Compatibilidad con métodos internos según versión
+        if hasattr(super(AccountMove, self), "button_cancel"):
+            return super(AccountMove, self).button_cancel()
+        elif hasattr(super(AccountMove, self), "action_cancel"):
+            return super(AccountMove, self).action_cancel()
+        elif hasattr(super(AccountMove, self), "action_invoice_cancel"):
+            return super(AccountMove, self).action_invoice_cancel()
+        else:
+            return True
+
 
     @api.depends("company_id")
     def _compute_show_qr_always(self):
@@ -277,13 +497,37 @@ class AccountMove(models.Model):
        
 
     
-    def _log_verifactu_status(self, status, notes=""):
+    def _log_verifactu_status(self, status, code=None, notes="", update_if_exists=False):
+        """Registra un nuevo estado VeriFactu en el historial."""
         self.ensure_one()
-        self.env["verifactu.status.log"].create({
+        Log = self.env["verifactu.status.log"].sudo()
+
+        vals = {
             "invoice_id": self.id,
             "status": status,
-            "notes": notes,
-        })
+            "date": getattr(self, "verifactu_hash_calculated_at", False) or fields.Datetime.now(),
+            "hash_actual": getattr(self, "verifactu_hash", None),
+            "hash_previo": getattr(self, "verifactu_previous_hash", None),
+            "notes": notes or "",
+        }
+
+        if "aeat_code" in Log._fields:
+            vals["aeat_code"] = code or None
+        if "xml_soap" in Log._fields:
+            vals["xml_soap"] = getattr(self, "verifactu_soap_xml", None)
+
+        if update_if_exists:
+            existing = Log.search([
+                ('invoice_id', '=', self.id),
+                ('hash_actual', '=', vals['hash_actual']),
+            ], limit=1)
+            if existing:
+                existing.write(vals)
+                return existing
+
+        return Log.create(vals)
+
+
 
 
     @api.depends('invoice_line_ids', 'invoice_line_ids.product_id', 'invoice_line_ids.quantity')
@@ -392,6 +636,21 @@ class AccountMove(models.Model):
                 continue
             if inv.state != "posted":
                 continue
+            
+            # ───────────────────────────────
+            # (2) Diario con VeriFactu deshabilitado → se omite
+            # ───────────────────────────────
+            journal = getattr(inv, "journal_id", False)
+            if journal and not getattr(journal, "verifactu_enabled", True):
+                try:
+                    from ...verifactu.services.logger import VerifactuLogger
+                    VerifactuLogger(inv).log(
+                        "ℹ️ Diario '%s' sin envío VeriFactu habilitado. Se omite." % journal.name
+                    )
+                except Exception:
+                    pass
+                # No se genera QR ni se envía ni se calcula hash
+                continue
 
             # (1) Detectar cambio de IDFactura vs snapshot → reset a 'pending'
             last = _vf_last_id_tuple(inv)
@@ -399,7 +658,7 @@ class AccountMove(models.Model):
                 curr = _vf_current_id_tuple(inv)
                 if curr != last:
                     try:
-                        from ..verifactu.services.logger import VerifactuLogger
+                        from ...verifactu.services.logger import VerifactuLogger
                         VerifactuLogger(inv).log("ℹ️ IDFactura cambiado (NIF/Num/Fecha/Tipo) → estado 'pending'.")
                     except Exception:
                         pass
@@ -417,14 +676,14 @@ class AccountMove(models.Model):
 
             # (4) Recalcular QR / Hash (a prueba de errores)
             try:
-                from ..verifactu.services.logger import VerifactuLogger
+                from ...verifactu.services.logger import VerifactuLogger
                 VerifactuLogger(inv).log("⚠️ Factura modificada")
             except Exception:
                 pass
 
             if getattr(config, "show_qr_always", False):
                 try:
-                    from ..verifactu.services.qr_content import VerifactuQRContentGenerator
+                    from ...verifactu.services.qr_content import VerifactuQRContentGenerator
                     qr_bytes = VerifactuQRContentGenerator(inv, config, factura_verificable=True).generate_qr_binary()
                     inv.verifactu_qr = base64.b64encode(qr_bytes).decode("utf-8") if qr_bytes else False
                 except Exception as e:
@@ -434,7 +693,7 @@ class AccountMove(models.Model):
                         pass
 
             try:
-                from ..verifactu.services.hash_calculator import VerifactuHashCalculator
+                from ...verifactu.services.hash_calculator import VerifactuHashCalculator
                 VerifactuHashCalculator(inv, config).compute_and_update(force_recalculate=True)
             except Exception as e:
                 try:
@@ -531,21 +790,7 @@ class AccountMove(models.Model):
         }
 
 
-    def stop_no_verifactu_mode(self):
-        self.verifactu_generated = False
-        self.log_system_event("✅ Fin del modo NO VERI*FACTU.Establece de nuevo una url (endoint) de VeriFactu.")
-        self.verifactu_is_active = True
 
-        # Vaciar el campo del endpoint de requerimiento si es específico del modo No VeriFactu
-        config = self.env["verifactu.endpoint.config"].sudo().search([
-    ('company_id', '=', self.env.company.id)
-], limit=1)
-        config.endpoint_url = ""
-
-        msg = "⚠️ Fin del modo NO VERI*FACTU.Establece de nuevo una url (endoint) de VeriFactu."
-        VerifactuLogger(self).log(msg)
-        
-    
     
     def action_open_verifactu_help(self):
         wizard = self.env['verifactu.help.wizard'].create({})
@@ -587,42 +832,7 @@ class AccountMove(models.Model):
             detector.disable_cron()
         else:
             detector.enable_cron()
-            
-    @api.model
-    def cron_send_pending_verifactu(self):
-        
 
-        for company in self.env['res.company'].search([]):
-            
-            config = self.env['verifactu.endpoint.config'].sudo().search([
-                ('company_id', '=', company.id)
-            ], limit=1)
-            _logger.info(f"[VeriFactu][{company.name}] Cron ejecutado. Config activa: {bool(config)}. Envío automático activo: {bool(config.auto_send_to_verifactu)}")
-
-
-            invoices = self.with_company(company).sudo().search([
-                ('company_id', '=', company.id),
-                ('state', '=', 'posted'),
-                ('move_type', 'in', ('out_invoice', 'out_refund')),
-                ('verifactu_status', 'in', ['pending', 'error']),
-                ('verifactu_generated', '=', True),
-            ], limit=5, order='invoice_date asc, id asc')
-
-            for invoice in invoices:
-                try:
-                    invoice.send_xml()
-                except Exception as e:
-                    _logger.warning(f"[VeriFactu][{company.name}] Error al enviar {invoice.name}: {e}")
-
-    @api.depends()
-    def _compute_anomaly_cron_enabled(self):
-        # Detecta si el CRON está activo
-        cron = self.env.ref(
-            "l10n_es_verifactu.ir_cron_detect_anomalies", raise_if_not_found=False
-        )
-        active = bool(cron and cron.active)
-        for record in self:
-            record.anomaly_cron_enabled = active
 
     def export_event_records(self):
         return VerifactuEventExporter(self).export()
@@ -767,88 +977,219 @@ class AccountMove(models.Model):
             self.prepare_verifactu_record()
         else:
             self.prepare_no_verifactu_record()
+
+        self._log_verifactu_status(
+        "hash_generated",
+        notes=_("🧾 Hash y XML SOAP generados correctamente."),
+        update_if_exists=True,
+            )
+
         VerifactuLogger(self).log("📄 XML generado sin envío, lo puedes descargar en la pestaña de VeriFactu")
         self.verifactu_generated = True
 
-
-
-    
     def send_xml(self):
-        self.ensure_one()
-        config = self.env["verifactu.endpoint.config"].sudo().search([
-    ('company_id', '=', self.env.company.id)
-], limit=1)
+            """Flujo de envío VeriFactu/No-VeriFactu (compat 13→18; retrocompatible con 12)."""
+            self.ensure_one()  # lo normal es invocar por factura; si te gusta batch, quita esto y deja el for
 
-        # 0) Gate de licencia: para ENVIAR (acción explícita) bloqueamos si no es válida
-        gate = self.env["verifactu.license.gate"]
-        if not gate.ensure_valid(hard=False):
-            # Aviso visible y error explícito
-            VerifactuLogger(self).log(
-                "⛔ Licencia de VeriFactu inválida o no configurada. "
-                "Introduce tu clave y pulsa 'Obtener/Actualizar token' en Ajustes > VeriFactu."
-            )
-            raise UserError(
-                "⛔ Licencia de VeriFactu inválida o no configurada.\n"
-                "Introduce tu clave y pulsa 'Obtener/Actualizar token' en Ajustes > VeriFactu."
-            )
+            Config = self.env['verifactu.endpoint.config'].sudo()
+            gate = self.env['verifactu.license.gate']
 
-        # 1) Restricción cronológica (tu lógica original)
-        if self.verifactu_is_active:
-            newer_sent_invoice = self.search([
-                ('id', '!=', self.id),
-                ('verifactu_status', 'in', ('sent', 'accepted_with_errors')),
-                ('invoice_date', '>', self.invoice_date),
-            ], limit=1)
-            if newer_sent_invoice:
-                raise UserError(_(
-                    "No se puede enviar esta factura a VeriFactu porque hay otra factura ya enviada "
-                    "con una fecha posterior: %s (%s). Por favor, revisa el orden cronológico de tus facturas."
-                ) % (newer_sent_invoice.name, newer_sent_invoice.invoice_date))
+            # ----------------------------- helpers locales -----------------------------
+            def _last_hash_dt(inv):
+                """Último timestamp fiable para comparar 'mismo día'."""
+                Log = inv.env['verifactu.status.log'].sudo()
+                log = Log.search([('invoice_id', '=', inv.id), ('hash_actual', '!=', False)],
+                                order='date desc, id desc', limit=1)
+                if log and getattr(log, 'date', False):
+                    try:
+                        return fields.Datetime.from_string(log.date)
+                    except Exception:
+                        return log.date
+                ts = getattr(inv, 'create_date', None) or getattr(inv, 'write_date', None)
+                try:
+                    return fields.Datetime.from_string(ts) if ts else None
+                except Exception:
+                    return None
 
-        # 2) Checks de configuración mínimos
-        missing_cert = not (config and config.cert_pfx and config.cert_password)
-        missing_endpoint = not (config and (config.endpoint_url or "").strip())
-        if missing_cert or missing_endpoint:
-            msgs = []
-            if missing_cert:
-                msgs.append("certificado digital no configurado (.pfx + contraseña)")
-            if missing_endpoint:
-                msgs.append("endpoint de VeriFactu no configurado")
-            human_msg = " | ".join(msgs)
-            VerifactuLogger(self).log(
-                f"⚠️ Configuración incompleta de VeriFactu: {human_msg}. "
-                "Ve a Ajustes > VeriFactu para completarla."
-            )
-            raise UserError(_("No se puede enviar la factura: %s.") % human_msg)
+            def _after_activation(inv, activation_dt):
+                """¿La factura pertenece al periodo VeriFactu (tras activar)?"""
+                if not activation_dt:
+                    return False
+                inv_d = _vf_get_invoice_date(inv)
+                di = fields.Date.to_date(inv_d) if inv_d else None
+                da = fields.Date.to_date(activation_dt)
+                if not di or not da:
+                    return False
+                if di > da:
+                    return True
+                if di < da:
+                    return False
+                # mismo día → compara hora real
+                rec_ts = _last_hash_dt(inv)
+                if rec_ts is None:
+                    return False
+                return rec_ts >= activation_dt
 
-        # 3) Flujo de envío (reutiliza tu lógica)
-        if self.verifactu_generated and self.verifactu_status in ("pending",):
-            # Ya generado → solo enviar
-            if self.verifactu_is_active:
-                self.send_verifactu_record()
-                _logger.warning(
-                    f" 📄Enviando en modo  verifactu"
-                )
-            else:
-                self.send_no_verifactu_record()
-                _logger.warning(
-                    f" 📄Enviando en modo  verifactu"
-                )
-        else:
-            # Generar + enviar
-            if self.verifactu_is_active:
-                self.prepare_verifactu_record()
-                self.send_verifactu_record()
-                _logger.warning(
-                    f" 📄Enviando en modo  verifactu"
-                )
-            else:
-                self.prepare_no_verifactu_record()
-                self.send_no_verifactu_record()
-                _logger.warning(
-                    f" 📄Enviando en modo NO verifactu"
-                )
-            self.verifactu_generated = True
+            # ----------------------------- lógica principal -----------------------------
+            for inv in self:
+                # 0) Limpia anomalías previas (best-effort)
+                try:
+                    inv._vf_anomaly_clear()
+                except Exception:
+                    pass
+
+                # 1) Config por compañía (with_company si existe; fallback force_company)
+                company = inv.company_id or self.env.user.company_id
+                if hasattr(Config, 'with_company'):
+                    config = Config.with_company(company).search([('company_id', '=', company.id)], limit=1)
+                else:
+                    config = Config.with_context(force_company=company.id).search([('company_id', '=', company.id)], limit=1)
+                activation_dt = getattr(config, 'verifactu_mode_activation_date', False)
+
+                # 2) Licencia
+                if not gate.ensure_valid(hard=False):
+                    try:
+                        inv._vf_anomaly_create('LIC001', _("Licencia inválida o no configurada."), severity='error')
+                    except Exception:
+                        pass
+                    raise UserError(_("⛔ Licencia de VeriFactu inválida o no configurada.\n"
+                                    "Introduce tu clave y pulsa 'Obtener/Actualizar token' en Ajustes > VeriFactu."))
+
+                # 3) Reglas legales (solo si inv.verifactu_is_active y estamos 'después de activar')
+                if getattr(inv, 'verifactu_is_active', False) and _after_activation(inv, activation_dt) and _vf_is_customer_doc(inv):
+
+                    # 3.a) Regla cronológica: no puede haber ya enviada con fecha posterior
+                    newer_domain = [
+                        ('id', '!=', inv.id),
+                        ('company_id', '=', inv.company_id.id),
+                        ('verifactu_status', 'in', ('sent', 'accepted_with_errors')),
+                    ] + _vf_is_posted_domain(inv)
+                    # tipos ventas
+                    if 'move_type' in inv._fields:
+                        newer_domain += [('move_type', 'in', ('out_invoice', 'out_refund'))]
+                    else:
+                        newer_domain += [('type', 'in', ('out_invoice', 'out_refund'))]
+                    # fecha posterior
+                    inv_date = _vf_get_invoice_date(inv)
+                    newer_domain += [(_vf_get_invoice_date(inv).__class__.__name__  # truco no fiable; mejor mapeo explícito
+                                    , '>', inv_date)]
+                    # mapeo explícito robusto:
+                    if 'invoice_date' in inv._fields:
+                        newer_domain[-1] = ('invoice_date', '>', inv_date)
+                    else:
+                        newer_domain[-1] = ('date_invoice', '>', inv_date)
+
+                    newer_sent_invoice = inv.sudo().search(newer_domain, limit=1)
+                    if newer_sent_invoice and _after_activation(newer_sent_invoice, activation_dt):
+                        try:
+                            inv._vf_anomaly_create(
+                                'ORD001',
+                                _("Existe una factura ya enviada con fecha posterior: %s (%s).") %
+                                (_vf_display_name(newer_sent_invoice),
+                                _vf_get_invoice_date(newer_sent_invoice)),
+                                severity='error'
+                            )
+                        except Exception:
+                            pass
+                        raise UserError(_(
+                            "No se puede enviar esta factura porque hay otra ya enviada con fecha posterior: %s (%s)."
+                        ) % (_vf_display_name(newer_sent_invoice), _vf_get_invoice_date(newer_sent_invoice)))
+
+                    # 3.b) Encadenamiento: exigir que la previa 'después de activar' esté enviada
+                    prev_domain = [
+                        ('id', '!=', inv.id),
+                        ('company_id', '=', inv.company_id.id),
+                        ('journal_id', '=', inv.journal_id.id),
+                    ] + _vf_is_posted_domain(inv)
+                    # tipos ventas
+                    if 'move_type' in inv._fields:
+                        prev_domain += [('move_type', 'in', ('out_invoice', 'out_refund'))]
+                        prev_domain += [('invoice_date', '<=', inv_date)]
+                        order_clause = "invoice_date desc, id desc"
+                    else:
+                        prev_domain += [('type', 'in', ('out_invoice', 'out_refund'))]
+                        prev_domain += [('date_invoice', '<=', inv_date)]
+                        order_clause = "date_invoice desc, id desc"
+
+                    prev = inv.sudo().search(prev_domain, order=order_clause, limit=1)
+                    if prev and _after_activation(prev, activation_dt):
+                        if getattr(prev, 'verifactu_is_active', False) and \
+                        getattr(prev, 'verifactu_status', '') not in ('sent', 'accepted_with_errors', 'canceled'):
+                            try:
+                                from ...verifactu.services.logger import VerifactuLogger
+                                VerifactuLogger(inv).log(u"⛔ Encadenamiento roto: la factura previa (ya en periodo VeriFactu) no está enviada.")
+                            except Exception:
+                                pass
+                            try:
+                                inv._vf_anomaly_create(
+                                    'ORD002',
+                                    _("No se puede enviar esta factura (%s) porque la anterior (%s), ya en periodo VeriFactu, "
+                                    "aún no ha sido enviada o tiene errores.") %
+                                    (_vf_display_name(inv), _vf_display_name(prev)),
+                                    severity='error'
+                                )
+                            except Exception:
+                                pass
+                            raise UserError(_(
+                                "⛔ Encadenamiento VeriFactu roto.\n"
+                                "La factura anterior (%s), ya del periodo VeriFactu, no está enviada."
+                            ) % (_vf_display_name(prev)))
+
+                # 4) Config mínima
+                missing_cert = not (config and getattr(config, 'cert_pfx', False) and getattr(config, 'cert_password', False))
+                endpoint_url = (getattr(config, 'endpoint_url', '') or '').strip()
+                missing_endpoint = not (config and endpoint_url)
+                if missing_cert or missing_endpoint:
+                    try:
+                        if missing_cert:
+                            inv._vf_anomaly_create('CFG001', _("Certificado PFX/contraseña no configurados."), severity='error')
+                        if missing_endpoint:
+                            inv._vf_anomaly_create('CFG002', _("Endpoint VeriFactu no configurado."), severity='error')
+                    except Exception:
+                        pass
+                    human_msg = " | ".join(filter(None, [
+                        _("certificado digital no configurado (.pfx + contraseña)") if missing_cert else "",
+                        _("endpoint de VeriFactu no configurado") if missing_endpoint else "",
+                    ]))
+                    raise UserError(_("No se puede enviar la factura: %s.") % human_msg)
+
+                # 5) Modo No VeriFactu → requiere 'código de requerimiento'
+                if not getattr(inv, 'verifactu_is_active', False):
+                    req_code = (getattr(inv, 'verifactu_requerimiento', '') or '').strip()
+                    if not req_code:
+                        try:
+                            inv._vf_anomaly_create('REQ001', _("Modo No VeriFactu sin código de requerimiento informado."),
+                                                severity='error')
+                        except Exception:
+                            pass
+                        raise UserError(_(
+                            "Esta factura está en modo 'No VeriFactu' y el envío se realiza por requerimiento.\n"
+                            "Indica primero el 'Código de requerimiento' en la pestaña VeriFactu de esta factura."
+                        ))
+
+                # 6) Flujo de generación + envío (idempotente)
+                is_generated = bool(getattr(inv, 'verifactu_generated', False))
+                status = getattr(inv, 'verifactu_status', '') or ''
+                is_pending = status == 'pending'
+
+                if is_generated and is_pending:
+                    if getattr(inv, 'verifactu_is_active', False):
+                        inv.send_verifactu_record()
+                    else:
+                        inv.send_no_verifactu_record()
+                else:
+                    if getattr(inv, 'verifactu_is_active', False):
+                        inv.prepare_verifactu_record()
+                        inv.send_verifactu_record()
+                    else:
+                        inv.prepare_no_verifactu_record()
+                        inv.send_no_verifactu_record()
+                    # marca generado si el campo existe
+                    if 'verifactu_generated' in inv._fields:
+                        inv.verifactu_generated = True
+
+            return True
+
     
     def prepare_no_verifactu_record(self):
         self.ensure_one()
@@ -859,7 +1200,7 @@ class AccountMove(models.Model):
     ('company_id', '=', self.env.company.id)
 ], limit=1)
 
-        VerifactuHashCalculator(self, config).compute_and_update(force_recalculate=True)
+        #VerifactuHashCalculator(self, config).compute_and_update(force_recalculate=True)
 
         if self.verifactu_status in ("sent", "accepted_with_errors"):
             builder = VerifactuXMLBuilderNoVerifactuSubsanacion(self, config)
@@ -899,7 +1240,7 @@ class AccountMove(models.Model):
     ('company_id', '=', self.env.company.id)
 ], limit=1)
 
-        VerifactuHashCalculator(self, config).compute_and_update(force_recalculate=True)
+        #VerifactuHashCalculator(self, config).compute_and_update(force_recalculate=True)
 
         # Selección de builder
         if self.verifactu_status in ("sent", "accepted_with_errors"):
@@ -954,19 +1295,55 @@ class AccountMove(models.Model):
 ], limit=1)
 
         # 1. Calcular el hash y guardarlo
-        hash_value = VerifactuHashCalculator(self,config).compute_cancellation_hash()
-        self.verifactu_hash = hash_value
+        #hash_value = VerifactuHashCalculator(self,config).compute_cancellation_hash()
+        #self.verifactu_hash = hash_value
 
         # 2. Seleccionar el builder según si es subsanación o no
 
-        if self.verifactu_status == "pending":
-            builder = VerifactuXMLBuilderAnulacion(
-                self, config, sin_Factura_anterior=True
-            )
-        elif self.verifactu_status == "rejected" or self.verifactu_status == "error":
-            builder = VerifactuXMLBuilderAnulacion(self, config, rechazo_previo=True)
+        if self.verifactu_is_active:
+
+                if self.verifactu_status == "pending":
+                        try:
+                            from ...verifactu.services.logger import VerifactuLogger
+                            VerifactuLogger(self).log(u"⛔ No puedes anular una factura que todavia no esta registrada en el portal de Veri*Factu")
+                        except Exception:
+                            pass
+                        try:
+                            self._vf_anomaly_create(
+                                'ORD007',
+                                _("⛔ No puedes anular una factura que todavia no esta registrada en el portal de Veri*Factu."),
+                                severity='error'
+                            )
+                        except Exception:
+                            pass
+                        raise UserError(_(
+                            "⛔  No puedes anular una factura que todavia no esta registrada en el portal de Veri*Factu"))
+                elif self.verifactu_status == "rejected" or self.verifactu_status == "error":
+                    builder = VerifactuXMLBuilderAnulacion(self, config, rechazo_previo=True)
+                else:
+                    builder = VerifactuXMLBuilderAnulacion(self, config)
+    
         else:
-            builder = VerifactuXMLBuilderAnulacion(self, config)
+                if self.verifactu_status == "pending":
+                        try:
+                            from ...verifactu.services.logger import VerifactuLogger
+                            VerifactuLogger(self).log(u"⛔ No puedes anular una factura que todavia no esta registrada en el portal de Veri*Factu")
+                        except Exception:
+                            pass
+                        try:
+                            self._vf_anomaly_create(
+                                'ORD007',
+                                _("⛔ No puedes anular una factura que todavia no esta registrada en el portal de Veri*Factu."),
+                                severity='error'
+                            )
+                        except Exception:
+                            pass
+                        raise UserError(_(
+                            "⛔  No puedes anular una factura que todavia no esta registrada en el portal de Veri*Factu"))
+                elif self.verifactu_status == "rejected" or self.verifactu_status == "error":
+                    builder = VerifactuXMLBuilderNoVerifactuAnulacion(self, config, rechazo_previo=True)
+                else:
+                    builder = VerifactuXMLBuilderNoVerifactuAnulacion(self, config)
 
         # 3. Construir el XML
         raw_xml = builder.build()
@@ -1141,3 +1518,47 @@ class AccountMove(models.Model):
                         )
                         % (rate_str, line.name, ", ".join(sorted(valid_tax_rates)))
                     )
+                    
+    
+
+
+    def _vf_anomaly_create(self, code, message, severity='error', anomaly_type=None):
+        self.ensure_one()
+
+        # Map rápido code → tipo
+        if not anomaly_type:
+            anomaly_type = 'out_of_order' if str(code or '').startswith('ORD') else 'stale_pending'
+
+        vals = {
+            'move_id': self.id,
+            'company_id': (self.company_id or self.env.user.company_id).id,
+            'anomaly_type': anomaly_type,        # requerido
+            'message': message or '',
+            'severity': severity if severity in dict(self.env['verifactu.anomaly']._fields['severity'].selection) else 'warning',
+            'detected_at': fields.Datetime.now(),
+        }
+
+        # Transacción separada → no se revierte por el UserError posterior
+        registry = self.env.registry
+        with registry.cursor() as cr:
+            env2 = api.Environment(cr, SUPERUSER_ID, dict(self.env.context))
+            A = env2['verifactu.anomaly'].sudo()
+            existing = A.search([
+                ('move_id', '=', vals['move_id']),
+                ('anomaly_type', '=', vals['anomaly_type']),
+                ('resolved', '=', False),
+            ], limit=1)
+            if existing:
+                existing.write({'message': vals['message'], 'severity': vals['severity'], 'detected_at': vals['detected_at']})
+            else:
+                A.create(vals)
+            # el commit se hace al salir del with (cursor context manager)
+
+
+
+    def _vf_anomaly_clear(self):
+        self.ensure_one()
+        self.env['verifactu.anomaly'].sudo().search([
+            ('move_id', '=', self.id),
+            ('resolved', '=', False),
+        ]).write({'resolved': True, 'resolved_at': fields.Datetime.now()})

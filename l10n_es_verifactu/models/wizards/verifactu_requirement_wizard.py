@@ -1,9 +1,5 @@
 # models/verifactu_requirement_wizard.py
 
-# Desarrollado por Juan Ormaechea (Mr. Rubik) — Todos los derechos reservados
-# Este módulo está protegido por la Odoo Proprietary License v1.0
-# Cualquier redistribución está prohibida sin autorización expresa.
-
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 
@@ -14,24 +10,37 @@ class VerifactuRequirementWizard(models.TransientModel):
     ref_requerimiento = fields.Char(string="Referencia de Requerimiento", required=True)
 
     def confirm(self):
-        active_id = self.env.context.get("active_id")
-        move = self.env["account.move"].browse(active_id)
-        if not self.ref_requerimiento:
-            raise UserError(_("Debes indicar el código del requerimiento"))
+        """Aplica el código a las facturas activas y recarga la vista."""
+        # Soporta una o varias facturas seleccionadas
+        active_ids = self.env.context.get("active_ids") or []
+        if not active_ids:
+            raise UserError(_("No se encontró ninguna factura activa."))
 
-        # Activamos el modo No VeriFactu en la factura
-        move.write({
-            "verifactu_is_active": False,
-            "verifactu_requerimiento": self.ref_requerimiento,
-            "verifactu_generated": False,
-        })
+        moves = self.env["account.move"].browse(active_ids).exists()
+        if not self.ref_requerimiento or not self.ref_requerimiento.strip():
+            raise UserError(_("Indica el código del requerimiento."))
 
-        # Actualizamos el endpoint requerido para este modo
-        config = self.env["verifactu.endpoint.config"].sudo().get_singleton_record()
-        config.endpoint_url = ""
+        ref = self.ref_requerimiento.strip()
 
-        move.message_post(body=_(
-            "⚠️ Activado el modo No VeriFactu con requerimiento: %s .Establece de nuevo una url (endoint) de VeriFactu."
-        ) % self.ref_requerimiento)
+        # Escribe el requerimiento en cada factura seleccionada
+        # y marca como no generado para forzar nueva generación en el flujo No VeriFactu
+        for move in moves:
+            move.write({
+                "verifactu_requerimiento": ref,
+                "verifactu_generated": False,
+            })
+            # Nota en el chatter
+            move.message_post(
+                body=_("⚠️ Se ha establecido el código de requerimiento para envío en modo No VeriFactu: <b>%s</b>.") % ref
+            )
+
+        # Si era una sola factura, recárgala; si eran varias, cierra el wizard
+        if len(moves) == 1:
+            return {
+                "type": "ir.actions.act_window",
+                "res_model": "account.move",
+                "view_mode": "form",
+                "res_id": moves.id,
+                "target": "current",
+            }
         return {"type": "ir.actions.act_window_close"}
-

@@ -9,5 +9,9 @@ access_verifactu_error_codes_wizard,access.verifactu.error.codes.wizard,model_ve
 access_verifactu_requirement_wizard_user_all,access.verifactu.requirement.wizard.user.all,model_verifactu_requirement_wizard,base.group_user,1,1,1,1
 access_verifactu_status_log_user,access_verifactu_status_log_user,model_verifactu_status_log,base.group_user,1,0,1,0
 access_verifactu_license,access_verifactu_license,model_verifactu_license,base.group_system,1,1,1,1
+access_verifactu_mode_history_user,access.verifactu.mode.history.user,model_verifactu_mode_history,base.group_user,1,0,0,0
+access_verifactu_anomaly_user_ro,access.verifactu.anomaly.user.ro,model_verifactu_anomaly,base.group_user,1,0,0,0
+access_verifactu_anomaly_admin,access.verifactu.anomaly.admin,model_verifactu_anomaly,base.group_system,1,1,1,0
+
 
 
