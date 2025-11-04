@@ -21,7 +21,7 @@
       <field name="model_id" ref="base.model_ir_actions_server"/>
       <field name="state">code</field>
       <field name="code">
-        env['ir.actions.server'].browse(ref('l10n_es_verifactu.ir_actions_server_verifactu_send_periodic')).run()
+        env['ir.actions.server'].browse(ref('l10n_es_verifactu_grader.ir_actions_server_verifactu_send_periodic')).run()
       </field>
       <field name="user_id" ref="base.user_root"/>
       <field name="cron_name">Enviar facturas VeriFactu pendientes</field>

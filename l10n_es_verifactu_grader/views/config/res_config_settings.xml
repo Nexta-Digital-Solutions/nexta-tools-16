@@ -462,7 +462,7 @@
                                 <div class="text-muted content-group">
                                     Consulta una guía rápida con ejemplos y consejos para configurar correctamente el módulo.
                                 </div>
-                                <button name="%(l10n_es_verifactu.verifactu_help_wizard_action)d"
+                                <button name="%(l10n_es_verifactu_grader.verifactu_help_wizard_action)d"
                                         type="action"
                                         string="⚙️ Mostrar Ayuda del Módulo"
                                         class="btn btn-warning mt8"

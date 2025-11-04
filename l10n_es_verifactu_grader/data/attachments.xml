@@ -14,7 +14,7 @@
     <!-- Guardar el id en ICP -->
     <record id="param_verifactu_declaracion_attachment_id" model="ir.config_parameter">
       <field name="key">verifactu.declaracion_attachment_id</field>
-      <field name="value" eval="str(ref('l10n_es_verifactu.verifactu_declaracion_default_attachment'))"/>
+      <field name="value" eval="str(ref('l10n_es_verifactu_grader.verifactu_declaracion_default_attachment'))"/>
     </record>
 
   </data>
