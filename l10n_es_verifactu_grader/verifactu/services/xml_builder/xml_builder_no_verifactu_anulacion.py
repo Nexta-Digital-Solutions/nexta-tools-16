@@ -9,6 +9,33 @@ from ...utils.system_info_builder import VerifactuSystemInfoBuilder
 from ...services.xml_signer import VerifactuXMLSigner
 from ...utils.verifactu_xml_validator import VerifactuXMLValidator
 
+# Helpers alineados con el cálculo de huella
+from ...services.hash_calculator  import _iso_with_tz, _safe_str
+
+# Si prefieres helpers de bytes/str centralizados, descomenta e importa desde tu módulo:
+# from ..verifactu_hash_calculator import _to_bytes, _to_text
+# En caso de que no los tengas, definimos unos mínimos locales:
+def _to_bytes(v):
+    if isinstance(v, (bytes, bytearray)):
+        return bytes(v)
+    return (v or "").encode("utf-8")
+
+def _to_text(v):
+    if v is None:
+        return u""
+    if isinstance(v, (bytes, bytearray)):
+        try:
+            return v.decode("utf-8")
+        except Exception:
+            return v.decode("latin-1", "ignore")
+    # A partir de aquí: cualquier tipo (Decimal, int, float, etc.) → texto
+    try:
+        return unicode(v)  # Py2
+    except NameError:
+        return str(v)       # Py3
+    except Exception:
+        return str(v)
+
 NS_SOAPENV = "http://schemas.xmlsoap.org/soap/envelope/"
 NS_SUM     = "https://www2.agenciatributaria.gob.es/static_files/common/internet/dep/aplicaciones/es/aeat/tike/cont/ws/SuministroLR.xsd"
 NS_SUM1    = "https://www2.agenciatributaria.gob.es/static_files/common/internet/dep/aplicaciones/es/aeat/tike/cont/ws/SuministroInformacion.xsd"
@@ -16,11 +43,11 @@ NS_SUM1    = "https://www2.agenciatributaria.gob.es/static_files/common/internet
 
 class VerifactuXMLBuilderNoVerifactuAnulacion(object):
     """
-    Builder compatible Odoo 11 → 18.
+    Builder compatible Odoo 10 → 18.
     - number/name
     - invoice_date/date_invoice/date
-    - previous_hash vacío → 'SINHUELLA'
-    - firma mantenida sin reference_uri (como pediste)
+    - previous_hash: no se fuerza 'SINHUELLA' (solo se serializa Encadenamiento si existe)
+    - FechaHoraHusoGenRegistro: mismo valor/formato que compute_cancellation_hash()
     """
 
     def __init__(self, invoice, config, rechazo_previo=False, sin_Factura_anterior=False):
@@ -31,7 +58,7 @@ class VerifactuXMLBuilderNoVerifactuAnulacion(object):
 
     # -------- Helpers de compat --------
     def _inv_number(self, inv):
-        # v11–12: number ; v13+: name
+        # v11–12: number ; v13+: name (preferimos name si existe)
         return (getattr(inv, "name", None) or getattr(inv, "number", "") or "").strip()
 
     def _coerce_date(self, val):
@@ -61,12 +88,6 @@ class VerifactuXMLBuilderNoVerifactuAnulacion(object):
         d = VerifactuXMLValidator._to_date(d)
         return d.strftime("%d-%m-%Y") if d else ""
 
-    def _current_hash(self, inv):
-        return (getattr(inv, "verifactu_hash", "") or "").strip()
-
-    def _previous_hash(self, inv):
-        return (getattr(inv, "verifactu_previous_hash", "") or "") or "SINHUELLA"
-
     # -------- Build --------
     def build(self):
         inv = self.invoice
@@ -81,8 +102,11 @@ class VerifactuXMLBuilderNoVerifactuAnulacion(object):
 
         invoice_number = self._inv_number(inv)
         invoice_date   = self._fmt_ddmmyyyy(self._inv_date(inv))
-        previous_hash  = self._previous_hash(inv)
-        current_hash   = self._current_hash(inv)
+
+        # Huellas: NO forzar 'SINHUELLA'
+        previous_hash  = _safe_str(getattr(inv, "verifactu_previous_hash", ""))
+        current_hash   = _safe_str(getattr(inv, "verifactu_hash", ""))
+
         verifactu_requerimiento = getattr(inv, "verifactu_requerimiento", "") or ""
 
         # Namespaces
@@ -118,27 +142,32 @@ class VerifactuXMLBuilderNoVerifactuAnulacion(object):
         ET.SubElement(id_factura, ET.QName(NS_SUM1, "NumSerieFacturaAnulada")).text = invoice_number
         ET.SubElement(id_factura, ET.QName(NS_SUM1, "FechaExpedicionFacturaAnulada")).text = invoice_date
 
-        # Encadenamiento
-        encadenamiento = ET.SubElement(registro_anulacion, ET.QName(NS_SUM1, "Encadenamiento"))
-        anterior = ET.SubElement(encadenamiento, ET.QName(NS_SUM1, "RegistroAnterior"))
-        ET.SubElement(anterior, ET.QName(NS_SUM1, "IDEmisorFactura")).text = emisor_nif
-        ET.SubElement(anterior, ET.QName(NS_SUM1, "NumSerieFactura")).text = invoice_number
-        ET.SubElement(anterior, ET.QName(NS_SUM1, "FechaExpedicionFactura")).text = invoice_date
-        ET.SubElement(anterior, ET.QName(NS_SUM1, "Huella")).text = previous_hash
+        # Encadenamiento —— SOLO si hay previous_hash (alineado con la base del hash)
+        if previous_hash:
+            encadenamiento = ET.SubElement(registro_anulacion, ET.QName(NS_SUM1, "Encadenamiento"))
+            anterior = ET.SubElement(encadenamiento, ET.QName(NS_SUM1, "RegistroAnterior"))
+            ET.SubElement(anterior, ET.QName(NS_SUM1, "IDEmisorFactura")).text = emisor_nif
+            ET.SubElement(anterior, ET.QName(NS_SUM1, "NumSerieFactura")).text = invoice_number
+            ET.SubElement(anterior, ET.QName(NS_SUM1, "FechaExpedicionFactura")).text = invoice_date
+            ET.SubElement(anterior, ET.QName(NS_SUM1, "Huella")).text = previous_hash
 
-        # Sello tiempo + huella actual
-        now = datetime.now().astimezone()
-        ET.SubElement(registro_anulacion, ET.QName(NS_SUM1, "FechaHoraHusoGenRegistro")).text = now.isoformat(timespec="seconds")
+        # Sello tiempo + huella actual —— usar el MISMO timestamp que compute_cancellation_hash()
+        ts_str = _iso_with_tz(inv.env, getattr(inv, 'verifactu_hash_calculated_at', None))
+        ET.SubElement(registro_anulacion, ET.QName(NS_SUM1, "FechaHoraHusoGenRegistro")).text = ts_str
         ET.SubElement(registro_anulacion, ET.QName(NS_SUM1, "TipoHuella")).text = "01"
         ET.SubElement(registro_anulacion, ET.QName(NS_SUM1, "Huella")).text = current_hash
 
-        # Firma (dejamos tu signer tal cual)
+        # Información del sistema (mantengo por coherencia, aunque no afecta al hash)
+        VerifactuSystemInfoBuilder(inv.company_id, self.config).append_to(registro_anulacion)
+
+        # Firma (robusta bytes/str; no se cambia tu signer)
         raw_anulacion = ET.tostring(registro_anulacion, encoding="utf-8")
-        signed_str = VerifactuXMLSigner(self.config).sign(raw_anulacion)
-        signed_lxml = LET.fromstring(signed_str)
-        signed_etree = ET.fromstring(LET.tostring(signed_lxml))
+        signed_str = VerifactuXMLSigner(self.config).sign(raw_anulacion)  # puede devolver bytes o str
+        signed_lxml = LET.fromstring(_to_bytes(signed_str))
+        signed_etree = ET.fromstring(_to_bytes(LET.tostring(signed_lxml)))
 
         # Insertar firmado en RegistroFactura
         registro_factura.append(signed_etree)
 
-        return minidom.parseString(ET.tostring(envelope)).toprettyxml(indent="  ")
+        # Devolver str unicode
+        return _to_text(minidom.parseString(ET.tostring(envelope)).toprettyxml(indent="  "))

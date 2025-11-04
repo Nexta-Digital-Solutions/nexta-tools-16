@@ -772,17 +772,33 @@ class VerifactuXMLValidator:
             return ''
         return re.sub(r'[^A-Z0-9]', '', (text or '').upper())
 
+
     @staticmethod
     def clean_nif_es(vat):
         """
-        Normaliza VAT/NIF español:
-        - Mayúsculas, sin separadores
-        - Elimina prefijo ES si viene de VIES/ERP
+        Normaliza y limpia el VAT/NIF:
+        - Convierte a mayúsculas, sin espacios ni separadores.
+        - Elimina prefijo de país (p.ej. ES, FR, DE...) si viene de VIES/ERP.
+        - Devuelve la parte numérica o alfanumérica pura.
         """
+        if not vat:
+            return ""
         v = VerifactuXMLValidator.clean_vat_like(vat)
-        if v.startswith('ES'):
-            v = v[2:]
-        return v
+
+        # Elimina prefijo de país si existe (códigos ISO-3166 de 2 letras al inicio)
+        if len(v) >= 2 and v[:2].isalpha():
+            # Para no eliminar códigos falsos tipo 'XX123...', comprobamos que no sea un NIF español legítimo (A12345678)
+            prefix = v[:2].upper()
+            # Si el prefijo es un país europeo o ES, lo quitamos
+            EU_CODES = {
+                'AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE',
+                'IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE'
+            }
+            if prefix in EU_CODES:
+                v = v[2:]
+
+        return v.strip()
+
 
     @staticmethod
     def is_es_nif_format(v):
@@ -790,66 +806,135 @@ class VerifactuXMLValidator:
         if not v:
             return False
         return bool(_SP_NIF_RE.fullmatch(v))
+    
 
     @staticmethod
-    def is_es_nif_format(v):
-        """Valida formato básico (sin calcular letra) de NIF/NIE/CIF."""
-        if not v:
-            return False
-        return bool(_SP_NIF_RE.fullmatch(v))
+    def is_probably_eu_vat(vat):
+        """
+        Heurística mejorada para detectar y limpiar VAT-UE:
+        - Elimina separadores y espacios.
+        - Detecta prefijo ISO (2 letras) y lo normaliza:
+            EL→GR, UK→GB, XI→XI (Irlanda del Norte), etc.
+        - Elimina el prefijo del VAT limpio si es válido.
+        - Considera todos los países de la UE y XI.
+        Devuelve: (es_vat_ue, código_país_normalizado, vat_sin_prefijo)
+        """
+        v = _clean_vat(vat)
+        if not v or len(v) < 4:
+            return (False, None, v)
+
+        pref = _country_code_from_vat_prefix(v) or ''
+        if not pref:
+            return (False, None, v)
+
+        pref = pref.upper()
+
+        # --- Normalizaciones comunes ---
+        normalization_map = {
+            'EL': 'GR',  # Grecia (EL en VAT, GR en AEAT)
+            'UK': 'GB',  # Reino Unido (aunque post-Brexit, aún se usa en históricos)
+            'GB': 'GB',  # Mantiene GB
+            'XI': 'XI',  # Irlanda del Norte (caso especial post-Brexit)
+        }
+        norm = normalization_map.get(pref, pref)
+
+        # ES no cuenta como VAT-UE extranjero
+        if norm == 'ES':
+            return (False, None, v)
+
+        # Países UE reconocidos (más XI)
+        in_eu = (norm in EU_COUNTRIES) or (norm == 'XI')
+
+        # Reglas mínimas: formato alfanumérico, longitud ≥ 4
+        is_alnum = v.isalnum()
+
+        # Si el VAT tiene formato válido y pertenece a un país UE, limpiamos el prefijo
+        vat_limpio = v
+        if in_eu and is_alnum and v.upper().startswith(pref):
+            vat_limpio = v[len(pref):].strip()
+
+        # Asegura coherencia (p.ej. "FR 23334175221" → "23334175221")
+        return (bool(in_eu and is_alnum), norm if in_eu else None, vat_limpio)
+
+
 
     @staticmethod
     def build_id_for_xml(partner):
         """
-        Retorna:
-          - {'tag': 'NIF', 'value': 'B12345678'}
-          - {'tag': 'IDOtro', 'IDType': '02'|'04'|'06', 'CodigoPais': 'FR', 'ID': '...'}
-        Reglas robustas con inferencia de país desde VAT si falta country.
+        Devuelve un diccionario con los datos de identificación fiscal
+        del destinatario en formato compatible con el esquema AEAT VeriFactu 1.0.
+
+        Ejemplos devueltos:
+        - {'tag': 'NIF', 'value': 'B12345678'}
+        - {'tag': 'IDOtro', 'IDType': '02', 'CodigoPais': 'US', 'ID': '352712024'}
+        - {'tag': 'IDOtro', 'IDType': '06', 'CodigoPais': 'ES', 'ID': 'X1234567L'}
+
+        Reglas aplicadas:
+        1️⃣ España (ES) → NIF válido → <NIF>
+        2️⃣ España (ES) sin NIF válido → IDOtro(06)
+        3️⃣ Unión Europea ≠ ES → IDOtro(02) o (04) si sin VAT válido
+        4️⃣ Extracomunitario → IDOtro(02) si empresa, (01) si persona física
+        5️⃣ Sin país → error explícito (mejor fallar que enviar datos inválidos)
         """
         p = _safe_cpartner(partner)
 
-        raw_vat = getattr(p, 'vat', '') or ''
+        raw_vat = getattr(p, "vat", "") or ""
         vat_clean = _clean_vat(raw_vat)
 
-        # 1) País: partner.country_id.code o prefijo VAT
-        country = (_country_code_from_partner(p)
-                   or _country_code_from_vat_prefix(vat_clean))
+        # 1️⃣ País del partner o deducido del VAT
+        country = (
+            _country_code_from_partner(p)
+            or _country_code_from_vat_prefix(vat_clean)
+        )
 
-        # 2) España
-        if country == 'ES':
+        # 2️⃣ España
+        if country == "ES":
             v = VerifactuXMLValidator.clean_nif_es(raw_vat)
             if VerifactuXMLValidator.is_es_nif_format(v):
-                return {'tag': 'NIF', 'value': v}
+                return {"tag": "NIF", "value": v}
+
             # Español sin NIF/NIE/CIF válido → IDOtro 06 (documento nacional alternativo)
-            _id = (v or vat_clean or (getattr(p, 'ref', '') or '')).strip()
+            _id = (v or vat_clean or (getattr(p, "ref", "") or "")).strip()
             if not _id:
-                raise UserError("VeriFactu: destinatario español sin NIF válido y sin ID alternativo (ref).")
-            return {'tag': 'IDOtro', 'IDType': '06', 'CodigoPais': 'ES', 'ID': _id}
+                raise UserError(
+                    "VeriFactu: destinatario español sin NIF válido y sin ID alternativo (ref)."
+                )
+            return {"tag": "IDOtro", "IDType": "06", "CodigoPais": "ES", "ID": _id}
 
-        # 3) UE (no ES) con VAT-UE
-        if country in EU_COUNTRIES and country != 'ES':
-            if VerifactuXMLValidator.is_probably_eu_vat(vat_clean) and vat_clean.startswith(country):
-                return {'tag': 'IDOtro', 'IDType': '02', 'CodigoPais': country, 'ID': vat_clean}
-            # UE sin VAT-UE válido → tratar como extranjero con doc alternativo
-            _id = (vat_clean or getattr(p, 'ref', '') or '').strip()
+        # 3️⃣ Unión Europea (excepto España)
+        if country in EU_COUNTRIES and country != "ES":
+            ok, norm_pref, vclean = VerifactuXMLValidator.is_probably_eu_vat(vat_clean)
+            if ok and (norm_pref == country or (country == "GR" and norm_pref == "EL")):
+                # VAT-UE válido
+                _id = vclean
+                if not _id.upper().startswith(country):
+                    _id = f"{country}{_id}"  # añade prefijo si falta
+                return {"tag": "IDOtro", "IDType": "02", "CodigoPais": country, "ID": _id}
+
+
+            # UE sin VAT-UE válido → documento alternativo
+            _id = (vclean or getattr(p, "ref", "") or "").strip()
             if not _id:
-                raise UserError("VeriFactu: destinatario UE sin VAT-UE y sin ID alternativo.")
-            return {'tag': 'IDOtro', 'IDType': '04', 'CodigoPais': country, 'ID': _id}
+                raise UserError("VeriFactu: destinatario UE sin VAT-UE ni ID alternativo.")
+            return {"tag": "IDOtro", "IDType": "04", "CodigoPais": country, "ID": _id}
 
-        # 4) Extranjero fuera UE (o país no en lista)
+        # 4️⃣ Extracomunitario (fuera de la UE)
         if country:
-            _id = (vat_clean or getattr(p, 'ref', '') or '').strip()
+            _id = (vat_clean or getattr(p, "ref", "") or "").strip()
             if not _id:
                 raise UserError("VeriFactu: destinatario extranjero sin documento (ID) ni VAT/Ref.")
-            return {'tag': 'IDOtro', 'IDType': '04', 'CodigoPais': country, 'ID': _id}
 
-        # 5) Sin país en partner y no deducible del VAT → decisión:
-        #    - Si la factura es F2/R5, deberías NO enviar destinatario y poner 61.d
-        #    - Si NO es F2/R5, mejor fallar con mensaje claro que inventarse datos
+            # Diferenciamos empresa vs persona física (AEAT recomienda 02 / 01)
+            id_type = "02" if getattr(p, "is_company", True) else "01"
+            return {"tag": "IDOtro", "IDType": id_type, "CodigoPais": country, "ID": _id}
+
+        # 5️⃣ Sin país → error (no podemos inventarlo)
         raise UserError(
             "VeriFactu: el destinatario no tiene país y no se puede inferir del VAT. "
             "Asigna un país al contacto o usa un VAT con prefijo de país (p.ej. FR..., DE...)."
         )
+
+
 
 
     @staticmethod
@@ -882,33 +967,58 @@ class VerifactuXMLValidator:
         else:
             return "I"
 
-    def build_descripcion_operacion(invoice): # OJO ESTO ES ALO NUEVO
-        tipo = invoice.move_type  # 'out_invoice', 'out_refund', etc.
+    @staticmethod
+    def build_descripcion_operacion(invoice):
+        """
+        Genera una descripción contextual para el nodo <DescripcionOperacion>.
+        Compatible con Odoo 10–18 y según recomendaciones AEAT.
+        """
+        tipo = getattr(invoice, "move_type", "") or ""
         tipo_factura = VerifactuTipoFacturaResolver.resolve(invoice)
-        
-        productos = list({line.product_id.name for line in invoice.invoice_line_ids if line.product_id and line.product_id.name})
-        servicios = [p for p in productos if any(s in p.lower() for s in ("servicio", "consultoría", "desarrollo", "mantenimiento"))]
+        is_refund = tipo.startswith("out_refund") or tipo_factura.startswith("R")
 
-        # Clasificación general
-        if tipo.startswith("out_refund") or tipo_factura.startswith("R"):
+        # Recoge nombres únicos de líneas
+        productos = list({
+            (line.name or line.product_id.display_name or "").strip()
+            for line in getattr(invoice, "invoice_line_ids", [])
+            if (line.name or line.product_id)
+        })
+
+        # Clasificación heurística
+        servicios = [
+            p for p in productos
+            if any(s in p.lower() for s in ("servicio", "consultor", "mantenimiento", "soporte", "desarrollo"))
+        ]
+
+        resumen = ""
+
+        # Caso 1: Factura rectificativa
+        if is_refund:
             resumen = "Factura rectificativa"
-        elif servicios:
-            resumen = "Prestación de servicios"
-        elif productos:
-            resumen = "Venta de bienes"
-        else:
-            resumen = "Sin descripción detallada"
+            if getattr(invoice, "reversed_entry_id", False):
+                orig = invoice.reversed_entry_id
+                num_orig = getattr(orig, "name", "") or getattr(orig, "number", "")
+                date_orig = getattr(orig, "invoice_date", getattr(orig, "date_invoice", None))
+                resumen += f" de la factura {num_orig or 'anterior'}"
+                if date_orig:
+                    resumen += f" emitida el {date_orig.strftime('%d-%m-%Y')}"
+            elif hasattr(invoice, "ref") and invoice.ref:
+                resumen += f" referente a {invoice.ref}"
 
-        # Añadir descripción más específica
-        if servicios:
+        # Caso 2: Servicios o productos
+        elif servicios and len(servicios) > 0:
+            resumen = "Prestación de servicios"
             resumen += f": {', '.join(servicios[:3])}"
         elif productos:
+            resumen = "Venta de bienes"
             resumen += f": {', '.join(productos[:3])}"
+        else:
+            resumen = "Operación comercial sin descripción detallada"
 
-        # Añadir número de líneas si es relevante
-        num_lines = len(invoice.invoice_line_ids)
+        # Añadir información de líneas si es relevante
+        num_lines = len(getattr(invoice, "invoice_line_ids", []))
         if num_lines > 3:
-            resumen += f" (total {num_lines} líneas)"
+            resumen += f" (total {num_lines} conceptos)"
 
         return resumen.strip()[:500]
 

@@ -6,6 +6,7 @@ from decimal import Decimal, ROUND_HALF_UP
 from itertools import groupby
 
 from lxml import etree as LET
+from odoo.tools.translate import _
 from odoo.exceptions import UserError
 
 from ...utils.system_info_builder import VerifactuSystemInfoBuilder
@@ -15,6 +16,37 @@ from ...utils.invoice_type_resolve import VerifactuTipoFacturaResolver
 from ...services.xml_signer import VerifactuXMLSigner
 from ...utils.verifactu_xml_validator import VerifactuXMLValidator
 
+# Helpers alineados con el cálculo de huella
+from ...services.hash_calculator import _iso_with_tz, _safe_str, _fmt_amount
+
+# Compat Py2/Py3
+try:
+    basestring
+except NameError:
+    basestring = (str,)
+
+# Helpers mínimos bytes/str
+def _to_bytes(v):
+    if isinstance(v, (bytes, bytearray)):
+        return bytes(v)
+    return (v or u"").encode("utf-8")
+
+def _to_text(v):
+    if v is None:
+        return u""
+    if isinstance(v, (bytes, bytearray)):
+        try:
+            return v.decode("utf-8")
+        except Exception:
+            return v.decode("latin-1", "ignore")
+    # A partir de aquí: cualquier tipo (Decimal, int, float, etc.) → texto
+    try:
+        return unicode(v)  # Py2
+    except NameError:
+        return str(v)       # Py3
+    except Exception:
+        return str(v)
+
 NS_SOAPENV = "http://schemas.xmlsoap.org/soap/envelope/"
 NS_SUM     = "https://www2.agenciatributaria.gob.es/static_files/common/internet/dep/aplicaciones/es/aeat/tike/cont/ws/SuministroLR.xsd"
 NS_SUM1    = "https://www2.agenciatributaria.gob.es/static_files/common/internet/dep/aplicaciones/es/aeat/tike/cont/ws/SuministroInformacion.xsd"
@@ -22,12 +54,13 @@ NS_SUM1    = "https://www2.agenciatributaria.gob.es/static_files/common/internet
 
 class VerifactuXMLBuilderNoVerifactu(object):
     """
-    Compatible Odoo 11 → 18:
-    - account.invoice (v11–12) y account.move (v13+)
+    Compatible Odoo 10 → 18:
+    - account.invoice (v10–12) y account.move (v13+)
     - number/name, date_invoice/invoice_date/date
     - invoice_line_tax_ids/tax_ids
-    - previous_hash vacío → 'SINHUELLA'
-    - firma con atributo Id opcional (si tu signer soporta reference_uri)
+    - Encadenamiento SOLO si hay previous_hash (no forzar 'SINHUELLA')
+    - Timestamp alineado con compute_hash()
+    - Firma con atributo Id opcional y reference_uri si el signer lo soporta
     """
 
     RE_TYPES = {Decimal("5.2"), Decimal("1.4"), Decimal("0.5")}
@@ -39,25 +72,24 @@ class VerifactuXMLBuilderNoVerifactu(object):
 
     # ---------------- Compat helpers ----------------
     def _inv_number(self, inv):
-        # v11–12: number ; v13+: name
-        return (getattr(inv, "name", None) or getattr(inv, "number", "") or "").strip()
+        # v13+: name ; v10–12: number
+        return (getattr(inv, "name", None) or getattr(inv, "number", u"") or u"").strip()
 
     def _coerce_date(self, val):
         try:
             from datetime import datetime as ddt
             if isinstance(val, ddt):
                 return val.date()
-            # date tiene .isoformat y no es str
-            if hasattr(val, "isoformat") and not isinstance(val, str):
+            if hasattr(val, "isoformat") and not isinstance(val, basestring):
                 return val
-            if isinstance(val, str):
+            if isinstance(val, basestring):
                 return datetime.strptime(val[:10], "%Y-%m-%d").date()
         except Exception:
             pass
         return None
 
     def _inv_date(self, inv):
-        # v11–12: date_invoice ; v13+: invoice_date ; fallback: date
+        # v13+: invoice_date ; v10–12: date_invoice ; fallback: date
         if getattr(inv, "invoice_date", None):
             return self._coerce_date(inv.invoice_date)
         if getattr(inv, "date_invoice", None):
@@ -68,7 +100,7 @@ class VerifactuXMLBuilderNoVerifactu(object):
 
     def _fmt_ddmmyyyy(self, d):
         d = VerifactuXMLValidator._to_date(d)
-        return d.strftime("%d-%m-%Y") if d else ""
+        return d.strftime("%d-%m-%Y") if d else u""
 
     def _inv_lines(self, inv):
         return list(getattr(inv, "invoice_line_ids", []))
@@ -92,33 +124,32 @@ class VerifactuXMLBuilderNoVerifactu(object):
         return Decimal(str(x or 0)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
     def _current_hash(self, inv):
-        return (getattr(inv, "verifactu_hash", "") or "").strip()
+        return _safe_str(getattr(inv, "verifactu_hash", u""))
 
     def _previous_hash(self, inv):
-        return (getattr(inv, "verifactu_previous_hash", "") or "") or "SINHUELLA"
+        return _safe_str(getattr(inv, "verifactu_previous_hash", u""))
 
     # ---------------- Build ----------------
     def build(self):
         inv = self.invoice
         company = inv.company_id
 
-        # Emisor (empresa/autónomo) desde company_id
-        company_name = (company.name or "").strip()
-        company_vat_raw = (company.vat or "").strip()
-        company_vat = VerifactuXMLValidator.clean_nif_es(company_vat_raw) if company_vat_raw else ""
-        if not company_name or not company_vat:
-            raise UserError("VeriFactu: faltan datos del emisor en la compañía (Nombre y/o NIF/CIF).")
+        # Emisor (empresa/autónomo)
+        company_name = (company.name or u"").strip()
+        company_vat_raw = (company.vat or u"").strip()
+        company_vat = VerifactuXMLValidator.clean_nif_es(company_vat_raw) if company_vat_raw else u""
+        if (not company_name) or (not company_vat):
+            raise UserError(_("VeriFactu: faltan datos del emisor en la compañía (Nombre y/o NIF/CIF)."))
 
         invoice_number = self._inv_number(inv)
         invoice_date = self._fmt_ddmmyyyy(self._inv_date(inv))
-        client_name = inv.partner_id.name or "SINNOMBRE"
+        client_name = inv.partner_id.name or u"SINNOMBRE"
 
         previous_hash = self._previous_hash(inv)
         current_hash = self._current_hash(inv)
 
         clave_regimen = VerifactuRegimeKey.compute_clave_regimen(inv)
-        # calif_operacion_global = VerifactuOperacionClassifier.compute(inv)  # si lo usas en algún texto
-        verifactu_requerimiento = getattr(inv, "verifactu_requerimiento", "") or ""
+        verifactu_requerimiento = getattr(inv, "verifactu_requerimiento", u"") or u""
         base_coste_total = getattr(inv, "verifactu_base_coste", 0.0) or 0.0
 
         # Namespaces
@@ -158,55 +189,67 @@ class VerifactuXMLBuilderNoVerifactu(object):
         # Nombre del emisor
         ET.SubElement(registro_alta, ET.QName(NS_SUM1, "NombreRazonEmisor")).text = company_name
 
-        # TipoFactura
+        # Tipo factura
         tipo_factura = VerifactuTipoFacturaResolver.resolve(inv)
         ET.SubElement(registro_alta, ET.QName(NS_SUM1, "TipoFactura")).text = tipo_factura
 
-        # Rectificativas
-        if tipo_factura in ("F4", "R1", "R2", "R3", "R4"):
+        # --- Rectificativas ---
+        is_refund = self.invoice.is_rectificativa()
+        if is_refund:
+            # Determina tipo según tu lógica interna (R1–R5)
+            tipo_factura = VerifactuTipoFacturaResolver.resolve(inv)
             tipo_rectificativa = VerifactuXMLValidator.infer_tipo_rectificativa(inv)
-            ET.SubElement(registro_alta, ET.QName(NS_SUM1, "TipoRectificativa")).text = tipo_rectificativa
 
-            original = VerifactuXMLValidator.get_original_invoice(inv)
-            if original:
-                datos_factura = ET.SubElement(registro_alta, ET.QName(NS_SUM1, "DatosFacturaRectificada"))
-                ET.SubElement(datos_factura, ET.QName(NS_SUM1, "IDEmisorFactura")).text = company_vat
-                num_orig, date_orig = VerifactuXMLValidator.get_original_num_and_date(original)
-                ET.SubElement(datos_factura, ET.QName(NS_SUM1, "NumSerieFactura")).text = (num_orig or "DESCONOCIDO")
-                ET.SubElement(datos_factura, ET.QName(NS_SUM1, "FechaExpedicionFactura")).text = (
-                    self._fmt_ddmmyyyy(date_orig) or "01-01-1900"
-                )
+            # Corrige el valor de TipoRectificativa según AEAT
+            tipo_rectificativa = (tipo_rectificativa or "").upper()
+            valid_map = {
+                "R1": "I",  # Sustitución o error fundado en derecho
+                "R2": "S",  # Por diferencias
+                "R3": "R",  # Resto de supuestos
+                "R4": "O",  # Otros
+                "R5": "A",  # Simplificada
+            }
+            ET.SubElement(registro_alta, ET.QName(NS_SUM1, "TipoRectificativa")).text = valid_map.get(tipo_factura, "S")
+            descripcion_operacion = VerifactuXMLValidator.build_descripcion_operacion(inv)
+            ET.SubElement(registro_alta, ET.QName(NS_SUM1, "DescripcionOperacion")).text = descripcion_operacion
 
-            base_rect, cuota_rect = VerifactuXMLValidator.compute_importe_rectificacion(inv, original, tipo_rectificativa)
-            importe = ET.SubElement(registro_alta, ET.QName(NS_SUM1, "ImporteRectificacion"))
-            ET.SubElement(importe, ET.QName(NS_SUM1, "BaseRectificada")).text = "%.2f" % (base_rect,)
-            ET.SubElement(importe, ET.QName(NS_SUM1, "CuotaRectificada")).text = "%.2f" % (cuota_rect,)
 
-        # Descripción
-        descripcion_operacion = VerifactuXMLValidator.build_descripcion_operacion(inv)
-        ET.SubElement(registro_alta, ET.QName(NS_SUM1, "DescripcionOperacion")).text = descripcion_operacion
+        # Descripción operación
+        if not is_refund:
+            descripcion_operacion = VerifactuXMLValidator.build_descripcion_operacion(inv)
+            ET.SubElement(registro_alta, ET.QName(NS_SUM1, "DescripcionOperacion")).text = descripcion_operacion
 
-        # Destinatario / 61.d
-        if tipo_factura in ("F2", "R5"):
-            vat = (inv.partner_id.vat or "").upper().strip()
-            if not vat or vat == "SINNIF":
-                ET.SubElement(registro_alta, ET.QName(NS_SUM1, "FacturaSinIdentifDestinatarioArt61d")).text = "S"
+        # ---------------- Destinatario ----------------
+        is_simpl = tipo_factura in ("F2", "R5")
+        vat = (inv.partner_id.vat or "").strip().upper()
+
+        if is_simpl and not vat:
+            # Simplificada SIN identificar → 61.d
+            ET.SubElement(registro_alta, ET.QName(NS_SUM1, "FacturaSinIdentifDestinatarioArt61d")).text = "S"
         else:
+            # Identificada (incluye F2/R5 con VAT) → construir <Destinatarios>
             destinatarios = ET.SubElement(registro_alta, ET.QName(NS_SUM1, "Destinatarios"))
             id_dest = ET.SubElement(destinatarios, ET.QName(NS_SUM1, "IDDestinatario"))
             ET.SubElement(id_dest, ET.QName(NS_SUM1, "NombreRazon")).text = client_name or "SINNOMBRE"
 
             idinfo = VerifactuXMLValidator.build_id_for_xml(inv.partner_id)
+
             if idinfo.get("tag") == "NIF":
-                ET.SubElement(id_dest, ET.QName(NS_SUM1, "NIF")).text = idinfo.get("value", "")
+                val = (idinfo.get("value") or "").strip()
+                if not val:
+                    raise UserError(_("VeriFactu: NIF del destinatario vacío."))
+                ET.SubElement(id_dest, ET.QName(NS_SUM1, "NIF")).text = val
             else:
                 _id = (idinfo.get("ID") or "").strip()
-                if not _id:
-                    raise UserError("VeriFactu: el destinatario no tiene NIF válido ni ID alternativo (IDType/CodigoPais/ID).")
+                _type = (idinfo.get("IDType") or "").strip()
+                _pais = (idinfo.get("CodigoPais") or "").strip()
+                if not (_id and _type and _pais):
+                    raise UserError(_("VeriFactu: destinatario extranjero sin ID/IDType/CodigoPais."))
                 idotro = ET.SubElement(id_dest, ET.QName(NS_SUM1, "IDOtro"))
-                ET.SubElement(idotro, ET.QName(NS_SUM1, "IDType")).text = idinfo.get("IDType", "")
-                ET.SubElement(idotro, ET.QName(NS_SUM1, "CodigoPais")).text = idinfo.get("CodigoPais", "")
+                ET.SubElement(idotro, ET.QName(NS_SUM1, "CodigoPais")).text = _pais
+                ET.SubElement(idotro, ET.QName(NS_SUM1, "IDType")).text = _type
                 ET.SubElement(idotro, ET.QName(NS_SUM1, "ID")).text = _id
+
 
         # --- Desglose ---
         desglose = ET.SubElement(registro_alta, ET.QName(NS_SUM1, "Desglose"))
@@ -237,23 +280,23 @@ class VerifactuXMLBuilderNoVerifactu(object):
 
             if calificacion not in ["N1", "N2"]:
                 tipo_impositivo = self._tax_percent(tax)
-                ET.SubElement(detalle, ET.QName(NS_SUM1, "TipoImpositivo")).text = str(tipo_impositivo)
+                ET.SubElement(detalle, ET.QName(NS_SUM1, "TipoImpositivo")).text = _to_text(tipo_impositivo)
 
-            ET.SubElement(detalle, ET.QName(NS_SUM1, "BaseImponibleOimporteNoSujeto")).text = f"{self._money(base_total)}"
+            ET.SubElement(detalle, ET.QName(NS_SUM1, "BaseImponibleOimporteNoSujeto")).text = u"%s" % (self._money(base_total),)
 
             if tipo_factura in ("F2", "F3", "R5") and clave_regimen == "06":
                 base_coste_proporcional = VerifactuXMLValidator.compute_base_coste_proporcional(inv, base_total, base_coste_total)
-                ET.SubElement(detalle, ET.QName(NS_SUM1, "BaseImponibleACoste")).text = f"{self._money(base_coste_proporcional)}"
+                ET.SubElement(detalle, ET.QName(NS_SUM1, "BaseImponibleACoste")).text = u"%s" % (self._money(base_coste_proporcional),)
 
             if calificacion not in ["N1", "N2"]:
                 cuota = (Decimal(base_total) * self._tax_percent(tax) / Decimal("100")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
-                ET.SubElement(detalle, ET.QName(NS_SUM1, "CuotaRepercutida")).text = str(cuota)
+                ET.SubElement(detalle, ET.QName(NS_SUM1, "CuotaRepercutida")).text = _to_text(cuota)
 
             tax_pct = self._tax_percent(tax)
             if tax_pct in self.RE_TYPES:
-                ET.SubElement(detalle, ET.QName(NS_SUM1, "TipoRecargoEquivalencia")).text = str(tax_pct)
+                ET.SubElement(detalle, ET.QName(NS_SUM1, "TipoRecargoEquivalencia")).text = _to_text(tax_pct)
                 cuota_recargo = (Decimal(base_total) * tax_pct / Decimal("100")).quantize(Decimal("0.01"))
-                ET.SubElement(detalle, ET.QName(NS_SUM1, "CuotaRecargoEquivalencia")).text = str(cuota_recargo)
+                ET.SubElement(detalle, ET.QName(NS_SUM1, "CuotaRecargoEquivalencia")).text = _to_text(cuota_recargo)
 
         # Sin impuestos
         line_items_no_tax = []
@@ -273,43 +316,51 @@ class VerifactuXMLBuilderNoVerifactu(object):
             ET.SubElement(detalle, ET.QName(NS_SUM1, "CalificacionOperacion")).text = calificacion
             if calificacion == "S2":
                 ET.SubElement(detalle, ET.QName(NS_SUM1, "OperacionExenta")).text = "E1"
-            ET.SubElement(detalle, ET.QName(NS_SUM1, "BaseImponibleOimporteNoSujeto")).text = f"{self._money(base_total)}"
+            ET.SubElement(detalle, ET.QName(NS_SUM1, "BaseImponibleOimporteNoSujeto")).text = u"%s" % (self._money(base_total),)
             if calificacion not in ["N1", "N2"]:
                 ET.SubElement(detalle, ET.QName(NS_SUM1, "TipoImpositivo")).text = "0.00"
                 ET.SubElement(detalle, ET.QName(NS_SUM1, "CuotaRepercutida")).text = "0.00"
 
-        # Totales
-        ET.SubElement(registro_alta, ET.QName(NS_SUM1, "CuotaTotal")).text = f"{self._money(getattr(inv, 'amount_tax', 0.0))}"
-        ET.SubElement(registro_alta, ET.QName(NS_SUM1, "ImporteTotal")).text = f"{self._money(getattr(inv, 'amount_total', 0.0))}"
+        # Totales (usar mismo formateo que compute_hash)
+        ET.SubElement(registro_alta, ET.QName(NS_SUM1, "CuotaTotal")).text = _fmt_amount(inv, getattr(inv, "amount_tax", 0.0))
+        ET.SubElement(registro_alta, ET.QName(NS_SUM1, "ImporteTotal")).text = _fmt_amount(inv, getattr(inv, "amount_total", 0.0))
 
-        # Encadenamiento
-        encadenamiento = ET.SubElement(registro_alta, ET.QName(NS_SUM1, "Encadenamiento"))
-        anterior = ET.SubElement(encadenamiento, ET.QName(NS_SUM1, "RegistroAnterior"))
-        ET.SubElement(anterior, ET.QName(NS_SUM1, "IDEmisorFactura")).text = company_vat
-        ET.SubElement(anterior, ET.QName(NS_SUM1, "NumSerieFactura")).text = invoice_number
-        ET.SubElement(anterior, ET.QName(NS_SUM1, "FechaExpedicionFactura")).text = invoice_date
-        ET.SubElement(anterior, ET.QName(NS_SUM1, "Huella")).text = previous_hash
+        # Encadenamiento — SOLO si hay previous_hash
+        if previous_hash:
+            encadenamiento = ET.SubElement(registro_alta, ET.QName(NS_SUM1, "Encadenamiento"))
+            anterior = ET.SubElement(encadenamiento, ET.QName(NS_SUM1, "RegistroAnterior"))
+            ET.SubElement(anterior, ET.QName(NS_SUM1, "IDEmisorFactura")).text = company_vat
+            ET.SubElement(anterior, ET.QName(NS_SUM1, "NumSerieFactura")).text = invoice_number
+            ET.SubElement(anterior, ET.QName(NS_SUM1, "FechaExpedicionFactura")).text = invoice_date
+            ET.SubElement(anterior, ET.QName(NS_SUM1, "Huella")).text = previous_hash
 
         # Info del sistema
         VerifactuSystemInfoBuilder(inv.company_id, self.config).append_to(registro_alta)
 
         # Sello de tiempo y huella actual
-        now = datetime.now().astimezone()
-        ET.SubElement(registro_alta, ET.QName(NS_SUM1, "FechaHoraHusoGenRegistro")).text = now.isoformat(timespec="seconds")
+        ts_str = _iso_with_tz(inv.env, getattr(inv, 'verifactu_hash_calculated_at', None))
+        ET.SubElement(registro_alta, ET.QName(NS_SUM1, "FechaHoraHusoGenRegistro")).text = ts_str
         ET.SubElement(registro_alta, ET.QName(NS_SUM1, "TipoHuella")).text = "01"
         ET.SubElement(registro_alta, ET.QName(NS_SUM1, "Huella")).text = current_hash
 
         # --- Firma del RegistroAlta ---
-        # Atributo Id opcional (si tu signer lo usa para Reference URI)
-        unique_id = "RA-%s" % (invoice_number.replace("/", "-") or "s-n")
+        unique_id = "RA-%s" % ((invoice_number or u"s-n").replace("/", "-"))
         registro_alta.set("Id", unique_id)
 
-        # Firma de RegistroAlta
         raw_alta = ET.tostring(registro_alta, encoding="utf-8")
-        signed_str = VerifactuXMLSigner(self.config).sign(raw_alta)
-        signed_lxml = LET.fromstring(signed_str)
-        signed_etree = ET.fromstring(LET.tostring(signed_lxml))
+        signer = VerifactuXMLSigner(self.config)
+        try:
+            # Algunas implementaciones aceptan reference_uri
+            signed_str = signer.sign(raw_alta, reference_uri="#%s" % unique_id)
+        except TypeError:
+            signed_str = signer.sign(raw_alta)
 
+        signed_lxml = LET.fromstring(_to_bytes(signed_str))
+        signed_etree = ET.fromstring(_to_bytes(LET.tostring(signed_lxml)))
         registro_factura.append(signed_etree)
 
-        return minidom.parseString(ET.tostring(envelope)).toprettyxml(indent="  ")
+        # Pretty print (robusto a bytes/str)
+        env_bytes = ET.tostring(envelope)
+        if not isinstance(env_bytes, (bytes, bytearray)):
+            env_bytes = _to_bytes(env_bytes)
+        return _to_text(minidom.parseString(env_bytes).toprettyxml(indent="  "))
