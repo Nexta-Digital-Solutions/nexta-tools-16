@@ -99,6 +99,12 @@ class VerifactuResConfigSettings(models.TransientModel):
                                                     help="Margen mínimo entre peticiones al portal por compañía en el cron diario (rate-limit).")
 
     # --- Config VeriFactu existente ---
+    # Campo legacy del módulo original - mantener para compatibilidad con DB
+    default_age_partner_config_id = fields.Many2one(
+        'res.partner', string="Partner Config (legacy)", readonly=True, 
+        default_model='res.partner', store=False
+    )
+    
     endpoint_url = fields.Char("URL del endpoint VeriFactu")
     show_qr_always = fields.Boolean("Mostrar siempre el QR")
     auto_send_to_verifactu = fields.Boolean("Envío automático al validar")
