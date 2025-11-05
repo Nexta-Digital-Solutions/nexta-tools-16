@@ -99,8 +99,10 @@ class VerifactuResConfigSettings(models.TransientModel):
                                                     help="Margen mínimo entre peticiones al portal por compañía en el cron diario (rate-limit).")
 
     # --- Config VeriFactu existente ---
-    # Campo dummy para compatibilidad con datos legacy (deprecated)
-    # Renombrado para evitar interpretación de 'default_' como default field
+    # Campos dummy para compatibilidad con datos legacy (deprecated)
+    default_age_partner_config_id = fields.Many2one(
+        'res.partner', string="Partner Config (deprecated)", readonly=True
+    )
     age_partner_config_id = fields.Many2one(
         'res.partner', string="Partner Config (deprecated)", readonly=True
     )
