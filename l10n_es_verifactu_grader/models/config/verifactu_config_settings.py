@@ -101,10 +101,10 @@ class VerifactuResConfigSettings(models.TransientModel):
     # --- Config VeriFactu existente ---
     # Campos dummy para compatibilidad con datos legacy (deprecated)
     default_age_partner_config_id = fields.Many2one(
-        'res.partner', string="Partner Config (deprecated)", readonly=True
+        'res.partner', string="Partner Config (deprecated)", readonly=True, default_model='res.partner'
     )
     age_partner_config_id = fields.Many2one(
-        'res.partner', string="Partner Config (deprecated)", readonly=True
+        'res.partner', string="Partner Config (deprecated)", readonly=True, default_model='res.partner'
     )
     
     endpoint_url = fields.Char("URL del endpoint VeriFactu")
