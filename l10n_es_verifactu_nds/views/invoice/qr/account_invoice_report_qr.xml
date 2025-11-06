@@ -1,5 +1,5 @@
 <odoo>
-    <template id="invoice_qr_nds" inherit_id="l10n_es_verifactu.report_invoice_document">
+    <template id="invoice_qr_nds" inherit_id="account.report_invoice_document">
 
         <xpath expr="//div[@id='qrcode']" position="before">
 
