@@ -34,7 +34,7 @@ Este módulo cumple con los requisitos técnicos establecidos por la AEAT en el 
         "views/wizards/verifactu_help_wizard.xml",
         "views/invoice/account_move_tree_verifactu.xml",
         "views/invoice/account_move_operation_date.xml",
-        "views/invoice/qr/account_invoice_report_qr.xml",
+        # "views/invoice/qr/account_invoice_report_qr.xml",
         "views/config/res_config_settings.xml",
         "data/verifactu_update_checker_cron.xml",
         "data/attachments.xml",
