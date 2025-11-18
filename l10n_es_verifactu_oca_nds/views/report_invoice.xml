@@ -1,8 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
 <!--
 # (c) 2025 Nexta - Carlos Ros <cros@nextads.es>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 -->
-<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
     <template
@@ -26,22 +26,18 @@
                     </ul>
                     <ul class="list-inline mb4">VERI*FACTU</ul>
                 </div>
-                <t t-if="information_block">
-                    <t t-set="colclass" t-value="'col-5'"/>
-                    <div name="information_block" class="col-4">
-                        <t t-out="information_block"/>
-                    </div>
-                    <div name="address" t-att-class="colclass">
-                    <t t-esc="address"/>
-                    </div>
-                </t>
-                <t t-if="not information_block">
-                    <t t-set="colclass" t-value="'col-5 offset-4'"/>
-                    <div name="address" t-att-class="colclass">
-                    <t t-esc="address"/>
-                    </div>
-                </t>
             </div>
+        </xpath>
+
+    </template>
+
+    <template id="report_invoice_document" inherit_id="l10n_es_verifactu_oca.address_layout" priority="1000">
+        <div class="address row" position="attributes">
+            <attribute name="t-if">1=1</attribute>
+        </div>
+
+        <xpath expr="//div[@id='verifactu_row']" position="attributes">
+            <attribute name="t-if">1!=1</attribute>
         </xpath>
 
     </template>
