@@ -260,9 +260,9 @@
                                 </t>
                                 
                                 <!-- Notas de la orden de venta -->
-                                <div t-if="o.sale_id and o.sale_id.note" class="mt-4">
+                                <div t-if="o.sale_id and o.sale_id.sale_note" class="mt-4">
                                     <strong>Notas:</strong>
-                                    <p t-field="o.sale_id.note"/>
+                                    <p t-field="o.sale_id.sale_note"/>
                                 </div>
                             </div>
                         </t>
