@@ -261,7 +261,6 @@
                                 
                                 <!-- Notas de la orden de venta -->
                                 <div t-if="o.sale_note" class="mt-4" name="notes">
-                                    <strong>Notas:</strong>
                                     <span t-field="o.sale_note"/>
                                 </div>
                             </div>
