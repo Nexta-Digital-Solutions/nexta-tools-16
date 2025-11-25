@@ -97,6 +97,15 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        <!-- Notas de venta -->
+                                        <t t-set="so_lines" t-value="o.sale_id.order_line.filtered(lambda x: x.display_type=='line_note')"/>
+                                        <t t-if="so_lines">
+                                            <tr t-foreach="so_lines" t-as="so_line" class="text-start">
+                                                <td colspan="99">
+                                                    <span t-field="so_line.name"/>
+                                                </td>
+                                            </tr>
+                                        </t>
                                         <t t-set="lines" t-value="o.move_ids.filtered(lambda x: x.product_uom_qty)"/>
                                         <tr t-foreach="lines" t-as="move">
                                             <td>
@@ -138,6 +147,15 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        <!-- Notas de venta -->
+                                        <t t-set="so_lines" t-value="o.sale_id.order_line.filtered(lambda x: x.display_type=='line_note')"/>
+                                        <t t-if="so_lines">
+                                            <tr t-foreach="so_lines" t-as="so_line" class="text-start">
+                                                <td colspan="99">
+                                                    <span t-field="so_line.name"/>
+                                                </td>
+                                            </tr>
+                                        </t>
                                         <!-- This part gets complicated with different use cases (additional use cases in extensions of this report):
                                                 1. If serial numbers are used and set to print on delivery slip => print lines as is, otherwise group them by overlapping
                                                     product + description + uom combinations
@@ -240,6 +258,12 @@
                                         </tbody>
                                     </table>
                                 </t>
+                                
+                                <!-- Notas de la orden de venta -->
+                                <div t-if="o.sale_id and o.sale_id.note" class="mt-4">
+                                    <strong>Notas:</strong>
+                                    <p t-field="o.sale_id.note"/>
+                                </div>
                             </div>
                         </t>
                     </t>
