@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Eliminar columna ORDENADO de las lineas agregadas -->
+    <template id="stock_report_delivery_aggregated_move_lines_sin_ordenado" 
+              inherit_id="stock.stock_report_delivery_aggregated_move_lines">
+        <xpath expr="//td[@name='move_line_aggregated_qty_ordered']" position="replace">
+        </xpath>
+    </template>
+</odoo>
