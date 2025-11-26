@@ -250,7 +250,6 @@
                                                     <td/>
                                                     <td class="text-center w-auto">
                                                         <span t-field="bo_line.product_uom_qty"/>
-                                                        <span t-field="bo_line.list_price"/>
                                                         <!--                                            <span t-field="bo_line.product_uom"/>-->
                                                     </td>
                                                 </tr>
