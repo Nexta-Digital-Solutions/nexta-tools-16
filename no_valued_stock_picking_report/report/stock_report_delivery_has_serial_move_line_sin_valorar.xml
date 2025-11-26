@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Template propio para líneas con lote/serie en albarán sin valorar -->
+    <!-- No usa lot_dict para evitar errores con otras herencias -->
+    <template id="stock_report_delivery_has_serial_move_line_sin_valorar">
+        <td>
+            <!-- Mostrar descripción de venta si existe, sino el producto -->
+            <t t-if="move_line.move_id.sale_line_id">
+                <span t-field="move_line.move_id.sale_line_id.name"/>
+            </t>
+            <t t-else="">
+                <span t-field="move_line.product_id"/>
+                <t t-if="not description and description != ''">
+                    <t t-set="description" t-value="move_line.move_id.description_picking"/>
+                </t>
+                <p t-if="description != '' and description != move_line.product_id.display_name and description != move_line.product_id.name">
+                    <span t-esc="description"/>
+                </p>
+            </t>
+        </td>
+        <t t-if="has_serial_number" name="move_line_lot">
+            <td><span t-field="move_line.lot_id.name"/></td>
+        </t>
+        <td class="text-center" name="move_line_lot_qty_done">
+            <span t-field="move_line.qty_done"/>
+            <span t-field="move_line.product_uom_id"/>
+        </td>
+    </template>
+</odoo>

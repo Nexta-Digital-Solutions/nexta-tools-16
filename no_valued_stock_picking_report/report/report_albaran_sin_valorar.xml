@@ -170,7 +170,7 @@
                                                 <!-- If printing lots/serial numbers => keep products in original lines -->
                                                 <t t-if="has_serial_number">
                                                     <tr t-foreach="package_move_lines" t-as="move_line">
-                                                        <t t-call="stock.stock_report_delivery_has_serial_move_line"/>
+                                                        <t t-call="no_valued_stock_picking_report.stock_report_delivery_has_serial_move_line_sin_valorar"/>
                                                     </tr>
                                                 </t>
                                                 <!-- If not printing lots/serial numbers => merge lines with same product+description+uom -->
@@ -188,7 +188,7 @@
                                                    name="no_package_section"/>
                                                 <t t-if="has_serial_number">
                                                     <tr t-foreach="move_lines" t-as="move_line">
-                                                        <t t-call="stock.stock_report_delivery_has_serial_move_line"/>
+                                                        <t t-call="no_valued_stock_picking_report.stock_report_delivery_has_serial_move_line_sin_valorar"/>
                                                     </tr>
                                                 </t>
                                                 <t t-else="">
@@ -205,7 +205,7 @@
                                             <!-- If printing lots/serial numbers => keep products in original lines -->
                                             <t t-if="has_serial_number">
                                                 <tr t-foreach="o.move_line_ids" t-as="move_line">
-                                                    <t t-call="stock.stock_report_delivery_has_serial_move_line"/>
+                                                    <t t-call="no_valued_stock_picking_report.stock_report_delivery_has_serial_move_line_sin_valorar"/>
                                                 </tr>
                                             </t>
                                             <!-- If not printing lots/serial numbers => merge lines with same product -->

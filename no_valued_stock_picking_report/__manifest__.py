@@ -32,6 +32,7 @@
         'report/report_albaran_sin_valorar.xml',
         'report/paperformat_albaran_report.xml',
         'report/stock_report_delivery_aggregated_move_lines.xml',
+        'report/stock_report_delivery_has_serial_move_line_sin_valorar.xml',
 
     ],
 
