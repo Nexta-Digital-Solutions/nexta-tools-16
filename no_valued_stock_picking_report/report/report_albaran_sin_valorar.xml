@@ -46,19 +46,26 @@
                                             </span>
                                         </div>
                                         <div t-if="partner" name="partner_header">
-                                            <t t-if="1!=1">
-                                                <div t-field="partner.self"
-                                                     t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;name&quot;, &quot;phone&quot;], &quot;no_marker&quot;: True, &quot;phone_icons&quot;: True}"/>
+                                            <!-- Nombre del cliente -->
+                                            <strong t-field="partner.sudo().name"/>
+                                            <br/>
+                                            <!-- Dirección completa -->
+                                            <span t-field="partner.sudo().street"/>
+                                            <t t-if="partner.sudo().street2">
+                                                <br/>
+                                                <span t-field="partner.sudo().street2"/>
                                             </t>
                                             <br/>
-                                            <span t-field="partner.sudo().city"/>
-                                            <span t-field="partner.sudo().state_id"/>
                                             <span t-field="partner.sudo().zip"/>
-                                            <span t-field="partner.sudo().street"/>
+                                            <span t-field="partner.sudo().city"/>
+                                            <t t-if="partner.sudo().state_id">
+                                                (<span t-field="partner.sudo().state_id.name"/>)
+                                            </t>
                                             <br/>
                                             <t t-if="partner.sudo().ref">
                                                 <span>Referencia:</span>
                                                 <span t-esc="partner.sudo().ref"/>
+                                                <br/>
                                             </t>
                                             <p t-if="partner.sudo().vat"><t
                                                     t-esc="o.company_id.country_id.vat_label or 'Tax ID'"/>:
