@@ -32,17 +32,17 @@
                                     <div class="col-5 offset-1" name="div_incoming_address">
                                         <div t-if="o.picking_type_id.code=='incoming' and partner">
                                             <span>
-                                                <strong>Vendor Address:</strong>
+                                                <strong>Dirección del Proveedor:</strong>
                                             </span>
                                         </div>
                                         <div t-if="o.picking_type_id.code=='internal' and partner">
                                             <span>
-                                                <strong>Warehouse Address:</strong>
+                                                <strong>Dirección del Almacén:</strong>
                                             </span>
                                         </div>
                                         <div t-if="o.picking_type_id.code=='outgoing' and partner">
                                             <span>
-                                                <strong>Customer Address:</strong>
+                                                <strong>Dirección de Envío:</strong>
                                             </span>
                                         </div>
                                         <div t-if="partner" name="partner_header">
@@ -220,6 +220,15 @@
                                 <!-- Notas de la orden de venta -->
                                 <div t-if="o.sale_note" class="mt-4" name="notes">
                                     <span t-field="o.sale_note"/>
+                                </div>
+                                
+                                <!-- Recuadro de firma -->
+                                <div class="d-block mt-5" style="float: right;">
+                                    <div name="sign_text">
+                                        <h5>Recibí: Conforme</h5>
+                                    </div>
+                                    <div class="border border-dark" style="width: 320px; height: 70px; padding: 10px;" name="sign_box">
+                                    </div>
                                 </div>
                             </div>
                         </t>
