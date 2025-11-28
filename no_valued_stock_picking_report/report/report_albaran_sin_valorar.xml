@@ -159,7 +159,8 @@
                                         <t t-set="moves" t-value="o.move_ids.filtered(lambda m: m.quantity_done > 0)"/>
                                         <tr t-foreach="moves" t-as="move">
                                             <td>
-                                                <span t-field="move.description_picking"/>
+                                                <!-- Mostrar descripción de venta del producto -->
+                                                <span t-field="move.product_id.sale_description"/>
                                             </td>
                                             <td class="text-center">
                                                 <span t-field="move.quantity_done"/>
