@@ -7,26 +7,6 @@
     </record>
     <record id="verifactu_map_line_S1" model="verifactu.map.line">
         <field name="code">S1</field>
-        <field
-            name="taxes"
-            eval="[(6, 0, [i for i in [
-                (obj().env.ref('l10n_es.account_tax_template_s_iva21b', False) or obj()).id,
-                (obj().env.ref('l10n_es.account_tax_template_s_iva0b', False) or obj()).id,
-                (obj().env.ref('l10n_es.account_tax_template_s_iva2b', False) or obj()).id,
-                (obj().env.ref('l10n_es.account_tax_template_s_iva4b', False) or obj()).id,
-                (obj().env.ref('l10n_es.account_tax_template_s_iva5b', False) or obj()).id,
-                (obj().env.ref('l10n_es.account_tax_template_s_iva7-5b', False) or obj()).id,
-                (obj().env.ref('l10n_es.account_tax_template_s_iva10b', False) or obj()).id,
-                (obj().env.ref('l10n_es.account_tax_template_s_iva21s', False) or obj()).id,
-                (obj().env.ref('l10n_es.account_tax_template_s_iva10s', False) or obj()).id,
-                (obj().env.ref('l10n_es.account_tax_template_s_iva0s', False) or obj()).id,
-                (obj().env.ref('l10n_es.account_tax_template_s_iva2s', False) or obj()).id,
-                (obj().env.ref('l10n_es.account_tax_template_s_iva4s', False) or obj()).id,
-                (obj().env.ref('l10n_es.account_tax_template_s_iva5s', False) or obj()).id,
-                (obj().env.ref('l10n_es.account_tax_template_s_iva7-5s', False) or obj()).id,
-                (obj().env.ref('l10n_es.account_tax_template_s_iva0', False) or obj()).id,
-            ] if i])]"
-        />
         <field name="verifactu_map_id" ref="verifactu_map" />
         <field
             name="name"
@@ -34,12 +14,6 @@
     </record>
     <record id="verifactu_map_line_S2" model="verifactu.map.line">
         <field name="code">S2</field>
-        <field
-            name="taxes"
-            eval="[(6, 0, [i for i in [
-                (obj().env.ref('l10n_es.account_tax_template_s_iva0_isp', False) or obj()).id,
-            ] if i])]"
-        />
         <field name="verifactu_map_id" ref="verifactu_map" />
         <field
             name="name"
@@ -47,77 +21,30 @@
     </record>
     <record id="verifactu_map_line_N1" model="verifactu.map.line">
         <field name="code">N1</field>
-        <field name="taxes" eval="[(6, 0, [i for i in [] if i])]" />
         <field name="verifactu_map_id" ref="verifactu_map" />
         <field name="name">Operación No Sujeta artículo 7, 14, otros.</field>
     </record>
 
     <record id="verifactu_map_line_N2" model="verifactu.map.line">
         <field name="code">N2</field>
-        <field
-            name="taxes"
-            eval="[(6, 0, [i for i in [
-                (obj().env.ref('l10n_es.account_tax_template_s_iva_e', False) or obj()).id,
-                (obj().env.ref('l10n_es.account_tax_template_s_iva0_sp_i', False) or obj()).id,
-                (obj().env.ref('l10n_es.account_tax_template_s_iva_ns_b', False) or obj()).id,
-                (obj().env.ref('l10n_es.account_tax_template_s_iva_ns', False) or obj()).id,
-            ] if i])]"
-        />
         <field name="verifactu_map_id" ref="verifactu_map" />
         <field name="name">Operación No Sujeta por Reglas de localización.</field>
     </record>
 
     <record id="verifactu_map_line_RE" model="verifactu.map.line">
         <field name="code">RE</field>
-        <field
-            name="taxes"
-            eval="[(6, 0, [i for i in [
-                (obj().env.ref('l10n_es.account_tax_template_s_req52', False) or obj()).id,
-                (obj().env.ref('l10n_es.account_tax_template_s_req014', False) or obj()).id,
-                (obj().env.ref('l10n_es.account_tax_template_s_req062', False) or obj()).id,
-                (obj().env.ref('l10n_es.account_tax_template_s_req1', False) or obj()).id,
-                (obj().env.ref('l10n_es.account_tax_template_s_req05', False) or obj()).id,
-                (obj().env.ref('l10n_es.account_tax_template_s_req026', False) or obj()).id,
-                (obj().env.ref('l10n_es.account_tax_template_s_req0', False) or obj()).id,
-            ] if i])]"
-        />
         <field name="verifactu_map_id" ref="verifactu_map" />
         <field name="name">Recargo Equivalencia</field>
     </record>
 
     <record id="verifactu_map_line_tax_not_included" model="verifactu.map.line">
         <field name="code">TaxNotIncludedInTotal</field>
-        <field
-            name="taxes"
-            eval="[(6, 0, [i for i in [
-              (obj().env.ref('l10n_es.account_tax_template_s_irpf1', False) or obj()).id,
-              (obj().env.ref('l10n_es.account_tax_template_s_irpf2', False) or obj()).id,
-              (obj().env.ref('l10n_es.account_tax_template_s_irpf7', False) or obj()).id,
-              (obj().env.ref('l10n_es.account_tax_template_s_irpf9', False) or obj()).id,
-              (obj().env.ref('l10n_es.account_tax_template_s_irpf15', False) or obj()).id,
-              (obj().env.ref('l10n_es.account_tax_template_s_irpf18', False) or obj()).id,
-              (obj().env.ref('l10n_es.account_tax_template_s_irpf19', False) or obj()).id,
-              (obj().env.ref('l10n_es.account_tax_template_s_irpf19a', False) or obj()).id,
-              (obj().env.ref('l10n_es.account_tax_template_s_irpf195a', False) or obj()).id,
-              (obj().env.ref('l10n_es.account_tax_template_s_irpf20', False) or obj()).id,
-              (obj().env.ref('l10n_es.account_tax_template_s_irpf20a', False) or obj()).id,
-              (obj().env.ref('l10n_es.account_tax_template_s_irpf21', False) or obj()).id,
-              (obj().env.ref('l10n_es.account_tax_template_s_irpf21a', False) or obj()).id,
-              (obj().env.ref('l10n_es.account_tax_template_s_irpf24', False) or obj()).id,
-            ] if i])]"
-        />
         <field name="verifactu_map_id" ref="verifactu_map" />
         <field name="name">Impuestos no incluidos en ImporteTotal</field>
     </record>
 
     <record id="verifactu_map_line_base_not_included" model="verifactu.map.line">
         <field name="code">BaseNotIncludedInTotal</field>
-        <field
-            name="taxes"
-            eval="[(6, 0, [i for i in [
-          (obj().env.ref('l10n_es.account_tax_template_s_iva0_ns', False) or obj()).id,
-        ] if i])]"
-        />
         <field name="verifactu_map_id" ref="verifactu_map" />
         <field name="name">Bases no incluidas en ImporteTotal</field>
     </record>
@@ -131,12 +58,6 @@
 
     <record id="verifactu_map_line_E2" model="verifactu.map.line">
         <field name="code">E2</field>
-        <field
-            name="taxes"
-            eval="[(6, 0, [i for i in [
-                (obj().env.ref('l10n_es.account_tax_template_s_iva0_e', False) or obj()).id,
-        ] if i])]"
-        />
         <field name="verifactu_map_id" ref="verifactu_map" />
         <field name="name">Exenta por el artículo 21</field>
     </record>
@@ -157,12 +78,6 @@
 
     <record id="verifactu_map_line_E5" model="verifactu.map.line">
         <field name="code">E5</field>
-        <field
-            name="taxes"
-            eval="[(6, 0, [i for i in [
-                (obj().env.ref('l10n_es.account_tax_template_s_iva0_ic', False) or obj()).id,
-        ] if i])]"
-        />
         <field name="verifactu_map_id" ref="verifactu_map" />
         <field name="name">Exenta por el artículo 25</field>
     </record>
@@ -173,4 +88,5 @@
         <field name="verifactu_map_id" ref="verifactu_map" />
         <field name="name">Exenta por otros</field>
     </record>
+    <function model="verifactu.map.line" name="_load_l10n_es_taxes" />
 </odoo>
